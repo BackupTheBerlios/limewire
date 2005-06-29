@@ -1,0 +1,48 @@
+
+<project name="GURL" default="build" basedir=".">
+	<description></description>
+	
+	<property name="product" value="GURL"/>
+	
+	
+	<path id="default.classpath">
+		<pathelement path="${CLASSPATH}"/>
+	</path>
+	
+	<target name="init">
+		<tstamp/>	
+	</target>
+	
+	<target name="build">
+		
+		<property name="JavaVM.framework" 
+			location="/System/Library/Frameworks/JavaVM.framework/Headers"/>
+		
+		<property name="ObjectFile" value="lib${product}.o"/>
+		<property name="LibFile" value="lib${product}.jnilib"/>
+		
+		<echo message="Creating: ${ObjectFile}"/>
+		<exec dir="." executable="cc">
+			<arg line="-c -o ${ObjectFile} -I${JavaVM.framework} 
+						-I${headers} ${product}jnilib.c"/>
+		</exec>
+		
+		<echo message="Creating: ${LibFile}"/>
+		<exec dir="." executable="cc">
+			<arg line="-dynamiclib -o ${LibFile} ${ObjectFile} 
+						-framework JavaVM -framework Carbon"/>
+		</exec>
+	</target>
+	
+	
+	<target name="clean" description="clean up">
+		<delete>
+			<fileset dir=".">
+				<include name="**/lib${product}.o"/>
+				<include name="**/*${product}*.h"/>
+				<include name="**/*.class"/>
+			</fileset>
+		</delete>
+	</target>
+	
+</project>

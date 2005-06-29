@@ -1,0 +1,21 @@
+#!/bin/sh
+
+CLASSPATH=\
+".;../core;../lib/messagebundles/;"\
+"../lib/jars/other/themes.jar;../lib/jars/other/log4j.jar;"\
+"../lib/jars/xerces.jar;../lib/jars/jl011.jar;../lib/jars/logicrypto.jar;"\
+"../lib/jars/mp3sp14.jar;../lib/jars/commons-httpclient.jar;../lib/jars/commons-logging.jar;"\
+"../lib/jars/i18n.jar;../lib/jars/icu4j.jar;../lib/jars/ProgressTabs.jar;../lib/jars/id3v2.jar;"\
+"../lib/jars/jcraft.jar;../lib/jars/looks.jar;../lib/jars/daap.jar;../lib/jars/jmdns.jar;"\
+"../lib/jars/tritonus.jar;../lib/jars/vorbis.jar;../lib/jars/clink.jar;../lib/jars/xml-apis.jar"
+
+export CLASSPATH
+PATH=$PATH:../lib/native
+export PATH
+
+# the exe will read a launch.properties file and set commandline arguments
+# per each newline in there.
+# if it doesn't exist, it will use default arguments -- 
+# so create one that's blank, so we can put arguments here.
+touch launch.properties
+./LimeWire.exe -classpath $CLASSPATH com.limegroup.gnutella.gui.Main

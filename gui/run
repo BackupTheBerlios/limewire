@@ -1,0 +1,18 @@
+#!/bin/sh
+
+CLASSPATH=\
+.:../core:../lib/messagebundles/:\
+../lib/jars/other/themes.jar:../lib/jars/other/log4j.jar:\
+../lib/jars/xerces.jar:../lib/jars/jl011.jar:../lib/jars/logicrypto.jar:\
+../lib/jars/mp3sp14.jar:../lib/jars/commons-httpclient.jar:../lib/jars/commons-logging.jar:\
+../lib/jars/i18n.jar:../lib/jars/icu4j.jar:../lib/jars/ProgressTabs.jar:../lib/jars/id3v2.jar:\
+../lib/jars/jcraft.jar:../lib/jars/looks.jar:../lib/jars/daap.jar:../lib/jars/jmdns.jar:\
+../lib/jars/tritonus.jar:../lib/jars/vorbis.jar:../lib/jars/clink.jar:../lib/jars/xml-apis.jar:\
+../lib/jars/linux/jdic.jar
+
+
+export CLASSPATH
+PATH=$PATH:../lib/native/linux
+export PATH
+
+java  -Djava.library.path=../lib/native/linux com.limegroup.gnutella.gui.Main -Djava.net.preferIPv4Stack=true $*

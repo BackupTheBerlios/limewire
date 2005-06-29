@@ -1,0 +1,180 @@
+This is a TODO list of missing code that could/should be done for the next releases:
+If works must be performed or commented, or has already been performed, please modify this file.
+If tasks as been assigned to somebody, or if somebody starts something, this should be annoted.
+
+
+1. Internationalization issues
+
+
+1.1. Keyboard accelerators
+
+* For Japanese, Chinese, Korean, Arabic.
+
+Keyboard accelerators are difficult to include within the resource string and won't be displayed correctly.
+
+It is then important to follow the menu item labels by an indicator such as "(X)" if X is the mnemonic of the accelerator key.
+
+
+1.2. Management of internationalized resources.
+
+* Missing resources and alternate resource files. (done)
+
+Manage localized resource properties so that a missing localized resource could be searched in an alternate resource file, or if not found in that alternate resource file, in the default en_US resource file.  This requires changes in the way the GUIMediator manages MessageBundles (for now a single MessagesBundle can be accessed).
+
+This work has been already done, by including ALL required resources in the default resource file without any country and language extension.  Localization is automatically performed by the standard Java resource manager, that looks for localized resouces in a well-defined order, trying each possible resource file to find a match.  When a resource is searched, and an appropriate localized file is found for that language, then any missing undefined resources in that file are automatically searched in the rest of the localization path, until the default resource file is read.  If a resource can't be found in the default resource file, only then will a resource not found exception be thrown.
+
+So it is important to define a resource that is required in any language in the default resource file.  Further specialization of a new resource for a given locale can come later in separate resource files specialized for a language and/or country locale.  The program will still continue to work by selecting the default resource.
+
+A localized resource properties file will still be usable if only a few resources are missing in the translated version, and they will be replaced by the corresponding default resource.
+
+
+* Don't break sentences or paragraphs in multiple resources even if you need line breaks.
+
+Note that this adds a new requirement to the way resources are built: a single sentence should not be broken into separate resources, or extended to include additional resources that were previously not required.  Doing so would expose to the risk that the new localized sentence or paragraph would exhibit several incoherent languages coming from different localized resource files.  You can avoid translation problems by using standard Java Message Formaters (that include moveable placeholders like {0} for variable parts of the message) within resource strings.  
+
+If you need line breaks within a paragraph, use the "\n" specifier in the resource file only between actual sentences, and use Swing JLabels that allow auto-justified multiline texts using breakable space positions.  Java resource properties strings can be very long.  Don't be afraid to put a single long text in a single resource.
+
+Use distinct resources only between sentences of a paragraph that necessarily have a significant order. Else, let freedom to the translator to reorder sentences in the paragraph.
+
+
+* Add a version info resource string within the resource file.
+
+This is to identify those localized resource file that were designed for a specific version of LimeWire, which has since been obsoleted.  I suggest a resource string such as:
+FILE_DESIGN_VERSION=LimeWire/2.0.1
+(This would allow non-developer users to build and propose their own tested localization resource file, because they won't have access to the CVS repository to check the version labels)
+Principally, LimeWire GUI developers do not always know the localized language, but still need a way to find if an old version will continue to work with a newer release of the LimeWire GUI interface).  This would speed-up the process of newer releases, without breaking the previous work done about internationalization, and without the need for GUI developers to modify every localized MessagesBundle file...
+A file that has been updated to support multiple versions could specify them:
+FILE_DESIGN_VERSION=LimeWire/2.0.1, LimeWire/2.0, LimeWire/1.18c, LimeWire/1.18
+This version could also be used to check alternate localized resource files:  The LimeWire interface could be completely changed with incompatible resources that won't work with elder versions of a resource file.
+
+
+1.3. Specific locale issues.
+
+
+* General support of localized text.
+
+Beware of plural forms of names and adjectives: only English expects an "s" suffix most of the time, and other languages also needs names and adjectives being accorded. Don't expect an "s" after singular verbs. The only safe method is to support localization of phrases.
+
+Beware of phrasing order. Avoid breaking a localized sentence to embed more than one variable element. The interface should be designed by using small phrases that do not need more than one embedded variable element.
+
+Beware of line breaks. Avoid artificial breaking of resource strings in the middle of a sentence, just to support simple display of long texts. The LimeWire interface can and should adjust itself by inserting needed linebreaks automatically within dialogs. There are still some existing resources where such artificial breaks have been used. This confuses the translator which does not know exactly where to put its linebreak.
+
+Avoid reusing resource strings in different contexts, especially for small words. Sometimes, two different terms in English will translate into a single one in another language, or two identical English words will translate into two different words or expressions in other languages. Make a separate resource for each interface element, so that each one can be translated in a unambiguous and appropriate form.
+
+
+* Beware of the punctuation within localized text.
+
+Note also the difference of punctuation formating in localized strings. Don't assume that English punctuation rules can be applied to any text:
+
+French punctiation rules always use an unbreakable and unjustifiable medium-width space before punctuation symbols that have multiple distinct glyphs (such as the colon, interrogation point and double angle guillemots), and no space before any punctuation sign with a single glyph, such as the comma and dot.  And French punctuation rules require a single breakable and justifiable full-width space after any ending punctuation sign, or before any leading punctuation sign (English text often use two spaces after sentence ending punctuation).  Between sentences, these justifiable and breakable spaces collapse into a single one in French, but they don't in English which keeps two spaces with monospaced fonts (because English rule in fact impose a justifiable double-width space between sentences).
+
+Spanish rules also require a leading reversed punctuation sign before any sentence to which an ending sign is applied (interrogative or exclamative sentences), and so it also use other characters for leading punctuation (such as the punctuation single or double quotes).
+
+So all punctuation marks should go with the localizable text resource, even if there's no translatable words. It is best to use localizable resources if you need them, such as:
+	QUESTION={0,string}?
+	EXCLAMATION={0,string}!
+	QUOTED_SENTENCE="{0,string}"
+	TITLED_SENTENCE={0,string}: {1,string}
+	ENUMERATION={0,string}, {0,string}
+in an English resource file, so that a French localized resource file can be written such as
+	QUESTION={0,string}\u00A0?
+	EXCLAMATION={0,string}\u00A0!
+	QUOTED_SENTENCE=<<\u00A0{0,string}\u00A0>>
+	TITLED_SENTENCE={0,string}\u00A0: {1,string}
+	ENUMERATION={0,string}\u00A0; {1,string}
+So don't build any visual message string by concatenating simple punctuation constants in the Java source code.
+
+
+* Support of locale categories.
+
+This affects the presentation of dates, times, currencies, and numbers. Checks need to be performed by users worldwide to detect where this is an issue.
+
+Do not assume that a date such as 01/02/03 is meaningful to all users (there are 6 different interpretation of such dates, not counting the century issue !). The only international format that gets accepted worlwide if the ISO806 format ("yyyy-mm-dd" or "yyyy-mm-ddThh:mi:ss.fffZ" if time must be appended).
+
+Beware of local time, which also affects the value of local dates !
+
+Do not expect that 1.203 is a number between 1 and 2 for all users. French users interpret it as a number between 1000 and 2000...
+
+Do not expect that thousand separators are always a comma (French users accept a dot, or better a non-breaking half-space), and that number grouping is always by block of 3 digits (Asian users often group the 3 small-order digits, but group higher-order digits by 2, which is appropriate to the spoken denomination of numbers in their own language).
+
+Note Java Message Formaters are very powerful as they can manage localizable number and date formats. For example the formater
+	"SIZE_KB=Size: {0,number,#,###.00}KB"
+used in in a localizable English resource string will use the language specific digits-grouping character, and the locale-specific decimal character.  And translating it to French could be done by defining the resource as
+	"SIZE_KB=Taille : {0,number,#,##0.00} Ko"
+Where the leading digit is required before the decimal-separator (indicated by the special '.' format character that translates automatically to a comma in French), and where the special ',' format character indicates the number of digits in one group, and is replaced by a non-breakable half-width space between each group of 3 digits.
+
+The Japanese resource would use the following formater: {0,number,#,###0.##} where the number of digits that constitutes a group is appropriately changed to 4 instead of three
+
+
+
+* Support of special latin characters, or non latin scripts.
+
+More important is the management of lettercase folding when matching searched filenames: this is only meaningful with languages based on a Latin, Cyrillic, or Greek script.
+
+And even with those languages, there are issues ; for example the German lowercase Ess-Tsett (whose glyph is nearly similar to the Greek Beta character) capitalizes in two uppercase S letters, or the Greek final lowercase sigma (which is distinct from the leading or middle lowercase sigma letter), or the Arabic and Hebrew script in general. This issue will also affect the "core" project when users are searching keywords.
+
+Another issue is related to sorting and dual letter glyphs. For example the "ch" letters sequence in Spanish which is sorted as if it was a single letter, or the "ij" dual-letter in Dutch. Sorting accented characters is not always as simple as grouping all related characters: for example in German, traditional sorting differentiates the vowels with or without an umlaut accent, while in French, accented vowels and consonants with cedilla are sorted among their unaccented version. Read the JRE documentation about localization of text.
+
+The GUI should also work with fonts designed for non latin-based scripts. And it could also support non Arabic digits for displayed numbers (for example the so-called "Latin-Roman" digits used in the written Arabic Language !)
+
+Java comes preinstalled with a set of "font.properties" files in its "lib" subdirectory.
+These files were designed to support only the native locale of the system of which the application is run.
+Only one of these font.properties file will be active at any time.
+
+Some of these localized font.properties files don't refer to the same fonts as those used for English text, so the layout may be modified.
+This is important for the Thai and Hindi locales of Windows, which have fonts for which the line height is taller than the line height used by Western European languages, with the same point size.
+This affects the position of the underline or other layout styles, even when only using English text on these systems.
+
+
+* Support of Asian languages by "gui" and "core" projects.
+
+This requires some changes to conform to the JRE/1.3.1 and to the Unicode specifications. Notably, this affects the presentation of multiple text entries, when proper alignment and ordering is required. This also affects the way users can input text fields using input methods. The encoding of Asian text is not a GUI issue but it may also be an issue for the "core" project (which needs to implement UTF-8 and/or UTF-16 encoding for XML and for the Gnutella protocol, plus the UTF-8 encoding of URL's and internationalized domain names).
+
+Mainly, resources bundles must be edited with a text editor which can handle these character sets, but they typically don't save the file directly in Unicode but with their own specific encoding (such as Shift-JIS for Japanese).
+
+Resource bundles must then be converted using the "native2ascii" tool found in the JDK to convert these files into ASCII or ISO-8859-1 encoding, with non encodable characters replaced by Unicode hex sequences (\uXXXX).
+
+Don't assume that filenames will support at least the ISO-8859-1 character set. Don't convert Unicode strings into byte sequences by stripping the high byte. This won't work.
+
+Don't use the JNI GetStringUTF() function, which returns UTF-8 encoded text. This encoding is rarely natively supported on host systems.
+Use instead the JNI GetString() and GetStringLength() functions to return the UTF-16 encoded text and manage the conversion to the native encoding of the system.
+
+Don't assume that the Windows "ANSI" codepage is always compatible with ISO-8859-1. The ANSI codepage is a placeholder for several character sets which are dependant on the localization of Windows.
+Windows 95/98/ME use the "ANSI" codepage internally in the Win32 API. Unicode APIs only work accurately on Windows NT/2000/XP.
+On Win NT/2000/XP systems, it's best to use the Win32 Unicode APIs. On Win 9x/ME you must provide the conversion from UTF-16 to the locally supported ANSI codepage.
+
+On Unix systems, fonts typically don't support the large range of Unicode characters. Instead you have to use a larger set of fonts.
+Once again, the native character set is not unique: it depends on the current POSIX locale set in the user environment.
+
+
+* Testing non ISO-8859-1 compatible text on an English system.
+
+First you must have installed your host system with the necessary fonts and system locales to support the additional locales. On Windows, this requires installing the Multilanguage option, and at least their default character sets.
+Then you must have installed the international version of the JRE or JDK, which contains support classes for additional character set conversions and locale settings.
+
+Finally, this requires modifying the "font.properties" file in the JRE/lib directory, to add support for the other encodings and fonts.
+Move the existing "font.properties.*" files into another place, and merge
+the font.properties file into a single one, renumbering font indices accordingly.
+
+On Windows, many native locales are supported. But some fonts (for Hindi Devanagari or Thai) have a taller line height that affect all the other fonts used for Latin, Cyrillic, Hebrew, Arabic text.
+
+Another solution is to move ALL existing font.properties.* files into a save directory, and just copy one font.properties.* file for the locale you want to test and renaming it into font.properties within the JRE/lib directory.
+Then you'll test the Java application as if it was running within that locale only.
+
+
+* Testing the look and layout of the English version on Asian systems.
+
+The English locale will still be usable, but it may have a different layout, due to the new fonts.
+
+It is interesting to test the English Java application with the Hindi (Devanagari) and Thai fonts which have taller vertical extensions.
+The Windows "Mangal" and "Cordia New" fonts are used by default (respectively) for Hindi Devanagari and Thai systems: they can display ISO-8859-1 compatible text but with a taller line layout.
+
+So beware of fixed dialog sizes, which may not completely display the dialog components, and hide the bottom components (such as OK and Cancel buttons typically positioned at the bottom of dialogs).
+Use the many Java layout manager classes to ensure proper disposition and automatic sizing of the dialogs.
+
+
+2. ADD YOUR CATEGORIES RELATED TO THE GUI BELOW...
+
+
+2.1. Your TODO entries here...
+
