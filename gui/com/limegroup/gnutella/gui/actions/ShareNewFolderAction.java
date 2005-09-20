@@ -23,10 +23,6 @@ public class ShareNewFolderAction extends AbstractAction {
 	 * Prompts for adding a shared library folder.
 	 */
 	public void actionPerformed(ActionEvent e) {
-	    GUIMediator.instance().schedule(new Runnable() {
-	        public void run() {
-		        GUIMediator.instance().addSharedLibraryFolder();
-            }
-        });
+		GUIMediator.instance().addSharedLibraryFolder();
 	}
 }

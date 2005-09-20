@@ -1,6 +1,7 @@
 package com.limegroup.gnutella.gui.options;
 
 import com.limegroup.gnutella.gui.options.panes.*;
+import com.limegroup.gnutella.util.CommonUtils;
 
 /**
  * Static factory class that creates the option panes based on their keys.
@@ -81,7 +82,7 @@ class OptionsPaneFactory {
 			downloadPane.add(new MaximumDownloadsPaneItem("DOWNLOAD_MAX"));
 			downloadPane.add(new AutoClearDownloadsPaneItem("DOWNLOAD_CLEAR"));
 			downloadPane.add(new DownloadBandwidthPaneItem("DOWNLOAD_BANDWIDTH"));
-			return downloadPane;
+            return downloadPane;
 		}
 		else if (key.equals(OptionsConstructor.UPLOAD_BASIC_KEY)) {
 			final OptionsPane uploadBasicPane = new OptionsPaneImpl(OptionsConstructor.UPLOAD_BASIC_KEY);
@@ -107,6 +108,8 @@ class OptionsPaneFactory {
 		else if (key.equals(OptionsConstructor.SHUTDOWN_KEY)) {
 			final OptionsPane shutdownPane = new OptionsPaneImpl(OptionsConstructor.SHUTDOWN_KEY);
 			shutdownPane.add(new ShutdownPaneItem("SHUTDOWN"));
+            if (CommonUtils.supportsTray())
+                shutdownPane.add(new TrayIconDisplayPaneItem("TRAY_ICON_DISPLAY"));
 			return shutdownPane;
 		}
 		else if (key.equals(OptionsConstructor.UPDATE_KEY)) {
@@ -124,6 +127,14 @@ class OptionsPaneFactory {
 			playerPane.add(new PlayerPreferencePaneItem("PLAYER_PREFERENCE"));
 			return playerPane;
 		}
+        else if (key.equals(OptionsConstructor.STATUS_BAR_KEY)) {
+            final OptionsPane statusBarPane = new OptionsPaneImpl(OptionsConstructor.STATUS_BAR_KEY);
+            statusBarPane.add(new StatusBarConnectionQualityPaneItem("STATUS_BAR_CONNECTION_QUALITY"));
+            statusBarPane.add(new StatusBarFirewallPaneItem("STATUS_BAR_FIREWALL"));
+            statusBarPane.add(new StatusBarSharedFilesPaneItem("STATUS_BAR_SHARED_FILES"));
+            statusBarPane.add(new StatusBarBandwidthPaneItem("STATUS_BAR_BANDWIDTH"));
+            return statusBarPane;
+        }
 		else if (key.equals(OptionsConstructor.ITUNES_IMPORT_KEY)) {
 			final OptionsPane itunesPane = new OptionsPaneImpl(OptionsConstructor.ITUNES_IMPORT_KEY);
 			itunesPane.add(new iTunesPreferencePaneItem("ITUNES_PREFERENCE"));
@@ -163,7 +174,8 @@ class OptionsPaneFactory {
 			final OptionsPane searchLimitPane = 
 				new OptionsPaneImpl(OptionsConstructor.SEARCH_LIMIT_KEY);
 			searchLimitPane.add(new MaximumSearchesPaneItem("SEARCH_MAX"));
-			return searchLimitPane;
+            searchLimitPane.add(new DownloadLicenseWarningPaneItem("DOWNLOAD_LICENSE_WARNING"));
+            return searchLimitPane;
 		}
 		else if (key.equals(OptionsConstructor.SEARCH_QUALITY_KEY)) {
 			final OptionsPane searchQualityPane = 

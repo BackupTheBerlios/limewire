@@ -1,6 +1,5 @@
 package com.limegroup.gnutella.gui.search;
 
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -23,12 +22,12 @@ import com.limegroup.gnutella.util.NameValue;
  * filter boxes and displays a popup menu offering more detailed searches
  * depending on the selected items in the filter boxes.
  */
-class FilterPopupHandler { 
+class FilterPopupMenuHandler { 
 
 
 	private FilterPanel filterPanel;
 
-	public FilterPopupHandler(FilterPanel panel) {
+	public FilterPopupMenuHandler(FilterPanel panel) {
 		filterPanel = panel;
 		FilterBox[] boxes = filterPanel.getBoxes();
 		for (int i = 0; i < boxes.length; i++) {

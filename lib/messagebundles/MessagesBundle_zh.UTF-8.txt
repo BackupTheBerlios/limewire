@@ -50,7 +50,7 @@ HAS_TIPS_OF_THE_DAY=false
 ################################################################################
 
 ################################################################################
-# Keys/value pairs for general strings that can be used in any components
+# Key/value pairs for general strings that can be used in any components
 ################################################################################
 #### GENERAL_OK_BUTTON_LABEL=OK
 GENERAL_OK_BUTTON_LABEL=确定
@@ -86,7 +86,7 @@ GENERAL_BROWSE_HOST_TIP=浏览 选中的 计算机上的 所有 共享 文件.
 #? GENERAL_ADVANCED_SUB_MENU=
 
 ################################################################################
-# Keys/value pairs for right-click context menus.
+# Key/value pairs for right-click context menus.
 ################################################################################
 #### CONTEXT_MENU_UNDO=Undo
 #? CONTEXT_MENU_UNDO=
@@ -194,6 +194,26 @@ ABOUT_LABEL_TITLE=关于 LimeWire
 ABOUT_SCROLL_CHECK_BOX_LABEL=自动 滚动.
 #### ABOUT_BUTTON_TIP=Close This Window
 ABOUT_BUTTON_TIP=关闭 关于 窗口.
+#### ABOUT_INTRODUCTION=Inspired by LimeWire's owner, Mark Gorton, the LimeWire project is a collaborative <a href="http://www.limewire.org/">open source effort</a> involving programmers and researchers from all over the world. The collaborative nature of Gnutella is also reflected in the Gnutella Developers Forum (GDF), of which LimeWire is a participant. The members of the GDF work in the trenches every day to make Gnutella a truly innovative collection of protocols that is constantly improving -- a testament to the power of open protocols and open standards.
+#? ABOUT_INTRODUCTION=
+#### ABOUT_DEV_BLURB=LimeWire is also, of course, the result of the countless hours of work by LimeWire's developers:
+#? ABOUT_DEV_BLURB=
+#### ABOUT_BIZDEV_BLURB=Behind the scenes business strategy and day-to-day affairs are handled by LimeWire's business developers:
+#? ABOUT_BIZDEV_BLURB=
+#### ABOUT_WEBDEV_BLURB=The LimeWire <a href="http://www.limewire.com/">web site</a> and LimeWire graphic design are the hard work of LimeWire's web team:
+#? ABOUT_WEBDEV_BLURB=
+#### ABOUT_SUPPORT_BLURB=LimeWire PRO questions are dutifully answered by LimeWire technical support:
+#? ABOUT_SUPPORT_BLURB=
+#### ABOUT_PREVIOUS_DEV_BLURB=In addition, the following developers have worked on the LimeWire team in the past but have since moved on to other projects:
+#? ABOUT_PREVIOUS_DEV_BLURB=
+#### ABOUT_CONTRIBUTORS_BLURB=LimeWire open source contributors have provided significant code and many bug fixes, ideas, research, etc. to the project as well. Those listed below have either written code that is distributed with every version of LimeWire, have identified serious bugs in the code, or both:
+#? ABOUT_CONTRIBUTORS_BLURB=
+#### ABOUT_I18N_BLURB=LimeWire would also like to thank the many contributors to the internationalization project, both for the application itself and for the LimeWire web site.
+#? ABOUT_I18N_BLURB=
+#### ABOUT_COMMUNITY_BLURB=Several colleagues in the Gnutella community merit special thanks. These include:
+#? ABOUT_COMMUNITY_BLURB=
+#### ABOUT_CONCLUSION=Finally, LimeWire would like to extend its sincere thanks to these developers, users, and all others who have contributed their ideas to the project. Without LimeWire users, the LimeWire network would not exist.
+#? ABOUT_CONCLUSION=
 
 ###################################################################
 # Key/value pairs for the tip of the day window (not the tips themselves)
@@ -210,6 +230,8 @@ ABOUT_BUTTON_TIP=关闭 关于 窗口.
 #? TOTD_PREVIOUS=
 #### TOTD_CLOSE=Close
 TOTD_CLOSE=关闭
+#### TOTD_LOADING_TIPS=Loading tips...
+#? TOTD_LOADING_TIPS=
 
 ###################################################################
 # Key/value pairs for the Getting Started image
@@ -230,7 +252,7 @@ TOTD_CLOSE=关闭
 ###################################################################
 # Key/value pairs for the Windows system tray
 ###################################################################
-#### TRAY_TOOLTIP=LimeWire: Running the Gnutella Network
+#### TRAY_TOOLTIP=LimeWire
 TRAY_TOOLTIP=LimeWire: 运行在 Gnutella 网络
 #### TRAY_RESTORE_LABEL=Restore
 TRAY_RESTORE_LABEL=恢复
@@ -549,7 +571,25 @@ MENU_HELP_ABOUT_ACCESSIBLE=关于 LimeWire 的 信息.
 #? MENU_HELP_ERROR_ACCESSIBLE=
 
 ################################################################################
-# Keys/value pairs for general tables info
+# Key/value pairs for status bar components and right-click menu
+################################################################################
+#### STATUS_BAR_SHOW_CONNECTION_QUALITY=Show Connection Quality
+#? STATUS_BAR_SHOW_CONNECTION_QUALITY=
+#### STATUS_BAR_SHOW_SHARED_FILES_COUNT=Show Shared Files Count
+#? STATUS_BAR_SHOW_SHARED_FILES_COUNT=
+#### STATUS_BAR_SHOW_FIREWALL_STATUS=Show Firewall Status
+#? STATUS_BAR_SHOW_FIREWALL_STATUS=
+#### STATUS_BAR_SHOW_BANDWIDTH_CONSUMPTION=Show Bandwidth Consumption
+#? STATUS_BAR_SHOW_BANDWIDTH_CONSUMPTION=
+#### STATUS_BAR_SHOW_MEDIA_PLAYER=Show Media Player
+#? STATUS_BAR_SHOW_MEDIA_PLAYER=
+#### STATUS_BAR_FIREWALL_FOUND_TOOLTIP=LimeWire has detected a firewall
+#? STATUS_BAR_FIREWALL_FOUND_TOOLTIP=
+#### STATUS_BAR_FIREWALL_NOT_FOUND_TOOLTIP=LimeWire has not detected a firewall
+#? STATUS_BAR_FIREWALL_NOT_FOUND_TOOLTIP=
+
+################################################################################
+# Key/value pairs for general tables info
 ################################################################################
 #### TABLES_USE_ROWSTRIPE=Stripe Rows
 #? TABLES_USE_ROWSTRIPE=
@@ -559,7 +599,7 @@ MENU_HELP_ABOUT_ACCESSIBLE=关于 LimeWire 的 信息.
 #? TABLES_DISPLAY_TOOLTIPS=
 
 ################################################################################
-# Keys/value pairs for SearchView stuff...
+# Key/value pairs for SearchView stuff
 ################################################################################
 #### SEARCH_NOT_CONNECTED=You are not connected to the network. To connect, select "Connect" from the "File" menu. Your search may not return any results until you connect.
 #? SEARCH_NOT_CONNECTED=
@@ -753,7 +793,7 @@ RESULT_PANEL_VENDOR=软件
 #### RESULT_PANEL_LICENSE=License
 #? RESULT_PANEL_LICENSE=
 
-#Filter labels.
+#Filter labels
 #### SEARCH_FILTER_ALL=All
 SEARCH_FILTER_ALL=全部
 #### SEARCH_FILTER_OPTION=Option
@@ -843,7 +883,6 @@ LIBRARY_RESUME_BUTTON_TIP=重新 尝试 下载.
 #### LIBRARY_SHARED_FILES_CONFIGURE_MENU=Configure Sharing Options
 #? LIBRARY_SHARED_FILES_CONFIGURE_MENU=
 
-
 #### PLAYLIST_LOAD_BUTTON_LABEL=Open...
 PLAYLIST_LOAD_BUTTON_LABEL=打开...
 #### PLAYLIST_LOAD_BUTTON_TIP=Open an Existing Playlist
@@ -860,7 +899,7 @@ PLAYLIST_DELETE_BUTTON_TIP=从 播放列表中 删除 选中的 文件.
 PLAYLIST_FILE_DESCRIPTION=播放列表 文件 (*.m3u)
 
 ################################################################################
-# Key/value pairs for the integrated media player...
+# Key/value pairs for the integrated media player
 ################################################################################
 #### MEDIA_PLAYER_DEFAULT_STRING=LimeWire Media Player
 MEDIA_PLAYER_DEFAULT_STRING=LimeWire 多媒体 播放器
@@ -898,7 +937,7 @@ PASSWORD_DIALOG_PASSWORD_FIELD_LABEL=密码
 #### DOWNLOADER_DIALOG_ERROR_LABEL=Error: {0}
 #? DOWNLOADER_DIALOG_ERROR_LABEL=
 # {0} a short warning message which is localized independently
-#### DOWNLOADER_DIALOG_WARNING_LABEL=Warning: {0} 
+#### DOWNLOADER_DIALOG_WARNING_LABEL=Warning: {0}
 #? DOWNLOADER_DIALOG_WARNING_LABEL=
 # {0} the full path name of the file in question
 #### DOWNLOADER_DIALOG_NOTE_LABEL=<b>Note</b>: A file with the same content already exists in the library at {0}
@@ -949,7 +988,7 @@ PASSWORD_DIALOG_PASSWORD_FIELD_LABEL=密码
 #### SAVE_LOCATION_DIRECTORY_NOT_WRITEABLE_ERROR=Could not save download to the folder {0}, because you do not have write access to it.
 #? SAVE_LOCATION_DIRECTORY_NOT_WRITEABLE_ERROR=
 # {0} the full path name of the folder
-#### SAVE_LOCATION_DIRECTORY_DOES_NOT_EXIST_ERROR=Could not save download to folder {0}, because the folder does not exist. 
+#### SAVE_LOCATION_DIRECTORY_DOES_NOT_EXIST_ERROR=Could not save download to folder {0}, because the folder does not exist.
 #? SAVE_LOCATION_DIRECTORY_DOES_NOT_EXIST_ERROR=
 # {0} the full path name of the folder/file
 #### SAVE_LOCATION_NOT_A_DIRECOTRY_ERROR=Could not set download folder to {0}, because it represents an individual file, not a folder.
@@ -1015,49 +1054,49 @@ PASSWORD_DIALOG_PASSWORD_FIELD_LABEL=密码
 STATISTICS_AVAILABLE=可用的 
 #### STATISTICS_FILES=Files
 STATISTICS_FILES=文件
+#### STATISTICS_FILES_TOOLTIP=files
+#? STATISTICS_FILES_TOOLTIP=
+#### STATISTICS_FILES_TOOLTIP_PENDING=files (Loading...)
+#? STATISTICS_FILES_TOOLTIP_PENDING=
 #### STATISTICS_DISCONNECTED=Disconnected / no files available
 STATISTICS_DISCONNECTED=断开的 / 没有 可用的 文件
-#### STATISTICS_SHARING=Sharing
-STATISTICS_SHARING=共享
-#### STATISTICS_SHARING_TOOLTIP=The number of files you are sharing.
+#### STATISTICS_SHARING_TOOLTIP=You are sharing
 STATISTICS_SHARING_TOOLTIP=你 正在 共享 文件的 数目.
 #### STATISTICS_CONNECTION_DISCONNECTED=Disconnected
 STATISTICS_CONNECTION_DISCONNECTED=断开的
 #### STATISTICS_CONNECTION_DISCONNECTED_TIP=You are disconnected from the network. To connect, choose Connect from the File menu.
 #? STATISTICS_CONNECTION_DISCONNECTED_TIP=
-#### STATISTICS_CONNECTION_CONNECTING=Connecting
+#### STATISTICS_CONNECTION_CONNECTING=Starting
 #? STATISTICS_CONNECTION_CONNECTING=
-#### STATISTICS_CONNECTION_CONNECTING_TIP=You are currently connecting to the network.
+#### STATISTICS_CONNECTION_CONNECTING_TIP=You are currently connecting to the network
 #? STATISTICS_CONNECTION_CONNECTING_TIP=
 #### STATISTICS_CONNECTION_POOR=Poor
 #? STATISTICS_CONNECTION_POOR=
-#### STATISTICS_CONNECTION_POOR_TIP=You are connected to few hosts and have an unstable connection the network.
+#### STATISTICS_CONNECTION_POOR_TIP=You are connected to few hosts and have an unstable connection the network
 #? STATISTICS_CONNECTION_POOR_TIP=
 #### STATISTICS_CONNECTION_FAIR=Fair
 #? STATISTICS_CONNECTION_FAIR=
-#### STATISTICS_CONNECTION_FAIR_TIP=Your connection to the network is getting stronger.
+#### STATISTICS_CONNECTION_FAIR_TIP=Your connection to the network is getting stronger
 #? STATISTICS_CONNECTION_FAIR_TIP=
 #### STATISTICS_CONNECTION_GOOD=Good
 #? STATISTICS_CONNECTION_GOOD=
-#### STATISTICS_CONNECTION_GOOD_TIP=You are not yet fully connected to the network, but have a very good connection.
+#### STATISTICS_CONNECTION_GOOD_TIP=You are not yet fully connected to the network, but have a very good connection
 #? STATISTICS_CONNECTION_GOOD_TIP=
 #### STATISTICS_CONNECTION_EXCELLENT=Excellent
 #? STATISTICS_CONNECTION_EXCELLENT=
-#### STATISTICS_CONNECTION_EXCELLENT_TIP=Your connection to the network is very strong.
+#### STATISTICS_CONNECTION_EXCELLENT_TIP=Your connection to the network is very strong
 #? STATISTICS_CONNECTION_EXCELLENT_TIP=
 #### STATISTICS_CONNECTION_TURBO_CHARGED=Turbo-Charged
 #? STATISTICS_CONNECTION_TURBO_CHARGED=
-#### STATISTICS_CONNECTION_TURBO_CHARGED_TIP_FREE=You can experience Turbo-Charged connections all the time with LimeWire PRO.
+#### STATISTICS_CONNECTION_TURBO_CHARGED_TIP_FREE=You can experience Turbo-Charged connections all the time with LimeWire PRO!
 #? STATISTICS_CONNECTION_TURBO_CHARGED_TIP_FREE=
-#### STATISTICS_CONNECTION_TURBO_CHARGED_TIP_PRO=Your connection to the network is extremely strong.
+#### STATISTICS_CONNECTION_TURBO_CHARGED_TIP_PRO=Your connection to the network is extremely strong
 #? STATISTICS_CONNECTION_TURBO_CHARGED_TIP_PRO=
-#### STATISTICS_CONNECTION_QUALITY=Quality:
+#### STATISTICS_CONNECTION_QUALITY=Connection
 #? STATISTICS_CONNECTION_QUALITY=
-#### STATISTICS_CONNECTION_IDLE=Idle
-#? STATISTICS_CONNECTION_IDLE=
 #### STATISTICS_CONNECTION_WAKING_UP=Waking Up
 #? STATISTICS_CONNECTION_WAKING_UP=
-#### STATISTICS_CONNECTION_WAKING_UP_TIP=LimeWire is waking up from sleep mode.
+#### STATISTICS_CONNECTION_WAKING_UP_TIP=LimeWire is waking up from sleep mode
 #? STATISTICS_CONNECTION_WAKING_UP_TIP=
 
 ################################################################################
@@ -1145,6 +1184,12 @@ DOWNLOAD_STATUS_SAVING=保存中 文件...
 #? DOWNLOAD_STATUS_PAUSED=
 #### DOWNLOAD_AWAITING_SOURCES=A more specific search may be required...
 #? DOWNLOAD_AWAITING_SOURCES=
+# {0} the name of the skin
+# {1} the localized name of the menu item "Refresh Skins"
+# {2} the localized name of the "View" menu
+# {3} the localized name of the "Apply Skins" menu
+#### DOWNLOAD_EXPLAIN_HOW_TO_CHANGE_THEME=You have downloaded a skin titled "{0}", you can activate the new skin by clicking "{1}" in the "{2}"->"{3}" menu and then selecting it from the list of available skins.
+#? DOWNLOAD_EXPLAIN_HOW_TO_CHANGE_THEME=
 #### DOWNLOAD_APPLY_NEW_THEME_START=You have downloaded a new skin titled "
 #? DOWNLOAD_APPLY_NEW_THEME_START=
 #### DOWNLOAD_APPLY_NEW_THEME_END=." Would you like to use this new skin?
@@ -1175,6 +1220,8 @@ DOWNLOAD_STATUS_SAVING=保存中 文件...
 #? DOWNLOAD_PRIORITY_DOWN_BUTTON_TIP=
 #### DOWNLOAD_PRIORITY_PRIORITIZE=Queue
 #? DOWNLOAD_PRIORITY_PRIORITIZE=
+#### DOWNLOAD_SHOW_FIRST_DOWNLOAD_WARNING=LimeWire is unable to find a license for this file. Download anyway?\n\nPlease note: LimeWire cannot monitor or control the content of the Gnutella network. Please respect your local copyright laws.
+#? DOWNLOAD_SHOW_FIRST_DOWNLOAD_WARNING=
 
 ###################################################################
 # Key/value pairs for UploadView
@@ -1762,7 +1809,7 @@ LIST_EDITOR_REMOVE_BUTTON_TIP=移除 选中的 条目
 INPUT_FIELD_GENERIC_CAPTION=输入
 
 ################################################################################
-# Keys/value pairs for general button labels/tooltips used in various windows
+# Key/value pairs for general button labels/tooltips used in various windows
 ################################################################################
 #### GENERAL_CHAT_BUTTON_LABEL=Chat...
 GENERAL_CHAT_BUTTON_LABEL=聊天...
@@ -1776,7 +1823,7 @@ GENERAL_LAUNCH_BUTTON_TIP=运行 文件.
 #? GENERAL_CLEAR_HISTORY=
 
 ################################################################################
-# Keys/value pairs for ButtonRow labels and tooltips
+# Key/value pairs for ButtonRow labels and tooltips
 ################################################################################
 #### CHAT_BLOCK_BUTTON_LABEL=Block Host
 CHAT_BLOCK_BUTTON_LABEL=屏蔽 对方
@@ -1804,75 +1851,75 @@ CHAT_YOU=你
 ###################################################################
 # Key/value pairs for splash screen status text
 ###################################################################
-#### SPLASH_STATUS_RESOURCE_MANAGER=Loading resources...
+#### SPLASH_STATUS_RESOURCE_MANAGER=Loading Resources...
 SPLASH_STATUS_RESOURCE_MANAGER=加载 资源...
 #### SPLASH_STATUS_HTML_ENGINE=Loading HTML Engine...
 SPLASH_STATUS_HTML_ENGINE=加载 HTML Engine...
-#### SPLASH_STATUS_SEARCH_WINDOW=Loading search window...
+#### SPLASH_STATUS_SEARCH_WINDOW=Loading Search Window...
 SPLASH_STATUS_SEARCH_WINDOW=加载 搜索 窗口...
-#### SPLASH_STATUS_OPTIONS_WINDOW=Loading options window...
+#### SPLASH_STATUS_OPTIONS_WINDOW=Loading Options Window...
 SPLASH_STATUS_OPTIONS_WINDOW=加载 选项 窗口...
-#### SPLASH_STATUS_USER_SETTINGS=Loading user settings...
+#### SPLASH_STATUS_USER_SETTINGS=Loading Settings...
 SPLASH_STATUS_USER_SETTINGS=加载 用户 设置...
-#### SPLASH_STATUS_SHARED_FILES=Loading shared files...
+#### SPLASH_STATUS_SHARED_FILES=Loading Shared Files...
 SPLASH_STATUS_SHARED_FILES=加载 共享的 文件...
-#### SPLASH_STATUS_INTERFACE=Loading user interface...
+#### SPLASH_STATUS_INTERFACE=Loading User Interface...
 SPLASH_STATUS_INTERFACE=加载 用户 界面...
-#### SPLASH_STATUS_UPDATES=Checking for updates...
+#### SPLASH_STATUS_UPDATES=Checking for Updates...
 SPLASH_STATUS_UPDATES=升级 检查...
-#### SPLASH_STATUS_CORE_COMPONENTS=Loading core components...
+#### SPLASH_STATUS_CORE_COMPONENTS=Loading Core Components...
 SPLASH_STATUS_CORE_COMPONENTS=加载 核心 组件...
-#### SPLASH_STATUS_DOWNLOAD_WINDOW=Loading download window...
+#### SPLASH_STATUS_DOWNLOAD_WINDOW=Loading Download Window...
 SPLASH_STATUS_DOWNLOAD_WINDOW=加载 下载 窗口...
-#### SPLASH_STATUS_LIBRARY_WINDOW=Loading library window...
+#### SPLASH_STATUS_LIBRARY_WINDOW=Loading Library Window...
 SPLASH_STATUS_LIBRARY_WINDOW=加载 收藏 窗口...
-#### SPLASH_STATUS_UPLOAD_WINDOW=Loading upload window...
+#### SPLASH_STATUS_UPLOAD_WINDOW=Loading Upload Window...
 SPLASH_STATUS_UPLOAD_WINDOW=加载 上载 窗口...
-#### SPLASH_STATUS_MONITOR_WINDOW=Loading monitor window...
+#### SPLASH_STATUS_MONITOR_WINDOW=Loading Monitor Window...
 SPLASH_STATUS_MONITOR_WINDOW=加载 监视 窗口...
-#### SPLASH_STATUS_CONNECTION_WINDOW=Loading connection window...
+#### SPLASH_STATUS_CONNECTION_WINDOW=Loading Connections Window...
 SPLASH_STATUS_CONNECTION_WINDOW=加载 连接 窗口...
-#### SPLASH_STATUS_STATISTICS_WINDOW=Loading statistics window...
+#### SPLASH_STATUS_STATISTICS_WINDOW=Loading Statistics Window...
 SPLASH_STATUS_STATISTICS_WINDOW=加载 统计 窗口...
-#### SPLASH_STATUS_STATUS_WINDOW=Loading status window...
+#### SPLASH_STATUS_STATUS_WINDOW=Loading Status Window...
 SPLASH_STATUS_STATUS_WINDOW=加载 状态 窗口...
-#### SPLASH_STATUS_PLAYLIST_WINDOW=Loading playlist window...
+#### SPLASH_STATUS_PLAYLIST_WINDOW=Loading Playlist Window...
 SPLASH_STATUS_PLAYLIST_WINDOW=加载 播放列表 窗口...
-#### SPLASH_STATUS_MENUS=Loading menus...
+#### SPLASH_STATUS_MENUS=Loading Menus...
 SPLASH_STATUS_MENUS=加载 菜单...
-#### SPLASH_STATUS_MESSAGE_SERVICE=Loading messages...
+#### SPLASH_STATUS_MESSAGE_SERVICE=Loading Messages...
 SPLASH_STATUS_MESSAGE_SERVICE=加载 消息...
-#### SPLASH_STATUS_ICONS=Loading icons...
+#### SPLASH_STATUS_ICONS=Loading Icons...
 SPLASH_STATUS_ICONS=加载 icons...
-#### SPLASH_STATUS_I18N=Loading internationalization support...
+#### SPLASH_STATUS_I18N=Loading Internationalization Support...
 SPLASH_STATUS_I18N=加载 internationalization support...
 #### SPLASH_STATUS_DAAP=Loading Digital Audio Access Protocol...
 SPLASH_STATUS_DAAP=加载 Digital Audio Access Protocol...
-#### SPLASH_STATUS_COMPONENT_LOADING_ACCEPTOR=Loading connection listener...
+#### SPLASH_STATUS_COMPONENT_LOADING_ACCEPTOR=Loading Connection Listener...
 SPLASH_STATUS_COMPONENT_LOADING_ACCEPTOR=加载 connection listener...
-#### SPLASH_STATUS_COMPONENT_LOADING_MESSAGE_ROUTER=Loading message router...
+#### SPLASH_STATUS_COMPONENT_LOADING_MESSAGE_ROUTER=Loading Message Router...
 SPLASH_STATUS_COMPONENT_LOADING_MESSAGE_ROUTER=加载 message router...
-#### SPLASH_STATUS_COMPONENT_LOADING_CONNECTION_MANAGER=Loading connection management...
+#### SPLASH_STATUS_COMPONENT_LOADING_CONNECTION_MANAGER=Loading Connection Manager...
 SPLASH_STATUS_COMPONENT_LOADING_CONNECTION_MANAGER=加载 connection management...
-#### SPLASH_STATUS_COMPONENT_LOADING_HOST_CATCHER=Locating peers...
+#### SPLASH_STATUS_COMPONENT_LOADING_HOST_CATCHER=Locating Peers...
 #? SPLASH_STATUS_COMPONENT_LOADING_HOST_CATCHER=
-#### SPLASH_STATUS_COMPONENT_LOADING_FILE_MANAGER=Loading shared files...
+#### SPLASH_STATUS_COMPONENT_LOADING_FILE_MANAGER=Loading Shared Siles...
 SPLASH_STATUS_COMPONENT_LOADING_FILE_MANAGER=加载 shared files...
-#### SPLASH_STATUS_COMPONENT_LOADING_DOWNLOAD_MANAGER_POST_GUI=Loading old downloads...
+#### SPLASH_STATUS_COMPONENT_LOADING_DOWNLOAD_MANAGER_POST_GUI=Loading Old Downloads...
 SPLASH_STATUS_COMPONENT_LOADING_DOWNLOAD_MANAGER_POST_GUI=加载 old downloads...
-#### SPLASH_STATUS_COMPONENT_LOADING_UPDATE_MANAGER=Checking for updates...
+#### SPLASH_STATUS_COMPONENT_LOADING_UPDATE_MANAGER=Checking for Updates...
 #? SPLASH_STATUS_COMPONENT_LOADING_UPDATE_MANAGER=
-#### SPLASH_STATUS_COMPONENT_LOADING_QUERY_UNICASTER=Loading directed querier...
+#### SPLASH_STATUS_COMPONENT_LOADING_QUERY_UNICASTER=Loading Directed Querier...
 SPLASH_STATUS_COMPONENT_LOADING_QUERY_UNICASTER=加载 directed querier...
-#### SPLASH_STATUS_COMPONENT_LOADING_HTTPACCEPTOR=Loading MAGNET listener...
+#### SPLASH_STATUS_COMPONENT_LOADING_HTTPACCEPTOR=Loading Magnet Listener...
 SPLASH_STATUS_COMPONENT_LOADING_HTTPACCEPTOR=加载 MAGNET listener...
-#### SPLASH_STATUS_COMPONENT_LOADING_PINGER=Loading peer listener...
+#### SPLASH_STATUS_COMPONENT_LOADING_PINGER=Loading Peer Listener...
 SPLASH_STATUS_COMPONENT_LOADING_PINGER=加载 peer listener...
-#### SPLASH_STATUS_COMPONENT_LOADING_CONNECTION_WATCHDOG=Loading stale connection management...
+#### SPLASH_STATUS_COMPONENT_LOADING_CONNECTION_WATCHDOG=Loading Stale Connection Manager...
 SPLASH_STATUS_COMPONENT_LOADING_CONNECTION_WATCHDOG=加载 stale connection management...
-#### SPLASH_STATUS_COMPONENT_LOADING_SAVED_FILE_MANAGER=Loading saved files...
+#### SPLASH_STATUS_COMPONENT_LOADING_SAVED_FILE_MANAGER=Loading Saved Files...
 SPLASH_STATUS_COMPONENT_LOADING_SAVED_FILE_MANAGER=加载 saved files...
-#### SPLASH_STATUS_COMPONENT_LOADING_SIMPP_MANAGER=Loading secure settings...
+#### SPLASH_STATUS_COMPONENT_LOADING_SIMPP_MANAGER=Loading Secure Settings...
 SPLASH_STATUS_COMPONENT_LOADING_SIMPP_MANAGER=加载 secure settings...
 
 ##################################################################
@@ -1889,23 +1936,23 @@ SPLASH_STATUS_COMPONENT_LOADING_SIMPP_MANAGER=加载 secure settings...
 ##################################################################
 #### SUPPORT_LIMEWIRE_01=For Turbo-Charged searches get LimeWire PRO.
 #? SUPPORT_LIMEWIRE_01=
-#### SUPPORT_LIMEWIRE_02=Click here to support LimeWire's development of open, peer-to-peer networks.
+#### SUPPORT_LIMEWIRE_02=Support LimeWire's peer-to-peer development. Get PRO.
 #? SUPPORT_LIMEWIRE_02=
 #### SUPPORT_LIMEWIRE_03=Purchase LimeWire PRO to help us make downloads faster.
 #? SUPPORT_LIMEWIRE_03=
 #### SUPPORT_LIMEWIRE_04=For Turbo-Charged downloads get LimeWire PRO.
 #? SUPPORT_LIMEWIRE_04=
-#### SUPPORT_LIMEWIRE_05=Support open networks.
+#### SUPPORT_LIMEWIRE_05=Support open networks. Get LimeWire PRO.
 #? SUPPORT_LIMEWIRE_05=
-#### SUPPORT_LIMEWIRE_06=Click here to support open source and open protocols.
+#### SUPPORT_LIMEWIRE_06=Support open source and open protocols. Get LimeWire PRO.
 #? SUPPORT_LIMEWIRE_06=
-#### SUPPORT_LIMEWIRE_07=For Turbo-Charged Performance get LimeWire PRO.
+#### SUPPORT_LIMEWIRE_07=For Turbo-Charged performance get LimeWire PRO.
 #? SUPPORT_LIMEWIRE_07=
 #### SUPPORT_LIMEWIRE_08=Keep the Internet open. Get LimeWire PRO.
 #? SUPPORT_LIMEWIRE_08=
 #### SUPPORT_LIMEWIRE_09=Developing LimeWire costs real money. Get PRO.
 #? SUPPORT_LIMEWIRE_09=
-#### SUPPORT_LIMEWIRE_11=Help support sharing of independent media content.
+#### SUPPORT_LIMEWIRE_11=Support LimeWire and independent media content. Get PRO.
 #? SUPPORT_LIMEWIRE_11=
 
 ################################################################################
@@ -1924,6 +1971,10 @@ UPDATE_DIALOG_CAPTION=升级 LimeWire
 #? UPDATE_NOW_LABEL=
 #### UPDATE_TIP=Visit http://www.limewire.com to update!
 #? UPDATE_TIP=
+#### UPDATE_RESTART=LimeWire needs to be restarted to install the update. If you choose not to update now, LimeWire will update automatically when you close. Would you like to update now?
+#? UPDATE_RESTART=
+#### UPDATE_RESTART_TITLE=Update Ready
+#? UPDATE_RESTART_TITLE=
 
 ################################################################################
 # Key/Value pairs for other messages displayed to the user
@@ -2025,9 +2076,9 @@ INVALID_SAVE_DIR_LABEL=保存 文件的 文件夹 非法. 请在 选择 新的 �
 #? ERROR_ACCESS_DENIED_DOWNLOAD=
 #### ERROR_ACCESS_DENIED_GENERIC=LimeWire was unable to write a necessary file because you do not have the necessary permissions. Your preferences may not be maintained the next time you start LimeWire, or LimeWire may behave in unexpected ways.
 #? ERROR_ACCESS_DENIED_GENERIC=
-#### ERROR_INVALID_NAME_DOWNLOAD=LimeWire was unable to open the incomplete file for the selected download because the file name contains characters which are not supported by your operating system.
+#### ERROR_INVALID_NAME_DOWNLOAD=LimeWire was unable to open the incomplete file for the selected download because the filename contains characters which are not supported by your operating system.
 #? ERROR_INVALID_NAME_DOWNLOAD=
-#### ERROR_INVALID_NAME_GENERIC=LimeWire cannot open a necessary file because the file name contain characters which are not supported by your operating system. LimeWire may behave in unexpected ways.
+#### ERROR_INVALID_NAME_GENERIC=LimeWire cannot open a necessary file because the filename contains characters which are not supported by your operating system. LimeWire may behave in unexpected ways.
 #? ERROR_INVALID_NAME_GENERIC=
 
 ################################################################################
@@ -2061,7 +2112,7 @@ ERROR_INTERNAL_OK=确定
 ################################################################################
 # Key/Value pairs for error messages
 ################################################################################
-#### ERROR_INTERNET_IS_BLOCKED=LimeWire was unable to initialize and start.  This is usually due to a firewall program blocking LimeWire's access to the internet or loopback connections on the local machine.  Please allow LimeWire access to the internet and restart LimeWire.
+#### ERROR_INTERNET_IS_BLOCKED=LimeWire was unable to initialize and start. This is usually due to a firewall program blocking LimeWire's access to the internet or loopback connections on the local machine. Please allow LimeWire access to the internet and restart LimeWire.
 #? ERROR_INTERNET_IS_BLOCKED=
 #### ERROR_DAAP_LOOPBACK_FAILED=LimeWire was unable to start the Digital Audio Access Protocol (for sharing files in iTunes) because a Microsoft patch is required or a firewall is blocking access. LimeWire can direct you to Microsoft's page with information if you want to use this feature. Click 'Yes' to go to the patch, 'No' to disable this feature, or 'Cancel' to decide later.
 #? ERROR_DAAP_LOOPBACK_FAILED=
@@ -2265,7 +2316,7 @@ OPTIONS_UPLOAD_BASIC_MAIN_TITLE=基本
 OPTIONS_UPLOAD_SLOTS_MAIN_TITLE=扩展槽
 #### OPTIONS_CONNECTIONS_MAIN_TITLE=Connections
 OPTIONS_CONNECTIONS_MAIN_TITLE=连接
-#### OPTIONS_SHUTDOWN_MAIN_TITLE=Shutdown
+#### OPTIONS_SHUTDOWN_MAIN_TITLE=System Tray
 OPTIONS_SHUTDOWN_MAIN_TITLE=关闭
 #### OPTIONS_UPDATE_MAIN_TITLE=Updates
 #? OPTIONS_UPDATE_MAIN_TITLE=
@@ -2273,6 +2324,8 @@ OPTIONS_SHUTDOWN_MAIN_TITLE=关闭
 OPTIONS_CHAT_MAIN_TITLE=聊天
 #### OPTIONS_PLAYER_MAIN_TITLE=Player
 OPTIONS_PLAYER_MAIN_TITLE=播放器
+#### OPTIONS_STATUS_BAR_MAIN_TITLE=Status Bar
+#? OPTIONS_STATUS_BAR_MAIN_TITLE=
 #### OPTIONS_ITUNES_MAIN_TITLE=iTunes
 OPTIONS_ITUNES_MAIN_TITLE=iTunes
 #### OPTIONS_ITUNES_PREFERENCE_MAIN_TITLE=Importing
@@ -2295,7 +2348,7 @@ OPTIONS_THEME_MAIN_TITLE=皮肤
 OPTIONS_SKIN_MAIN_TITLE=皮肤
 #### OPTIONS_SEARCH_MAIN_TITLE=Searching
 OPTIONS_SEARCH_MAIN_TITLE=搜索
-#### OPTIONS_SEARCH_LIMIT_MAIN_TITLE=Limit
+#### OPTIONS_SEARCH_LIMIT_MAIN_TITLE=Basic
 OPTIONS_SEARCH_LIMIT_MAIN_TITLE=限定
 #### OPTIONS_SEARCH_QUALITY_MAIN_TITLE=Quality
 OPTIONS_SEARCH_QUALITY_MAIN_TITLE=质量
@@ -2401,7 +2454,7 @@ OPTIONS_SHARED_DIRS_BUTTON_TIP=添加 一个 共享 文件夹
 #? OPTIONS_SHARED_SHARE_SPECIALLY_TITLE=
 #### OPTIONS_SHARED_SHARE_SPECIALLY_LABEL=You can share files that you download to unshared folders.
 #? OPTIONS_SHARED_SHARE_SPECIALLY_LABEL=
-#### OPTIONS_SHARED_NEW_SAVE_FOLDERS=Would you like to share your new save folders?  The following new folders will be shared:\n\n
+#### OPTIONS_SHARED_NEW_SAVE_FOLDERS=Would you like to share your new save folders? The following new folders will be shared:\n\n
 #? OPTIONS_SHARED_NEW_SAVE_FOLDERS=
 
 ################################################################################
@@ -2469,7 +2522,7 @@ OPTIONS_DOWNLOAD_MAX_NUMBER_LABEL=最多 下载 数:
 OPTIONS_DOWNLOAD_CLEAR_TITLE=清除 下载 条目
 #### OPTIONS_DOWNLOAD_CLEAR_LABEL=You can choose whether or not to automatically clear downloads that have completed.
 OPTIONS_DOWNLOAD_CLEAR_LABEL=你 可以 选择 是否 自动 清除 已完成的 下载 条目.
-#### OPTIONS_DOWNLOAD_CLEAR_CHECK_BOX_LABEL=Auto-clear Completed Downloads:
+#### OPTIONS_DOWNLOAD_CLEAR_CHECK_BOX_LABEL=Clear Completed Downloads:
 OPTIONS_DOWNLOAD_CLEAR_CHECK_BOX_LABEL=自动 清除 已完成的 下载 条目:
 
 ################################################################################
@@ -2486,6 +2539,17 @@ OPTIONS_DOWNLOAD_BANDWIDTH_SLIDER_MAX_LABEL=无限的
 OPTIONS_DOWNLOAD_BANDWIDTH_SLIDER_LABEL_LABEL=下载 带宽:
 
 ################################################################################
+# Key/Value pairs for the options for download license warning
+# in the options window
+################################################################################
+#### OPTIONS_DOWNLOAD_LICENSE_WARNING_TITLE=License Warning
+#? OPTIONS_DOWNLOAD_LICENSE_WARNING_TITLE=
+#### OPTIONS_DOWNLOAD_LICENSE_WARNING_LABEL=You can choose whether to be warned about downloading a file without a license.
+#? OPTIONS_DOWNLOAD_LICENSE_WARNING_LABEL=
+#### OPTIONS_DOWNLOAD_LICENSE_WARNING_CHECK_BOX_LABEL=Show License Warning:
+#? OPTIONS_DOWNLOAD_LICENSE_WARNING_CHECK_BOX_LABEL=
+
+################################################################################
 # Key/Value pairs for the options for automatically clearing uploads
 # in the options window
 ################################################################################
@@ -2493,7 +2557,7 @@ OPTIONS_DOWNLOAD_BANDWIDTH_SLIDER_LABEL_LABEL=下载 带宽:
 OPTIONS_UPLOAD_CLEAR_TITLE=清除 上载
 #### OPTIONS_UPLOAD_CLEAR_LABEL=You can choose whether or not to automatically clear uploads that have completed.
 OPTIONS_UPLOAD_CLEAR_LABEL=你 可以 选择 是否 自动 清除 已完成的 上载.
-#### OPTIONS_UPLOAD_CLEAR_CHECK_BOX_LABEL=Auto-clear Completed Uploads:
+#### OPTIONS_UPLOAD_CLEAR_CHECK_BOX_LABEL=Automatically Clear Completed Uploads:
 OPTIONS_UPLOAD_CLEAR_CHECK_BOX_LABEL=自动 清楚 已完成的 上载:
 
 ################################################################################
@@ -2563,7 +2627,7 @@ OPTIONS_CONNECT_ON_STARTUP_CHECK_BOX_LABEL=启动 时 连接:
 ################################################################################
 # Key/Value pairs for shutdown options
 ################################################################################
-#### OPTIONS_SHUTDOWN_TITLE=Shutdown Options
+#### OPTIONS_SHUTDOWN_TITLE=Shutdown Behavior
 OPTIONS_SHUTDOWN_TITLE=关闭 选项
 #### OPTIONS_SHUTDOWN_LABEL=You can choose the default shutdown behavior.
 OPTIONS_SHUTDOWN_LABEL=你 可以 选择 缺省的 关闭 动作.
@@ -2573,6 +2637,12 @@ OPTIONS_SHUTDOWN_IMMEDIATELY_LABEL=立即 关闭
 OPTIONS_SHUTDOWN_AFTER_TRANSFERS_LABEL=传输 完后 关闭
 #### OPTIONS_SHUTDOWN_TO_TRAY_LABEL=Minimize to System Tray
 OPTIONS_SHUTDOWN_TO_TRAY_LABEL=最小化 到系统托盘
+#### OPTIONS_TRAY_ICON_DISPLAY_CHECK_BOX_LABEL=Show System Tray Icon:
+#? OPTIONS_TRAY_ICON_DISPLAY_CHECK_BOX_LABEL=
+#### OPTIONS_TRAY_ICON_DISPLAY_TITLE=System Tray Icon
+#? OPTIONS_TRAY_ICON_DISPLAY_TITLE=
+#### OPTIONS_TRAY_ICON_DISPLAY_LABEL=You can display the system tray icon while LimeWire is visible.
+#? OPTIONS_TRAY_ICON_DISPLAY_LABEL=
 
 ################################################################################
 # Key/Value pairs for update options
@@ -2605,8 +2675,40 @@ OPTIONS_CHAT_ACTIVE_LABEL=你 可以 设置 聊天为 开启 和 关闭 状态.
 OPTIONS_PLAYER_ACTIVE_CHECK_BOX_LABEL=选用 LimeWire MP3 播放器:
 #### OPTIONS_PLAYER_PREFERENCE_TITLE=Player Options
 OPTIONS_PLAYER_PREFERENCE_TITLE=播放器 选项
-#### OPTIONS_PLAYER_PREFERENCE_LABEL=You can choose to play media with LimeWire or your system's default player.  The media player and playlist will appear only if this option is set.  A restart will be required when enabling or disabling the media controls.
+#### OPTIONS_PLAYER_PREFERENCE_LABEL=You can choose to play media with LimeWire or your system's default player. The media player and playlist will appear only if this option is set. A restart will be required when enabling or disabling the media controls.
 OPTIONS_PLAYER_PREFERENCE_LABEL=你 可以 选用 内部 播放器 或者系统 缺省的 播放器.
+
+################################################################################
+# Key/Value pairs for the status bar options in the options window
+################################################################################
+#### OPTIONS_STATUS_BAR_CONNECTION_QUALITY_CHECK_BOX_LABEL=Show Connection Quality Indicator:
+#? OPTIONS_STATUS_BAR_CONNECTION_QUALITY_CHECK_BOX_LABEL=
+#### OPTIONS_STATUS_BAR_CONNECTION_QUALITY_TITLE=Connection Quality Indicator
+#? OPTIONS_STATUS_BAR_CONNECTION_QUALITY_TITLE=
+#### OPTIONS_STATUS_BAR_CONNECTION_QUALITY_LABEL=You can display a measurement of your connection quality in the status bar.
+#? OPTIONS_STATUS_BAR_CONNECTION_QUALITY_LABEL=
+#### OPTIONS_STATUS_BAR_SHARED_FILES_CHECK_BOX_LABEL=Show Shared Files Indicator:
+#? OPTIONS_STATUS_BAR_SHARED_FILES_CHECK_BOX_LABEL=
+#### OPTIONS_STATUS_BAR_SHARED_FILES_TITLE=Shared Files Indicator
+#? OPTIONS_STATUS_BAR_SHARED_FILES_TITLE=
+#### OPTIONS_STATUS_BAR_SHARED_FILES_LABEL=You can display how many files you are sharing in the status bar.
+#? OPTIONS_STATUS_BAR_SHARED_FILES_LABEL=
+#### OPTIONS_STATUS_BAR_FIREWALL_CHECK_BOX_LABEL=Show Firewall Indicator:
+#? OPTIONS_STATUS_BAR_FIREWALL_CHECK_BOX_LABEL=
+#### OPTIONS_STATUS_BAR_FIREWALL_TITLE=Firewall Indicator
+#? OPTIONS_STATUS_BAR_FIREWALL_TITLE=
+#### OPTIONS_STATUS_BAR_FIREWALL_LABEL=You can display your firewall status in the status bar.
+#? OPTIONS_STATUS_BAR_FIREWALL_LABEL=
+#### OPTIONS_STATUS_BAR_BANDWIDTH_CHECK_BOX_LABEL=Show Bandwidth Indicator:
+#? OPTIONS_STATUS_BAR_BANDWIDTH_CHECK_BOX_LABEL=
+#### OPTIONS_STATUS_BAR_BANDWIDTH_TITLE=Bandwidth Indicator
+#? OPTIONS_STATUS_BAR_BANDWIDTH_TITLE=
+#### OPTIONS_STATUS_BAR_BANDWIDTH_LABEL=You can display your bandwidth consumption in the status bar.
+#? OPTIONS_STATUS_BAR_BANDWIDTH_LABEL=
+#### OPTIONS_STATUS_BAR_BANDWIDTH_DOWNLOADS=Downloads:
+#? OPTIONS_STATUS_BAR_BANDWIDTH_DOWNLOADS=
+#### OPTIONS_STATUS_BAR_BANDWIDTH_UPLOADS=Uploads:
+#? OPTIONS_STATUS_BAR_BANDWIDTH_UPLOADS=
 
 ################################################################################
 # Key/Value pairs for the iTunes options in the options window
@@ -2674,7 +2776,7 @@ OPTIONS_AUDIO_PLAYER_PREFERENCE_TITLE=音频 选项
 ################################################################################
 #### OPTIONS_BUGS_TITLE=Bug Reports
 #? OPTIONS_BUGS_TITLE=
-#### OPTIONS_BUGS_LABEL=You can choose how bug reports should be sent. To view an example bug report, click 'View Example'. Choosing 'Always Send Immediately' will immediately contact the bug server when LimeWire encounters an internal error. Choosing 'Always Ask for Review' will tell LimeWire to ask for your approval before sending a bug to the bug server. Choosing 'Always Discard Bugs' will cause LimeWire to ignore all bugs (this is not recommended).
+#### OPTIONS_BUGS_LABEL=You can choose how bug reports should be sent. To view an example bug report, click 'View Example'. Choosing 'Always Send Immediately' will immediately contact the bug server when LimeWire encounters an internal error. Choosing 'Always Ask for Review' will tell LimeWire to ask for your approval before sending a bug to the bug server. Choosing 'Always Discard All Errors' will cause LimeWire to ignore all bugs (this is not recommended).
 #? OPTIONS_BUGS_LABEL=
 #### OPTIONS_BUGS_VIEW_EXAMPLE=View Example
 #? OPTIONS_BUGS_VIEW_EXAMPLE=
@@ -2846,6 +2948,8 @@ OPTIONS_IGNORE_RESULT_TYPES_ADULT_BOX_LABEL=忽略 成人 内容
 OPTIONS_IGNORE_RESULT_TYPES_HTML_BOX_LABEL=忽略 .htm/.html 文件
 #### OPTIONS_IGNORE_RESULT_TYPES_VBS_BOX_LABEL=Ignore .vbs Files
 OPTIONS_IGNORE_RESULT_TYPES_VBS_BOX_LABEL=忽略 .vbs 文件
+#### OPTIONS_IGNORE_RESULT_TYPES_WMV_ASF_BOX_LABEL=Ignore .wmv/.asf files
+#? OPTIONS_IGNORE_RESULT_TYPES_WMV_ASF_BOX_LABEL=
 
 ################################################################################
 # Key/Value pairs for message filtering options in the options window
@@ -4034,6 +4138,8 @@ SENT_ALL_MULTICAST_MESSAGES_BYTES=Multicast 消息
 #? ERROR_VENDOR_INVALID_PAYLOAD=
 #### ERROR_VENDOR_UNRECOGNIZED=Unrecognized Vendor Message
 #? ERROR_VENDOR_UNRECOGNIZED=
+#### ERROR_STARTUP_WINDOWS_COMPATIBILITY=LimeWire has encountered a problem during startup and cannot proceed. You may be able to fix this problem by changing LimeWire's Windows Compatibility. Right-click on the LimeWire icon on your Desktop and select 'Properties' from the popup menu. Click the 'Compatibility' tab at the top, then click the 'Run this program in compatibility mode for' check box, and then select 'Windows 2000' in the box below the check box. Then click the 'OK' button at the bottom and restart LimeWire.
+#? ERROR_STARTUP_WINDOWS_COMPATIBILITY=
 
 ###############################################################################
 # Key/value pairs for general message labels

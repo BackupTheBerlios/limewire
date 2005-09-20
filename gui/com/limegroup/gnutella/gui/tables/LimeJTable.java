@@ -466,8 +466,8 @@ public final class LimeJTable extends JTable implements JSortTable {
         
         // If the user doesn't want tooltips, only display
         // them if the column is too small (and data is clipped)
-        if(!tableSettings.DISPLAY_TOOLTIPS.getValue()) {
-            if(isClippable)
+        if (!tableSettings.DISPLAY_TOOLTIPS.getValue()) {
+            if (isClippable)
                 return clippedToolTip(row, col, colModel);
             else
                 return null;
@@ -488,8 +488,8 @@ public final class LimeJTable extends JTable implements JSortTable {
             // the tooltip will auto change when the mouse
             // moves around the new DataLine (same row)
             if (tips == null) {
-                // if we're over a column, see if we can display a clipped tt.
-                if(isClippable)
+                // if we're over a column, see if we can display a clipped tool tip.
+                if (isClippable)
                     return clippedToolTip(row, col, colModel);
                 else
                     return null;
@@ -511,7 +511,7 @@ public final class LimeJTable extends JTable implements JSortTable {
         TableColumn tc = getColumnModel().getColumn(col);
         int columnWidth = tc.getWidth();
         int dataWidth = getDataWidth(row, colModel);
-        if(columnWidth < dataWidth) {
+        if (columnWidth < dataWidth) {
             tips = CLIPPED_TIP;
             return ((DataLineModel)dataModel).get(row).toString() + col;
         } else {
@@ -530,14 +530,19 @@ public final class LimeJTable extends JTable implements JSortTable {
         DataLineModel dlm = (DataLineModel)dataModel;
         DataLine dl = dlm.get(row);
         Object data = dl.getValueAt(col);
-        if(data != null) {
-            String info = data.toString();
+        String info;
+        if( data != null &&
+            (info = data.toString()) != null ) {
             CLIPPED_TIP[0] = info;
             TableCellRenderer tcr = getDefaultRenderer(dlm.getColumnClass(col));
             JComponent renderer = (JComponent)tcr.getTableCellRendererComponent(
                                         this, data, false, false, row, col);
-            FontMetrics fm = renderer.getFontMetrics(renderer.getFont());
-            return fm.stringWidth(info) + 3;
+            try {
+                FontMetrics fm = renderer.getFontMetrics(renderer.getFont());
+                return fm.stringWidth(info) + 3;
+            } catch (NullPointerException npe) {
+                return -1;
+            }
         } else {
             return -1;
         }

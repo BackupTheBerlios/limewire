@@ -1,11 +1,13 @@
 package com.limegroup.gnutella.gui.tabs;
 
+import java.awt.BorderLayout;
+
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
 import com.limegroup.gnutella.gui.GUIMediator;
 import com.limegroup.gnutella.gui.library.LibraryMediator;
-import com.limegroup.gnutella.gui.playlist.PlaylistMediator;
 import com.limegroup.gnutella.gui.util.DividerLocationSettingUpdater;
 import com.limegroup.gnutella.settings.ApplicationSettings;
 import com.limegroup.gnutella.settings.UISettings;
@@ -20,30 +22,21 @@ public final class LibraryPlayListTab extends AbstractTab {
 	 * Constant for the <tt>Component</tt> instance containing the 
 	 * elements of this tab.
 	 */
-	private final JComponent COMPONENT;
-
+	private static JComponent COMPONENT;
+	private static JPanel PANEL = new JPanel(new BorderLayout());
+	
+	private static LibraryMediator LIBRARY_MEDIATOR;
+	
 	/**
 	 * Constructs the elements of the tab.
 	 *
 	 * @param LIBRARY_MEDIATOR the <tt>LibraryMediator</tt> instance 
-	 * @param PLAYLIST_VIEW the <tt>PlayListView</tt> instance 
+	 * @param PLAYLIST_MEDIATOR the <tt>PlayListMediator</tt> instance 
 	 */
-	public LibraryPlayListTab(final LibraryMediator LIBRARY_MEDIATOR,
-							  final PlaylistMediator PLAYLIST_MEDIATOR) {
+	public LibraryPlayListTab(final LibraryMediator lm) {
 		super("LIBRARY", GUIMediator.LIBRARY_INDEX, "library_tab");
-		if(PLAYLIST_MEDIATOR != null) {
-			JSplitPane divider = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-												LIBRARY_MEDIATOR.getComponent(), 
-												PLAYLIST_MEDIATOR.getComponent());
-			divider.setOneTouchExpandable(true);
-			new DividerLocationSettingUpdater(divider, 
-					UISettings.UI_LIBRARY_PLAY_LIST_TAB_DIVIDER_LOCATION);
-			COMPONENT = divider;
-		}	
-		
-		else {
-			COMPONENT = LIBRARY_MEDIATOR.getComponent();
-		}
+		LIBRARY_MEDIATOR = lm;
+		setPlayerEnabled(GUIMediator.isPlaylistVisible());
 	}
 
 	public void storeState(boolean visible) {
@@ -51,6 +44,29 @@ public final class LibraryPlayListTab extends AbstractTab {
 	}
 
 	public JComponent getComponent() {
-		return COMPONENT;
+		return PANEL;
+	}
+	
+	public static void setPlayerEnabled(boolean value) {
+		if (COMPONENT != null && value == COMPONENT instanceof JSplitPane)
+			return;
+		
+		PANEL.removeAll();
+		
+		if (value) {
+			JSplitPane divider = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+												LIBRARY_MEDIATOR.getComponent(), 
+												GUIMediator.getPlayList().getComponent());
+			divider.setOneTouchExpandable(true);
+			new DividerLocationSettingUpdater(divider, 
+					UISettings.UI_LIBRARY_PLAY_LIST_TAB_DIVIDER_LOCATION);
+			COMPONENT = divider;
+		} else
+			COMPONENT = LIBRARY_MEDIATOR.getComponent();
+		
+		PANEL.add(COMPONENT, BorderLayout.CENTER);
+		
+		PANEL.invalidate();
+		PANEL.validate();
 	}
 }

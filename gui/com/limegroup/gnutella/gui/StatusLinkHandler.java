@@ -10,7 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -177,6 +176,7 @@ final class StatusLinkHandler {
 	Component getComponent() {
 		return LABEL;
 	}
+	
 	/**
 	 * Returns the next <tt>LabelURLPair</tt> in the list.
 	 *
@@ -189,6 +189,7 @@ final class StatusLinkHandler {
 		_curLabelIndex++;
 		return LABEL_URLS[_curLabelIndex];
 	}
+	
 	/**
 	 * Handle a change in the current <tt>LabelURLPair</tt> pair.
 	 */
@@ -200,8 +201,9 @@ final class StatusLinkHandler {
         int height = fm.getHeight();
         Dimension preferred = new Dimension(width, height);
         LABEL.setPreferredSize(preferred);
-        
+		GUIMediator.instance().getStatusLine().refresh();
 	}
+	
 	/**
 	 * Handles a click on the current link by opening the appropriate web 
 	 * page.

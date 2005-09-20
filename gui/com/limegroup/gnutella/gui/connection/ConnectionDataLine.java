@@ -12,8 +12,6 @@ import com.limegroup.gnutella.gui.GUIUtils;
 import com.limegroup.gnutella.gui.tables.AbstractDataLine;
 import com.limegroup.gnutella.gui.tables.LimeTableColumn;
 import com.limegroup.gnutella.gui.tables.TimeRemainingHolder;
-import com.limegroup.gnutella.routing.QueryRouteTable;
-import com.limegroup.gnutella.util.CommonUtils;
 
 
 public final class ConnectionDataLine extends AbstractDataLine {

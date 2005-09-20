@@ -1,9 +1,15 @@
 package com.limegroup.gnutella;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import com.limegroup.gnutella.messages.QueryRequest;
+import com.limegroup.gnutella.settings.FilterSettings;
 import com.limegroup.gnutella.util.ForgetfulHashMap;
 import com.limegroup.gnutella.util.StringUtils;
 import com.limegroup.gnutella.xml.LimeXMLDocument;
@@ -16,23 +22,26 @@ import com.limegroup.gnutella.xml.LimeXMLDocument;
 public class ResponseVerifier {
     private static class RequestData {
         /** The original query. */
-        String query;
+        final String query;
         /** The rich query. */
-        LimeXMLDocument richQuery;
+        final LimeXMLDocument richQuery;
         /** The keywords of the original query, lowercased. */
-        String[] queryWords;
+        final List queryWords;
         /** The type of the original query. */
-        MediaType type;
+        final MediaType type;
+        /** Whether this is a what is new query */
+        final boolean whatIsNew;
 
         RequestData(String query, MediaType type) {
-            this(query, null, type);
+            this(query, null, type, false);
         }
 
-        RequestData(String query, LimeXMLDocument richQuery, MediaType type) {
+        RequestData(String query, LimeXMLDocument richQuery, MediaType type, boolean whatIsNew) {
             this.query=query;
             this.richQuery=richQuery;
             this.queryWords=getSearchTerms(query, richQuery);
             this.type=type;
+            this.whatIsNew = whatIsNew;
         }
 
         public boolean xmlQuery() {
@@ -66,9 +75,33 @@ public class ResponseVerifier {
         byte[] guid = qr.getGUID();
         mapper.put(new GUID(guid),new RequestData(qr.getQuery(), 
                                                   qr.getRichQuery(),
-                                                  type));
+                                                  type,
+                                                  qr.isWhatIsNewRequest()));
     }
 
+    public synchronized boolean matchesQuery(byte [] guid, Response response) {
+        RequestData data = (RequestData) mapper.get(new GUID(guid));
+        if (data == null || data.queryWords == null) 
+            return false;
+        
+        if (data.whatIsNew) 
+            return true;
+        
+        int minGood = FilterSettings.MIN_MATCHING_WORDS.getValue();
+        if (score(data.queryWords, response.getName()) > minGood)
+            return true;
+
+        LimeXMLDocument doc = response.getDocument();
+        if (doc != null) {
+            for (Iterator iter = doc.getKeyWords().iterator(); iter.hasNext();) {
+                String xmlWord = (String) iter.next();
+                if (score(data.queryWords,xmlWord) > minGood ) return true;
+            }
+        }
+        
+        return false;
+    }
+    
     /**
      * Returns the score of the given response compared to the given query.
      *
@@ -86,23 +119,23 @@ public class ResponseVerifier {
     /** Actual implementation of scoring; called from both public versions. 
      *  @param queryWords the tokenized query keywords
      *  @param filename the name of the response*/
-    private static int score(String[] queryWords, String filename) {
+    private static int score(List queryWords, String filename) {
         int numMatchingWords=0;
-        int numQueryWords=queryWords.length;
+        int numQueryWords=queryWords.size();
         if (numQueryWords==0)
             return 100; // avoid divide-by-zero errors below
 
         //Count the number of regular expressions from the query that
         //match the result's name.  Ignore case in comparison.
         for (int i=0; i<numQueryWords; i++) {
-            String pattern=queryWords[i];
+            String pattern = (String) queryWords.get(i);
             if (StringUtils.contains(filename, pattern, true)) {
                 numMatchingWords++;
                 continue;
             }
         }
 
-        return (int)(100.0f * numMatchingWords/numQueryWords);
+        return (int)(100.0f * ((float)numMatchingWords/numQueryWords));
     }
 
     /**
@@ -137,7 +170,7 @@ public class ResponseVerifier {
         return mapper.toString();
     }
 
-    private static String[] getSearchTerms(String query,
+    private static List getSearchTerms(String query,
                                            LimeXMLDocument richQuery) {
         String[] terms = null;
         // combine xml and standard keywords
@@ -159,7 +192,7 @@ public class ResponseVerifier {
             }
         }
         
-        return (String[])qWords.toArray(new String[qWords.size()]);
+        return Collections.unmodifiableList(new ArrayList(qWords));
     }
 }
 

@@ -3,7 +3,6 @@ package com.limegroup.gnutella.gui.mp3;
 import java.awt.Font;
 import java.awt.Graphics;
 
-import javax.swing.JComponent;
 import javax.swing.JProgressBar;
 import javax.swing.UIManager;
 

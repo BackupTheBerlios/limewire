@@ -11,7 +11,6 @@ import org.apache.commons.logging.LogFactory;
 
 import com.limegroup.gnutella.Downloader;
 import com.limegroup.gnutella.ErrorService;
-import com.limegroup.gnutella.settings.SharingSettings;
 import com.limegroup.gnutella.settings.iTunesSettings;
 import com.limegroup.gnutella.util.CommonUtils;
 import com.limegroup.gnutella.util.FileUtils;

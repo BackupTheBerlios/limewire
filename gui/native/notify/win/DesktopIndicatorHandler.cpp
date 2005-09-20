@@ -109,8 +109,10 @@ void DesktopIndicatorHandler::doEnable()
 	l_Class.cbWndExtra = 0;
 	l_Class.hInstance = NULL;	//CB enables this code to work in WIN 98
 
-	if( !RegisterClassEx( &l_Class ) )
+	static bool bFirst=true;
+	if( bFirst && !RegisterClassEx( &l_Class ) )
 		return;
+	bFirst=false;
 
 	// Create window
 	m_window = CreateWindow

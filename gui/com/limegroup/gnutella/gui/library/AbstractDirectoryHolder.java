@@ -20,7 +20,8 @@ public abstract class AbstractDirectoryHolder implements DirectoryHolder {
 	}
 	
 	public boolean accept(File pathname) {
-		return pathname.getParentFile().equals(getDirectory());
+		File parent = pathname.getParentFile();
+		return parent != null && parent.equals(getDirectory());
 	}
 	
 	public String getName() {

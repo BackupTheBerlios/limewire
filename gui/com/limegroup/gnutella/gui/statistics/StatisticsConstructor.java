@@ -117,13 +117,6 @@ public final class StatisticsConstructor {
 		addStatisticPane(BANDWIDTH_KEY, DOWNSTREAM_BANDWIDTH_KEY,
 						 new TotalDownstreamBandwidth(DOWNSTREAM_BANDWIDTH_KEY));
 		
-		///////////// NETWORK //////////////
-		final String NET_KEY =
-			"STATS_NET_PANE_TITLE";
-		final StatisticsPane netPane = new VisibleStatsPane(NET_KEY);
-		netPane.add(new NetStats());
-		addGroupTreeNode(StatisticsMediator.ROOT_NODE_KEY, netPane);
-		
 		///////////// ADVANCED //////////////
 		final StatisticsPane advancedPane = new VisibleStatsPane(ADVANCED_KEY);
 		advancedPane.add(new AdvancedStats());

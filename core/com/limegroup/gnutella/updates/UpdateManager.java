@@ -2,8 +2,6 @@ package com.limegroup.gnutella.updates;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.Random;
 import java.util.StringTokenizer;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -16,13 +14,11 @@ import org.xml.sax.SAXException;
 import com.limegroup.gnutella.Assert;
 import com.limegroup.gnutella.Connection;
 import com.limegroup.gnutella.ErrorService;
-import com.limegroup.gnutella.RouterService;
 import com.limegroup.gnutella.http.HTTPHeaderName;
 import com.limegroup.gnutella.http.HttpClientManager;
 import com.limegroup.gnutella.util.CommonUtils;
 import com.limegroup.gnutella.util.FileUtils;
 import com.limegroup.gnutella.util.ManagedThread;
-import com.limegroup.gnutella.settings.UpdateSettings;
 
 /**
  * Used for parsing the signed_update_file.xml and updating any values locally.
@@ -131,12 +127,12 @@ public class UpdateManager {
                 String ip = c.getAddress();
                 int port = c.getPort();
                 String connectTo = "http://" + ip + ":" + port + UPDATE;
+                HttpClient client = HttpClientManager.getNewClient();
                 HttpMethod get = new GetMethod(connectTo);
                 get.addRequestHeader("Cache-Control", "no-cache");
                 get.addRequestHeader("User-Agent", CommonUtils.getHttpServer());
                 get.addRequestHeader(HTTPHeaderName.CONNECTION.httpStringValue(),
                                      "close");
-                HttpClient client = HttpClientManager.getNewClient();
                 try {
                     client.executeMethod(get);
                     byte[] data = get.getResponseBody();

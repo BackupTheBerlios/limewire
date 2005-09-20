@@ -35,59 +35,59 @@ final class SearchTableColumns {
     static final int COUNT_IDX = 1;
     private final LimeTableColumn COUNT_COLUMN =
         new SearchColumn(COUNT_IDX, "RESULT_PANEL_COUNT",
-                            24, true,  String.class);
+                            24, true,  Integer.class);
                             
-    static final int ICON_IDX = 2;
+    static final int LICENSE_IDX = 2;
+    private final LimeTableColumn LICENSE_COLUMN =
+        new SearchColumn(LICENSE_IDX, "RESULT_PANEL_LICENSE",
+                            40, true, License.class);
+    
+    static final int ICON_IDX = 3;
     private final LimeTableColumn ICON_COLUMN =
         new SearchColumn(ICON_IDX, "RESULT_PANEL_ICON",
 		    GUIMediator.getThemeImage("question_mark"),
                     18, true, Icon.class);
     
-    static final int NAME_IDX = 3;
+    static final int NAME_IDX = 4;
     private final LimeTableColumn NAME_COLUMN =
         new SearchColumn(NAME_IDX, "RESULT_PANEL_NAME",
                             272, true,  String.class);
                             
-    static final int TYPE_IDX = 4;
+    static final int TYPE_IDX = 5;
     private final LimeTableColumn TYPE_COLUMN =
         new SearchColumn(TYPE_IDX, "RESULT_PANEL_TYPE",
                             42, true, String.class);
 
-    static final int SIZE_IDX = 5;
+    static final int SIZE_IDX = 6;
     private final LimeTableColumn SIZE_COLUMN =
         new SearchColumn(SIZE_IDX, "RESULT_PANEL_SIZE",
                             53, true, String.class);
                             
-    static final int SPEED_IDX = 6;
+    static final int SPEED_IDX = 7;
     private final LimeTableColumn SPEED_COLUMN =
         new SearchColumn(SPEED_IDX, "RESULT_PANEL_SPEED",
                             61, true, String.class);
     
-    static final int CHAT_IDX = 7;
+    static final int CHAT_IDX = 8;
     private final LimeTableColumn CHAT_COLUMN =
         new SearchColumn(CHAT_IDX, "RESULT_PANEL_CHAT",
                             40, false, ChatHolder.class);
     
-    static final int LOCATION_IDX = 8;
+    static final int LOCATION_IDX = 9;
     private final LimeTableColumn LOCATION_COLUMN =
         new SearchColumn(LOCATION_IDX, "RESULT_PANEL_LOCATION",
                            86, false, EndpointHolder.class);
     
-    static final int VENDOR_IDX = 9;
+    static final int VENDOR_IDX = 10;
     private final LimeTableColumn VENDOR_COLUMN = 
         new SearchColumn(VENDOR_IDX, "RESULT_PANEL_VENDOR",
                             55, false, String.class);
                             
-    static final int ADDED_IDX = 10;
+    static final int ADDED_IDX = 11;
     private final LimeTableColumn ADDED_COLUMN =
         new SearchColumn(ADDED_IDX, "RESULT_PANEL_ADDED",
                             55, false, Date.class);
                             
-    static final int LICENSE_IDX = 11;
-    private final LimeTableColumn LICENSE_COLUMN =
-        new SearchColumn(LICENSE_IDX, "RESULT_PANEL_LICENSE",
-                            40, false, License.class);
-    
     /**
      * The number of default columns.
      */

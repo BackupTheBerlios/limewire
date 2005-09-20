@@ -14,6 +14,7 @@ import com.limegroup.gnutella.RemoteFileDesc;
 import com.limegroup.gnutella.RouterService;
 import com.limegroup.gnutella.URN;
 import com.limegroup.gnutella.util.DataUtils;
+import com.limegroup.gnutella.util.IpPortForSelf;
 import com.limegroup.gnutella.util.IpPortImpl;
 import com.limegroup.gnutella.util.NetworkUtils;
 
@@ -55,9 +56,9 @@ public class DirectAltLoc extends AlternateLocation {
 	 */
 	protected DirectAltLoc(final URN sha1) throws IOException{
 		this(new Endpoint(
-				NetworkUtils.ip2string(RouterService.getAddress()),
-				RouterService.getPort()),
-			 sha1);
+		        RouterService.getAddress(),
+		        RouterService.getPort())
+		    ,sha1);
 	}
 	
 	protected DirectAltLoc(IpPort address, URN sha1) throws IOException{
@@ -66,6 +67,8 @@ public class DirectAltLoc extends AlternateLocation {
 		    throw new IOException("not a valid external address:port in direct altloc "+address);
 		
 		_node=address;
+		if (_node == IpPortForSelf.instance())
+			hashCode = IpPortForSelf.instance().hashCode();
 	}
 	
 	protected String generateHTTPString() {
@@ -93,7 +96,7 @@ public class DirectAltLoc extends AlternateLocation {
 	public synchronized AlternateLocation createClone() {
         DirectAltLoc ret = null;
         try {
-        		ret = new DirectAltLoc(_node, this.SHA1_URN);
+        	ret = new DirectAltLoc(_node, this.SHA1_URN);
 
         } catch(IOException ioe) {
             ErrorService.error(ioe);
@@ -105,17 +108,14 @@ public class DirectAltLoc extends AlternateLocation {
     }
 	
 	public boolean isMe(){
-	    return NetworkUtils.isMe(_node.getAddress(),_node.getPort());
+	    return NetworkUtils.isMe(_node);
 	}
 	
 	/**
 	 * Returns the host/port of this alternate location as an endpoint.
 	 */
-	public Endpoint getHost() {
-		if (_node instanceof Endpoint)
-			return (Endpoint)_node;
-		else
-	    return new Endpoint(_node.getAddress(), _node.getPort());
+	public IpPort getHost() {
+		return _node;
 	}
 
 	
@@ -129,7 +129,9 @@ public class DirectAltLoc extends AlternateLocation {
 		
 		DirectAltLoc other = (DirectAltLoc)o;
 		
-
+		if (_node == other._node)
+			return true;
+		
 		return (_node.getInetAddress().equals(other._node.getInetAddress()) &&
 		        _node.getPort() == other._node.getPort());
 		
@@ -170,6 +172,10 @@ public class DirectAltLoc extends AlternateLocation {
         if (ret != 0)
             return ret;
 
+        // if we are both altlocs for myself
+        if (_node == other._node)
+        	return 0;
+        
         ret = _node.getAddress().compareTo(other._node.getAddress());
         if (ret != 0)
             return ret;
@@ -184,7 +190,7 @@ public class DirectAltLoc extends AlternateLocation {
 	
 	public int hashCode() {
 		if (hashCode ==0) {
-		int result = super.hashCode();
+			int result = super.hashCode();
 			result = (37* result)+_node.getInetAddress().hashCode();
 			result = (37* result)+_node.getPort();
 			hashCode=result;

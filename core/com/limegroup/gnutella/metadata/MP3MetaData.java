@@ -6,7 +6,6 @@ import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.Vector;
-import java.util.StringTokenizer;
 
 import com.limegroup.gnutella.ByteOrder;
 
@@ -14,8 +13,6 @@ import de.vdheide.mp3.ID3v2;
 import de.vdheide.mp3.ID3v2Exception;
 import de.vdheide.mp3.ID3v2Frame;
 import de.vdheide.mp3.NoID3v2TagException;
-
-import com.limegroup.gnutella.licenses.CCConstants;
 
 /**
  * Provides a utility method to read ID3 Tag information from MP3
@@ -35,8 +32,7 @@ public class MP3MetaData extends AudioMetaData {
      * Returns ID3Data for the file.
      *
      * LimeWire would prefer to use ID3V2 tags, so we try to parse the ID3V2
-     * tags first, and if we were not able to find some tags using v2 we get it
-     * using v1 if possible 
+     * tags first, and then v1 to get any missing tags.
      */
     protected void parseFile(File file) throws IOException {
         parseID3v2Data(file);
@@ -45,11 +41,8 @@ public class MP3MetaData extends AudioMetaData {
         setBitrate(mp3Info.getBitRate());
         setLength((int)mp3Info.getLengthInSeconds());
         
-        if(!isComplete()) {
-            //AudioData v1 = parseID3v1Data(file);
-            //data.mergeID3Data(v1);
-        	parseID3v1Data(file);
-        }
+        parseID3v1Data(file);
+        
     }
 
     /**

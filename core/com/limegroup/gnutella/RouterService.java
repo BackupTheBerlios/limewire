@@ -147,18 +147,18 @@ public class RouterService {
     private static PromotionManager promotionManager = new PromotionManager();
 
 	
-    private static final ResponseVerifier verifier = new ResponseVerifier();
+    private static final ResponseVerifier VERIFIER = new ResponseVerifier();
 
 	/**
 	 * <tt>Statistics</tt> class for managing statistics.
 	 */
-	private static final Statistics statistics = Statistics.instance();
+	private static final Statistics STATISTICS = Statistics.instance();
 
 	/**
 	 * Constant for the <tt>UDPService</tt> instance that handles UDP 
 	 * messages.
 	 */
-	private static final UDPService udpService = UDPService.instance();
+	private static final UDPService UDPSERVICE = UDPService.instance();
 
 	/**
 	 * Constant for the <tt>SearchResultHandler</tt> class that processes
@@ -522,7 +522,7 @@ public class RouterService {
 	 * @return the <tt>UDPService</tt> instance in use
 	 */
 	public static UDPService getUdpService() {
-		return udpService;
+		return UDPSERVICE;
 	}
 	
 	/**
@@ -772,7 +772,7 @@ public class RouterService {
      * Returns the current uptime.
      */
     public static long getCurrentUptime() {
-        return statistics.getUptime();
+        return STATISTICS.getUptime();
     }
     
     /**
@@ -977,27 +977,6 @@ public class RouterService {
     }
 
     /**
-     *  Returns the number of good hosts in my horizon.
-     */
-    public static long getNumHosts() {
-        return HorizonCounter.instance().getNumHosts();
-    }
-
-    /**
-     * Returns the number of files in my horizon.
-     */
-    public static long getNumFiles() {
-        return HorizonCounter.instance().getNumFiles();
-    }
-
-    /**
-     * Returns the size of all files in my horizon, in kilobytes.
-     */
-    public static long getTotalFileSize() {
-        return HorizonCounter.instance().getTotalFileSize();
-    }
-
-    /**
      * Prints out the information about current initialied connections
      */
     public static void dumpConnections() {
@@ -1021,19 +1000,6 @@ public class RouterService {
         }
     }
     
-    /**
-     * Updates the horizon statistics.  This should called at least every five
-     * minutes or so to prevent the reported numbers from growing too large.
-     * You can safely call it more often.  Note that it does not modify the
-     * network; horizon stats are calculated by passively looking at messages.
-     *
-     * @modifies this (values returned by getNumFiles, getTotalFileSize, and
-     *  getNumHosts) 
-     */
-    public static void updateHorizon() {
-        HorizonCounter.instance().refresh();
-    }
-
     /** 
      * Returns a new GUID for passing to query.
      * This method is the central point of decision making for sending out OOB 
@@ -1147,7 +1113,7 @@ public class RouterService {
     private static void recordAndSendQuery(final QueryRequest qr, 
                                            final MediaType type) {
         _lastQueryTime = System.currentTimeMillis();
-        verifier.record(qr, type);
+        VERIFIER.record(qr, type);
         RESULT_HANDLER.addQuery(qr); // so we can leaf guide....
         router.sendDynamicQuery(qr);
     }
@@ -1184,9 +1150,12 @@ public class RouterService {
      * @see ResponseVerifier#matchesType(byte[], Response) 
      */
     public static boolean matchesType(byte[] guid, Response response) {
-        return verifier.matchesType(guid, response);
+        return VERIFIER.matchesType(guid, response);
     }
 
+    public static boolean matchesQuery(byte [] guid, Response response) {
+        return VERIFIER.matchesQuery(guid, response);
+    }
     /** 
      * Returns true if the given response for the query with the given guid is a
      * result of the Madragore worm (8KB files of form "x.exe").  Returns false
@@ -1199,7 +1168,7 @@ public class RouterService {
      * @see ResponseVerifier#isMandragoreWorm(byte[], Response) 
      */
     public static boolean isMandragoreWorm(byte[] guid, Response response) {
-        return verifier.isMandragoreWorm(guid, response);
+        return VERIFIER.isMandragoreWorm(guid, response);
     }
     
     /**
@@ -1613,14 +1582,12 @@ public class RouterService {
         if(!NetworkUtils.isValidPort(port))
             return false;
 
-        updateAlterntateLocations();
-
         // reset the last connect back time so the next time the TCP/UDP
         // validators run they try to connect back.
         if (acceptor != null)
         	acceptor.resetLastConnectBackTime();
-        if (udpService != null)
-        	udpService.resetLastConnectBackTime();
+        if (UDPSERVICE != null)
+        	UDPSERVICE.resetLastConnectBackTime();
         
         if (manager != null) {
         	Properties props = new Properties();
@@ -1659,17 +1626,7 @@ public class RouterService {
         if(!NetworkUtils.isValidPort(port))
             return false;
             
-        updateAlterntateLocations();
         return true;
-    }
-    
-    /**
-     * Updates all alternate locations.
-     */
-    private static void updateAlterntateLocations() {
-        FileDesc[] fds = fileManager.getAllSharedFileDescriptors();
-        for(int i = 0; i < fds.length; i++)
-            fds[i].addUrnsForSelf();
     }
     
     /**
@@ -1725,7 +1682,7 @@ public class RouterService {
 	 *  GUESS queries, <tt>false</tt> otherwise
 	 */
 	public static boolean isGUESSCapable() {
-		return udpService.isGUESSCapable();
+		return UDPSERVICE.isGUESSCapable();
 	}
 
 
@@ -1741,7 +1698,7 @@ public class RouterService {
 
 
     public static GUID getUDPConnectBackGUID() {
-        return udpService.getConnectBackGUID();
+        return UDPSERVICE.getConnectBackGUID();
     }
 
     
@@ -1753,14 +1710,14 @@ public class RouterService {
     }
     
     public static boolean canReceiveSolicited() {
-    	return udpService.canReceiveSolicited();
+    	return UDPSERVICE.canReceiveSolicited();
     }
     
     public static boolean canReceiveUnsolicited() {
-    	return udpService.canReceiveUnsolicited();
+    	return UDPSERVICE.canReceiveUnsolicited();
     }
     
     public static boolean canDoFWT() {
-        return udpService.canDoFWT();
+        return UDPSERVICE.canDoFWT();
     }
 }

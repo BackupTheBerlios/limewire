@@ -124,7 +124,9 @@ public class UploadManager implements BandwidthTracker {
     
 	/** set to true when an upload has been succesfully completed. */
 	private volatile boolean _hadSuccesfulUpload=false;
-
+    
+    /** Number of force-shared active uploads */
+    private int _forcedUploads;
     
 	/**
 	 * LOCKING: obtain this' monitor before modifying any 
@@ -202,6 +204,16 @@ public class UploadManager implements BandwidthTracker {
      * The file index used in this structure to indicate a HTTP Resource Get.
      */
     public static final int RESOURCE_INDEX = -7;
+
+    /** 
+     * The file index used in this structure to indicate a special request from a browser.
+     */
+    public static final int BROWSER_CONTROL_INDEX = -8;
+
+    /**
+     * Constant for the beginning of a BrowserControl request.
+     */
+    public static final String BROWSER_CONTROL_STR = "/browser-control";
     
     /**
      * Constant for HttpRequestLine parameter
@@ -456,6 +468,7 @@ public class UploadManager implements BandwidthTracker {
                uploader.getIndex() != BAD_URN_QUERY_INDEX &&
                uploader.getIndex() != FILE_VIEW_FILE_INDEX &&
                uploader.getIndex() != RESOURCE_INDEX &&
+               uploader.getIndex() != BROWSER_CONTROL_INDEX &&
                uploader.getMethod() != HTTPRequestMethod.HEAD &&
                !uploader.isForcedShare();
 	}
@@ -542,6 +555,9 @@ public class UploadManager implements BandwidthTracker {
         switch(uploader.getIndex()) {
         case BROWSE_HOST_FILE_INDEX:
             uploader.setState(Uploader.BROWSE_HOST);
+            return;
+        case BROWSER_CONTROL_INDEX:
+            uploader.setState(Uploader.BROWSER_CONTROL);
             return;
         case PUSH_PROXY_FILE_INDEX:
             uploader.setState(Uploader.PUSH_PROXY);
@@ -711,6 +727,8 @@ public class UploadManager implements BandwidthTracker {
             case ACCEPTED:
                 assertAsConnecting( uploader.getState() );
                 synchronized (this) {
+                    if (uploader.isForcedShare())
+                        _forcedUploads++;
                     _activeUploadList.add(uploader);
                 }
                 break;
@@ -831,11 +849,10 @@ public class UploadManager implements BandwidthTracker {
      */
     public synchronized boolean isServiceable() {
     	return hasFreeSlot(uploadsInProgress() + getNumQueuedUploads());
-        
     }
 
 	public synchronized int uploadsInProgress() {
-		return _activeUploadList.size();
+		return _activeUploadList.size() - _forcedUploads;
 	}
 
 	public synchronized int getNumQueuedUploads() {
@@ -1050,7 +1067,9 @@ public class UploadManager implements BandwidthTracker {
   		//try remove the urn from the map of unique uploaded files for that host.
   		
 		if (_activeUploadList.remove(uploader)) {
-		
+		    if (((HTTPUploader)uploader).isForcedShare())
+                _forcedUploads--;
+            
 			//at this point it is safe to allow other uploads from the same host
 			RequestCache rcq = (RequestCache) REQUESTS.get(uploader.getHost());
 
@@ -1103,6 +1122,7 @@ public class UploadManager implements BandwidthTracker {
         //uploads, the probability that all just happen to have low capacity
         //(e.g., modems) is small.  This reduces "Try Again Later"'s at the
         //expensive of quality, making swarmed downloads work better.
+        
 		if (current >= UploadSettings.HARD_MAX_UPLOADS.getValue()) {
             return false;
         } else if (current < UploadSettings.SOFT_MAX_UPLOADS.getValue()) {
@@ -1304,6 +1324,10 @@ public class UploadManager implements BandwidthTracker {
                 index = BROWSE_HOST_FILE_INDEX;
                 fileName = "Browse-Host Request";
                 UploadStat.BROWSE_HOST.incrementStat();
+            } else if(fileInfoPart.startsWith(BROWSER_CONTROL_STR)) {
+                //special case for browser-control request
+                index = BROWSER_CONTROL_INDEX;
+                fileName = fileInfoPart;
             } else if(fileInfoPart.startsWith(FV_REQ_BEGIN)) {
                 //special case for file view request
                 index = FILE_VIEW_FILE_INDEX;
@@ -1563,32 +1587,44 @@ public class UploadManager implements BandwidthTracker {
   	}
 
     /** Calls measureBandwidth on each uploader. */
-    public synchronized void measureBandwidth() {
+    public void measureBandwidth() {
+        List activeCopy;
+        synchronized(this) {
+            activeCopy = new ArrayList(_activeUploadList);
+        }
+        
         float currentTotal = 0f;
         boolean c = false;
-        for (Iterator iter = _activeUploadList.iterator(); iter.hasNext(); ) {
+        for (Iterator iter = activeCopy.iterator(); iter.hasNext(); ) {
+			HTTPUploader up = (HTTPUploader)iter.next();
+            if (up.isForcedShare())
+                continue;
             c = true;
-			BandwidthTracker bt = (BandwidthTracker)iter.next();
-			bt.measureBandwidth();
-			currentTotal += bt.getAverageBandwidth();
+			up.measureBandwidth();
+			currentTotal += up.getAverageBandwidth();
 		}
-		if ( c )
-		    averageBandwidth = ( (averageBandwidth * numMeasures) + currentTotal ) 
-		                    / ++numMeasures;
+		if ( c ) {
+            synchronized(this) {
+                averageBandwidth = ( (averageBandwidth * numMeasures) + currentTotal ) 
+                    / ++numMeasures;
+            }
+        }
     }
 
     /** Returns the total upload throughput, i.e., the sum over all uploads. */
-	public synchronized float getMeasuredBandwidth() {
+	public float getMeasuredBandwidth() {
+        List activeCopy;
+        synchronized(this) {
+            activeCopy = new ArrayList(_activeUploadList);
+        }
+        
         float sum=0;
-        for (Iterator iter = _activeUploadList.iterator(); iter.hasNext(); ) {
-			BandwidthTracker bt = (BandwidthTracker)iter.next();
-            float curr = 0;
-            try {
-                curr = bt.getMeasuredBandwidth();
-            } catch(InsufficientDataException ide) {
-                curr = 0;
-            }
-			sum+= curr;
+        for (Iterator iter = activeCopy.iterator(); iter.hasNext(); ) {
+			HTTPUploader up = (HTTPUploader)iter.next();
+            if (up.isForcedShare())
+                continue;
+            
+            sum += up.getMeasuredBandwidth();
 		}
         return sum;
 	}

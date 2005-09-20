@@ -304,6 +304,13 @@ public abstract class MessageRouter {
                                HOPS_FLOW_INTERVAL);
     }
 
+    /**
+     * Routes a query GUID to yourself.
+     */
+    public void originateQueryGUID(byte[] guid) {
+        _queryRouteTable.routeReply(guid, FOR_ME_REPLY_HANDLER);
+    }
+
     /** Call this to inform us that a query has been killed by a user or
      *  whatever.  Useful for purging unneeded info.<br>
      *  Callers of this should make sure that they have purged the guid from
@@ -1182,20 +1189,33 @@ public abstract class MessageRouter {
         // keep track of who you tried connecting back too, don't do it too
         // much....
         String addrString = addrToContact.getHostAddress();
-        Object placeHolder = _udpConnectBacks.get(addrString);
-        if (placeHolder == null) {
-            try {
-                _udpConnectBacks.put(addrString, new Object());
-            } catch (NoMoreStorageException nomo) {
-                return;  // we've done too many connect backs, stop....
-            }
-        } else {
-            return;  // we've connected back to this guy recently....
-        }
+        if (!shouldServiceRedirect(_udpConnectBacks,addrString))
+            return;
 
         PingRequest pr = new PingRequest(guidToUse.bytes(), (byte) 1,
                                          (byte) 0);
         UDPService.instance().send(pr, addrToContact, portToContact);
+    }
+    
+    /**
+     * @param map the map that keeps track of recent redirects
+     * @param key the key which we would (have) store(d) in the map
+     * @return whether we should service the redirect request
+     * @modifies the map
+     */
+    private boolean shouldServiceRedirect(FixedsizeHashMap map, Object key) {
+        synchronized(map) {
+            Object placeHolder = map.get(key);
+            if (placeHolder == null) {
+                try {
+                    map.put(key, map);
+                    return true;
+                } catch (NoMoreStorageException nomo) {
+                    return false;  // we've done too many connect backs, stop....
+                }
+            } else 
+                return false;  // we've connected back to this guy recently....
+        }
     }
 
 
@@ -1246,16 +1266,8 @@ public abstract class MessageRouter {
 
         // keep track of who you tried connecting back too, don't do it too
         // much....
-        Object placeHolder = _tcpConnectBacks.get(addrToContact);
-        if (placeHolder == null) {
-            try {
-                _tcpConnectBacks.put(addrToContact, new Object());
-            } catch (NoMoreStorageException nomo) {
-                return;  // we've done too many connect backs, stop....
-            }
-        } else {
-            return;  // we've connected back to this guy recently....
-        }
+        if (!shouldServiceRedirect(_tcpConnectBacks,addrToContact))
+            return;
 
         TCP_CONNECT_BACKER.add(new Runnable() {
             public void run() {
@@ -2022,12 +2034,10 @@ public abstract class MessageRouter {
      *  Handles an update request by sending a response.
      */
     private void handleUpdateRequest(UpdateRequest req, ReplyHandler handler ) {
-        if(req.getVersion() > UpdateRequest.VERSION)
-            return; //we are not going to deal with these types of requests. 
 
         byte[] data = UpdateHandler.instance().getLatestBytes();
         if(data != null) {
-            UpdateResponse msg = new UpdateResponse(data);
+            UpdateResponse msg = UpdateResponse.createUpdateResponse(data,req);
             handler.reply(msg);
         }
     }
@@ -2037,7 +2047,7 @@ public abstract class MessageRouter {
      * Passes the request onto the update manager.
      */
     private void handleUpdateResponse(UpdateResponse resp, ReplyHandler handler) {
-        UpdateHandler.instance().handleNewData(resp.getPayload());
+        UpdateHandler.instance().handleNewData(resp.getUpdate());
     }
 
     /**

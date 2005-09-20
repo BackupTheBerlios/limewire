@@ -10,7 +10,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.text.MessageFormat;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -129,7 +128,7 @@ final class SchemaBox extends JPanel {
      * Returns the selected icon, or null if the selection has no icon.
      */
     public Icon getSelectedIcon() {
-        NamedMediaType nmt = (NamedMediaType)getSelectedMedia();
+        NamedMediaType nmt = getSelectedMedia();
         if(nmt == null)
             return null;
             
@@ -140,7 +139,7 @@ final class SchemaBox extends JPanel {
      * Returns the selected schema, or null if the selected item has no schema.
      */
     public LimeXMLSchema getSelectedSchema() {
-        NamedMediaType nmt = (NamedMediaType)getSelectedMedia();
+        NamedMediaType nmt = getSelectedMedia();
         if(nmt == null)
             return null;
             
@@ -151,7 +150,7 @@ final class SchemaBox extends JPanel {
      * Returns the description of the selected item.
      */
     public String getSelectedItem() {
-        NamedMediaType nmt = (NamedMediaType)getSelectedMedia();
+        NamedMediaType nmt = getSelectedMedia();
         if(nmt == null)
             return null;
         return nmt.getName();
@@ -161,7 +160,7 @@ final class SchemaBox extends JPanel {
      * Returns the selected item's media type.
      */
     public MediaType getSelectedMediaType() {
-        NamedMediaType nmt = (NamedMediaType)getSelectedMedia();
+        NamedMediaType nmt = getSelectedMedia();
         if(nmt == null)
             return null;
         return nmt.getMediaType();

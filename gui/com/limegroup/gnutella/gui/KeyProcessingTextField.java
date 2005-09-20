@@ -2,7 +2,6 @@ package com.limegroup.gnutella.gui;
 
 import java.awt.event.KeyEvent;
 
-import javax.swing.JTextField;
 import javax.swing.text.Document;
 
 public class KeyProcessingTextField extends LimeTextField {

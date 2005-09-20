@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeModel;
 
 /**
  * This class creates the <tt>TreeModel</tt> used in the <tt>JTree</tt> of 

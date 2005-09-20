@@ -2,8 +2,6 @@ package com.limegroup.gnutella.gui;
 
 import java.awt.Dimension;
 
-import javax.swing.JTextField;
-
 /**
  * This class creates a <tt>JTextField</tt> with a standardized size.<p>
  *

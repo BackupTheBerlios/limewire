@@ -65,13 +65,15 @@ public final class LibraryMediator implements ThemeObserver {
      */
     private static final LibraryTableMediator LIBRARY_TABLE =
         LibraryTableMediator.instance();
-	private static final String TABLE_KEY = "LIBRARY_TABLE";
-	
+
+    private static final String TABLE_KEY = "LIBRARY_TABLE";
+    private static final String SHARED_KEY = "SHARED";
+
     /**
      * Constant handle to the file update handler.
      */
-    private static final HandleFileUpdate FILE_UPDATER = new HandleFileUpdate();
-
+    private final HandleFileUpdate FILE_UPDATER = new HandleFileUpdate();
+   
 	/** Panel for the Shared Files node. */
 	private static JPanel jpShared = null;
 
@@ -367,7 +369,6 @@ public final class LibraryMediator implements ThemeObserver {
 			active = false;
         }
     }    
-
 	
 	/**
 	 * Shows the Shared Files view in response to selection of the Shared Files
@@ -387,10 +388,10 @@ public final class LibraryMediator implements ThemeObserver {
 					"LIBRARY_SHARED_FILES_CONFIGURE_EXPLAIN")), gbc);
 			jpShared.add(jpInternal, BorderLayout.CENTER);
 			jpShared.setBorder(BorderFactory.createEtchedBorder());
-			addView(jpShared, "Shared");
-		}
-		showView("Shared");
-	}
+            addView(jpShared, SHARED_KEY);
+        }
+        showView(SHARED_KEY);
+    }
 
 	public static void showView(String key) {
 		viewLayout.show(viewPanel, key);
@@ -401,9 +402,19 @@ public final class LibraryMediator implements ThemeObserver {
 	}
 
 	/**
-	 * Sets the selected directory in the LibraryTree. 
+	 * Sets the selected directory in the LibraryTree.
+	 * 
+	 * @return true if the directory exists in the tree and could be selected
 	 */
-	public static void setSelectedDirectory(File dir) {
-		LIBRARY_TREE.setSelectedDirectory(dir);		
+	public static boolean setSelectedDirectory(File dir) {
+		return LIBRARY_TREE.setSelectedDirectory(dir);		
+	}
+
+	/**
+	 * Updates the Library GUI based on whether the player is enabled. 
+	 */
+	public void setPlayerEnabled(boolean value) {
+		LIBRARY_TABLE.setPlayerEnabled(value);
+		LIBRARY_TREE.setPlayerEnabled(value);
 	}
 }

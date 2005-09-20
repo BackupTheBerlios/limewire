@@ -25,10 +25,6 @@ public class ConfigureOptionsAction extends AbstractAction {
 	 * Launches LimeWire's options with the Sharing options pane selected.
 	 */
 	public void actionPerformed(ActionEvent e) {
-	    GUIMediator.instance().schedule(new Runnable() {
-	        public void run() {
-				GUIMediator.instance().setOptionsVisible(true, paneTitle);
-            }
-        });
+		GUIMediator.instance().setOptionsVisible(true, paneTitle);
 	}
 }

@@ -1,12 +1,9 @@
 package com.limegroup.gnutella.gui.menu;
 
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -15,22 +12,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
-import javax.swing.Box;
 import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
-import javax.swing.WindowConstants;
 import javax.swing.UIManager;
 
-import com.limegroup.gnutella.gui.BoxPanel;
 import com.limegroup.gnutella.gui.GUIMediator;
-import com.limegroup.gnutella.gui.GUIUtils;
-import com.limegroup.gnutella.gui.MultiLineLabel;
-import com.limegroup.gnutella.gui.ResourceManager;
-import com.limegroup.gnutella.gui.themes.ThemeFileHandler;
 import com.limegroup.gnutella.gui.themes.ThemeMediator;
 import com.limegroup.gnutella.gui.themes.ThemeSettings;
 import com.limegroup.gnutella.util.CommonUtils;

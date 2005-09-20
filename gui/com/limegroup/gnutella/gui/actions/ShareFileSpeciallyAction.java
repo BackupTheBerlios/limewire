@@ -6,9 +6,9 @@ import java.io.File;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-import com.limegroup.gnutella.RouterService;
 import com.limegroup.gnutella.FileEventListener;
 import com.limegroup.gnutella.FileManagerEvent;
+import com.limegroup.gnutella.RouterService;
 import com.limegroup.gnutella.gui.FileChooserHandler;
 import com.limegroup.gnutella.gui.GUIMediator;
 import com.limegroup.gnutella.gui.MessageService;
@@ -45,11 +45,15 @@ public class ShareFileSpeciallyAction extends AbstractAction {
 	}
 	
 	private static class Listener implements FileEventListener {
-	    public void handleFileEvent(FileManagerEvent fev) {
-	        if(fev.isAlreadySharedEvent())
-	            GUIMediator.showFormattedError("SHARE_FILE_ALREADY_SHARED", new Object[] { fev.getFiles()[0] });
-	        else if(!fev.isAddEvent()) // like FailedEvent, but potentially others too.
-	            GUIMediator.showFormattedError("SHARE_FILE_FAILED", new Object[] { fev.getFiles()[0] });
+	    public void handleFileEvent(final FileManagerEvent fev) {
+	    	GUIMediator.safeInvokeLater(new Runnable() {
+	    		public void run() {
+	    			if (fev.isAlreadySharedEvent())
+	    				GUIMediator.showFormattedError("SHARE_FILE_ALREADY_SHARED", new Object[] { fev.getFiles()[0] });
+	    			else if (!fev.isAddEvent()) // like FailedEvent, but potentially others too.
+	    				GUIMediator.showFormattedError("SHARE_FILE_FAILED", new Object[] { fev.getFiles()[0] });
+	    		}
+	    	});
         }
     }
 	            

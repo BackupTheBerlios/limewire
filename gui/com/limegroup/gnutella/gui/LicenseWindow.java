@@ -1,7 +1,6 @@
 package com.limegroup.gnutella.gui;
 
 import com.limegroup.gnutella.gui.themes.ThemeFileHandler;
-import com.limegroup.gnutella.gui.themes.ThemeObserver;
 import com.limegroup.gnutella.licenses.License;
 import com.limegroup.gnutella.licenses.LicenseFactory;
 import com.limegroup.gnutella.licenses.VerificationListener;

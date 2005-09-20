@@ -31,22 +31,27 @@ import com.limegroup.gnutella.gui.connection.ConnectionMediator;
 import com.limegroup.gnutella.gui.download.DownloadMediator;
 import com.limegroup.gnutella.gui.library.LibraryMediator;
 import com.limegroup.gnutella.gui.menu.MenuMediator;
+import com.limegroup.gnutella.gui.mp3.MediaPlayerComponent;
 import com.limegroup.gnutella.gui.notify.NotifyUserProxy;
 import com.limegroup.gnutella.gui.options.OptionsMediator;
 import com.limegroup.gnutella.gui.playlist.PlaylistMediator;
 import com.limegroup.gnutella.gui.search.SearchMediator;
 import com.limegroup.gnutella.gui.statistics.StatisticsMediator;
+import com.limegroup.gnutella.gui.tabs.LibraryPlayListTab;
+import com.limegroup.gnutella.gui.themes.ThemeMediator;
+import com.limegroup.gnutella.gui.themes.ThemeSettings;
 import com.limegroup.gnutella.gui.upload.UploadMediator;
 import com.limegroup.gnutella.settings.ApplicationSettings;
 import com.limegroup.gnutella.settings.BooleanSetting;
 import com.limegroup.gnutella.settings.IntSetting;
 import com.limegroup.gnutella.settings.PlayerSettings;
+import com.limegroup.gnutella.settings.QuestionsHandler;
 import com.limegroup.gnutella.settings.StartupSettings;
 import com.limegroup.gnutella.util.CommonUtils;
 import com.limegroup.gnutella.util.Launcher;
+import com.limegroup.gnutella.util.ManagedThread;
 import com.limegroup.gnutella.util.ProcessingQueue;
 import com.limegroup.gnutella.version.UpdateInformation;
-import com.limegroup.gnutella.version.UpdateHandler;
 
 /**
  * This class acts as a central point of access for all gui components, a sort
@@ -153,13 +158,6 @@ public final class GUIMediator {
 	 */
 	private static OptionsMediator _optionsMediator;
 
-    /**
-     * Handle to the <tt>PlaylistMediator</tt> class that is responsible for
-     * displaying the playlist to the user.  May be null if no playlist
-     * is present.
-     */
-    private static PlaylistMediator _playlistMediator;
-
 	/**
 	 * Constant handle to the <tt>MainFrame</tt> instance that handles
 	 * constructing all of the primary gui components.
@@ -254,7 +252,6 @@ public final class GUIMediator {
 	private GUIMediator() {
 		FRAME.setTitle(APP_TITLE);
 		_optionsMediator = MAIN_FRAME.getOptionsMediator();
-        _playlistMediator = MAIN_FRAME.getPlaylistMediator();
 		addRefreshListener(STATISTICS_MEDIATOR);
 	}
 
@@ -314,15 +311,50 @@ public final class GUIMediator {
         safeInvokeLater(new Runnable() {
             public void run() {
                 try {
-                    FRAME.toFront();
+                    if (visible)
+                        FRAME.toFront();
                     FRAME.setVisible(visible);
+                } catch (NullPointerException npe) {
+                    //  NPE being thrown on WinXP sometimes.  First try
+                    //  reverting to the limewire theme.  If NPE still
+                    //  thrown, tell user to change LimeWire's Windows
+                    //  compatibility mode to Win2k.
+                    //  null pointer found
+                    if (CommonUtils.isWindowsXP()) {
+                        try {
+                            if (ThemeSettings.isWindowsTheme()) {
+                                ThemeMediator.changeTheme(ThemeSettings.LIMEWIRE_THEME_FILE);
+                                try {
+                                    if (visible)
+                                        FRAME.toFront();
+                                    FRAME.setVisible(visible);
+                                } catch (NullPointerException npe2) {
+                                    GUIMediator.showError("ERROR_STARTUP_WINDOWS_COMPATIBILITY");
+                                    System.exit(0);
+                                }                                
+                            } else {
+                                GUIMediator.showError("ERROR_STARTUP_WINDOWS_COMPATIBILITY");
+                                System.exit(0);
+                            }
+                        } catch (Throwable t) {
+                            if (visible)
+                                FatalBugManager.handleFatalBug(npe);
+                            else
+                                showInternalError(npe);
+                        }
+                    } else {
+                        if (visible)
+                            FatalBugManager.handleFatalBug(npe);
+                        else
+                            showInternalError(npe);
+                    }
                 } catch(Throwable t) {
-                    if(visible)
+                    if (visible)
                         FatalBugManager.handleFatalBug(t);
                     else
                         showInternalError(t);
                 }
-                if(visible) {
+                if (visible) {
                     SearchMediator.requestSearchFocus();
                     // forcibily revalidate the FRAME
                     // after making it visible.
@@ -334,21 +366,16 @@ public final class GUIMediator {
                         }
                     });
                 }
+                // If the app has already been made visible, don't display extra
+                // dialogs.  We could display the pro dialog here, but it causes
+                // some odd issues when LimeWire is brought back up from the tray
+                if (visible && !_visibleOnce) {
+                    // Show the startup dialogs in the swing thread.
+                    showDialogsForFirstVisibility();
+                    _visibleOnce = true;
+                }
             }
         });
-
-		// If the app has already been made visible, don't display extra
-		// dialogs.  We could display the pro dialog here, but it causes
-		// some odd issues when LimeWire is brought back up from the tray
-		if (visible && !_visibleOnce) {
-            // Show the startup dialogues in the swing thread.
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-			        showDialogsForFirstVisibility();
-                }
-            });
-			_visibleOnce = true;
-		}
 	}
 
 	/**
@@ -359,17 +386,31 @@ public final class GUIMediator {
 		if (!hasDonated())
 			UpgradeWindow.showProDialog();
 			
-        UpdateInformation update = UpdateHandler.instance().getLatestUpdateInfo();
-        if(update != null) {
-            new UpdateDialog(update).setVisible(true);
-            instance().showUpdateNotification(false, update);
+		if (!_displayedMessage && 
+		  ResourceManager.hasLocalizedTipsOfTheDay() && StartupSettings.SHOW_TOTD.getValue()) {
+			new ManagedThread("TOTD") {
+                public void managedRun() {
+                    try {
+                        Thread.sleep(500);
+                    } catch (Throwable t) { }
+                    TipOfTheDayMediator.instance().displayTipWindow();
+                }
+            }.start();
         }
-
-		if (!_displayedMessage && update == null && 
-		  ResourceManager.hasLocalizedTipsOfTheDay() && StartupSettings.SHOW_TOTD.getValue())
-			TipOfTheDayMediator.instance().displayTipWindow();
 	}
 
+	/**
+	 * Displays a dialog the first time a user performs a download. 
+	 * Returns true iff the user selects 'Yes'; returns false otherwise.
+	 */
+	public static boolean showFirstDownloadDialog() {
+		if (MessageService.YES_OPTION ==
+			showYesNoCancelMessage("DOWNLOAD_SHOW_FIRST_DOWNLOAD_WARNING",
+                    QuestionsHandler.SKIP_FIRST_DOWNLOAD_WARNING))
+			return true;
+		return false;
+	}
+	
     /**
      * Closes any dialogues that are displayed at startup and sets the flag to
      * indicate that we've displayed a message.
@@ -457,6 +498,13 @@ public final class GUIMediator {
 	}
 
 	/**
+	 * Returns the status line instance for other classes to access 
+	 */
+	public StatusLine getStatusLine() {
+		return STATUS_LINE;
+	}
+	
+	/**
 	 * Refreshes the various gui components that require refreshing.
 	 */
 	public final void refreshGUI() {
@@ -471,15 +519,11 @@ public final class GUIMediator {
 		}
 
         // update the status panel
-        int numHosts     = (int)RouterService.getNumHosts();
-        long numFiles    = RouterService.getNumFiles();
-        long totSize     = RouterService.getTotalFileSize();
         int sharedFiles  = RouterService.getNumSharedFiles();
         int pendingShare = RouterService.getNumPendingShared();
         int quality      = getConnectionQuality();
-        STATUS_LINE.setStatistics(numHosts, numFiles, totSize, sharedFiles, pendingShare);
+        STATUS_LINE.setStatistics(sharedFiles, pendingShare);
 
-        RouterService.updateHorizon();
         updateConnectionUI(quality);
 	}
 
@@ -691,10 +735,11 @@ public final class GUIMediator {
 	}
 
 	/**
-	 * Gets the active playlist.
+	 * Returns the active playlist or <code>null</code> if the playlist
+	 * is not enabled.
 	 */
 	public static PlaylistMediator getPlayList() {
-	    return _playlistMediator;
+	    return MainFrame.getPlaylistMediator();
     }
 
     /**
@@ -708,7 +753,7 @@ public final class GUIMediator {
         if(!isConstructed())
             return PlayerSettings.PLAYER_ENABLED.getValue();
         else
-            return _playlistMediator != null;
+            return getPlayList() != null && PlayerSettings.PLAYER_ENABLED.getValue();
     }
     
     /**
@@ -717,7 +762,7 @@ public final class GUIMediator {
      */
     public static void startupHidden() {
         // sends us to the system tray on windows, ignored otherwise.
-        GUIMediator.addNotify();
+        GUIMediator.showTrayIcon();
         // If on OSX, we must set the framestate appropriately.
         if(CommonUtils.isMacOSX())
             GUIMediator.hideView();
@@ -733,11 +778,14 @@ public final class GUIMediator {
     }
 
     /**
-     * Notification that loading is finished.  Updates the status line.
+     * Notification that loading is finished.  Updates the status line and 
+     * bumps the AWT thread priority.
      */
     public void loadFinished() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+                Thread awt = Thread.currentThread();
+                awt.setPriority(awt.getPriority() + 1);
                 STATUS_LINE.loadFinished();
             }
        });
@@ -772,10 +820,8 @@ public final class GUIMediator {
 	public static void hideView() {
         FRAME.setState(Frame.ICONIFIED);
 
-		if (CommonUtils.supportsTray()) {
+		if (CommonUtils.supportsTray())
 			GUIMediator.setAppVisible(false);
-			GUIMediator.addNotify();
-		}
 	}
 
 
@@ -789,7 +835,6 @@ public final class GUIMediator {
 		// before restoring.
 
 		if (CommonUtils.supportsTray()) {
-
             // below is a little hack to get around odd windowing
             // behavior with the system tray on windows.  This enables
             // us to get LimeWire to the foreground after it's run from
@@ -799,14 +844,15 @@ public final class GUIMediator {
             // cache whether or not to use our little hack, since setAppVisible
             // changes the value of _visibleOnce
             boolean doHack = false;
-            if(!_visibleOnce) {
+            if (!_visibleOnce)
                 doHack = true;
-            }
 			GUIMediator.setAppVisible(true);
-			GUIMediator.hideNotify();
-            if(doHack) {
+            if (ApplicationSettings.DISPLAY_TRAY_ICON.getValue())
+                GUIMediator.showTrayIcon();
+            else
+                GUIMediator.hideTrayIcon();
+            if (doHack)
                 restoreView();
-            }
 		}
 
         // If shutdown sequence was initiated, cancel it.  Auto shutdown is
@@ -827,8 +873,11 @@ public final class GUIMediator {
 		    // able to load the tray library, then shutdown after transfers.
 		    if(CommonUtils.supportsTray() && !ResourceManager.instance().isTrayLibraryLoaded())
 		        shutdownAfterTransfers();
-		    else
+		    else {
+                applyWindowSettings();
+                GUIMediator.showTrayIcon();
                 hideView();
+            }
         } else if (CommonUtils.isMacOSX() && CommonUtils.isJava14OrLater() &&
                    fromFrame) {
             //If on OSX, don't close in response to clicking on the 'X'
@@ -850,7 +899,7 @@ public final class GUIMediator {
 	public static void shutdown() {
 		Finalizer.shutdown();
 	}
-
+    
 	/**
 	 * Shutdown the program cleanly after all transfers in progress are
 	 * complete.  Calling this method causes the GUI to be hidden while the
@@ -861,6 +910,10 @@ public final class GUIMediator {
 		Finalizer.shutdownAfterTransfers();
 		GUIMediator.hideView();
 	}
+    
+    public static void flagUpdate(String toExecute) {
+        Finalizer.flagUpdate(toExecute);
+    }
 
 	/**
 	 * Shows the "About" menu with more information about the program.
@@ -870,61 +923,21 @@ public final class GUIMediator {
 	}
 
 	/**
-	 * Updates the icon associated with the user notification area, such as
-	 * the system tray on Windows.
-	 *
-	 * @param imageFileName the name of the new image file to use,
-	 *  preferably a file in and relative to the current directory,
-	 *  as in "LimeWire.ico"
-	 */
-	public static void updateNotifyImage(final String imageFileName) {
-		NotifyUserProxy.instance().updateImage(imageFileName);
-	}
-
-	/**
-	 * Updates the text associated with the user notification area, such as
-	 * the system tray on Windows.
-	 *
-	 * @param text the new text to use for the user notification area for
-	 *  such things as the system tray tooltip on Windows
-	 */
-	public static void updateNotifyText(final String text) {
-		NotifyUserProxy.instance().updateDesc(text);
-	}
-
-	/**
-	 * Updates the icon and the text associated with the user notification
-	 * area, such as the system tray on Windows.
-	 *
-	 * @param imageFileName the name of the new image file to use, preferably
-	 *  a file in and relative to the current directory, as in "LimeWire.ico"
-	 * @param text the new text to use for the user notification area for
-	 *  such things as the system tray tooltip on Windows
-	 */
-	public static void updateNotify(
-			final String imageFileName,
-			final String text) {
-		NotifyUserProxy.instance().updateNotify(imageFileName, text);
-	}
-
-	/**
-	 * Hides the user notification area.  If this method is called,
-	 * the caller must ensure that the user always has a way to exit
-	 * the application even though the notification area is hidden, or
-	 * to make the notification area visible again.
-	 */
-	public static void hideNotify() {
-		NotifyUserProxy.instance().hideNotify();
-	}
-
-	/**
 	 * Shows the user notification area.  The user notification icon and
 	 * tooltip created by the NotifyUser object are not modified.
 	 */
-	public static void addNotify() {
-        applyWindowSettings();
-		NotifyUserProxy.instance().addNotify();
+	public static void showTrayIcon() {
+        NotifyUserProxy.instance().addNotify();
 	}
+
+    /**
+     * Hides the user notification area.
+     */
+    public static void hideTrayIcon() {
+        //  Do not use hideNotify() here, since that will
+        //  create multiple tray icons.
+        NotifyUserProxy.instance().removeNotify();
+    }
 
     /**
      * Sets the window height, width and location properties to remember the
@@ -1026,7 +1039,7 @@ public final class GUIMediator {
 		return MessageService.instance().showYesNoMessage(
 			getStringResource(messageKey));
 	}
-
+    
 	/**
 	 * Acts as a proxy for the <tt>MessageService</tt> class.  Displays a
 	 * locale-specific message to the user in the form of a yes or no
@@ -1045,6 +1058,14 @@ public final class GUIMediator {
 		return MessageService.instance().showYesNoMessage(
 			getStringResource(messageKey), defaultValue);
 	}
+    
+    public static final int showYesNoTitledMessage(
+            final String messageKey,
+            final String titleKey) {
+        return MessageService.instance().showYesNoMessage(
+                getStringResource(messageKey),
+                getStringResource(titleKey));
+    }
 
 	/**
 	 * Acts as a proxy for the <tt>MessageService</tt> class.  Displays a
@@ -1291,6 +1312,20 @@ public final class GUIMediator {
 			defaultValue);
 	}	
 
+	/**
+	 * Displays the message denoted by <code>messageKey</code> replacing all 
+	 * occurrences of {number} in the message string with the arguments given
+	 * in <code>args</code>
+	 * <p>
+	 * For details on the syntax, please see 
+	 * {@link MessageFormat#format(java.lang.String, java.lang.Object[])} which 
+	 * is used internally.
+	 */
+	public static final void showFormattedMessage(final String messageKey,
+			Object[] args) {
+		MessageService.instance().showMessage(MessageFormat.format(getStringResource(messageKey), args));
+	}
+	
 	/**
 	 * Acts as a proxy for the <tt>MessageService</tt> class.  Displays a
 	 * locale-specific message to the user.<p>
@@ -2002,9 +2037,20 @@ public final class GUIMediator {
 	 * @param the new <tt>RefreshListener</tt> to add
 	 */
 	public static void addRefreshListener(RefreshListener listener) {
-		REFRESH_LIST.add(listener);
+		if (!REFRESH_LIST.contains(listener))
+			REFRESH_LIST.add(listener);
 	}
 
+	/**
+	 * Removes the specified <tt>RefreshListener</tt> instance from the list
+	 * of listeners to be notified when a UI refresh event occurs.
+	 * 
+	 * @param the <tt>RefreshListener</tt> to remove
+	 */
+	public static void removeRefreshListener(RefreshListener listener) {
+		REFRESH_LIST.remove(listener);
+	}
+	
 	/**
 	 * Returns the <tt>Locale</tt> instance currently in use.
 	 *
@@ -2020,15 +2066,15 @@ public final class GUIMediator {
 	 * @param file the <tt>File</tt> instance to launch
 	 */
 	public void launchAudio(File file) {
-		STATUS_LINE.launchAudio(file);
+		MediaPlayerComponent.launchAudio(file);
 	}
 
     /**
      * Makes the update message show up in the status panel
      */
-    public void showUpdateNotification(boolean blink, UpdateInformation info) {
-        UpdatePanel updatePanel = STATUS_LINE.getUpdatePanel();
-        updatePanel.makeVisible(blink, info);
+    public void showUpdateNotification(UpdateInformation info) {
+        boolean popup = info.getUpdateCommand() != null;
+        STATUS_LINE.showUpdatePanel(popup, info);
     }
 
    /**
@@ -2096,14 +2142,25 @@ public final class GUIMediator {
     }
 	
 	/**
-	 * InvokesLater if not already in the dispatch thraed.
+	 * InvokesLater if not already in the dispatch thread.
 	 */
 	public static void safeInvokeLater(Runnable runnable) {
-		if(EventQueue.isDispatchThread())
+		if (EventQueue.isDispatchThread())
 			runnable.run();
 		else
 			SwingUtilities.invokeLater(runnable);
 	}
 
+	/**
+	 * Changes whether the media player is enabled and updates the GUI accordingly. 
+	 */
+	public void setPlayerEnabled(boolean value) {
+		if (value == PlayerSettings.PLAYER_ENABLED.getValue())
+			return;
+		PlayerSettings.PLAYER_ENABLED.setValue(value);
+		getStatusLine().refresh();
+		LIBRARY_MEDIATOR.setPlayerEnabled(value);
+		LibraryPlayListTab.setPlayerEnabled(value);
+	}
 }
 

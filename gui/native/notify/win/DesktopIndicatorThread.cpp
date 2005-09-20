@@ -75,13 +75,12 @@ DWORD WINAPI DesktopIndicatorThread::ThreadProc( LPVOID lpParameter )
 
 			case DesktopIndicatorHandler::disableCode:
 				// Destroy it!
-
 				delete l_handler;
 
 				// No more handlers?
 				if( !--l_this->m_handlerCount )
 				{
-					
+					 
 					l_this->m_thread = 0;
 					// Detach thread from VM
 					l_this->m_vm->DetachCurrentThread();

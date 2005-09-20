@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 
+import com.limegroup.gnutella.gui.Main;
 import com.limegroup.gnutella.settings.IntSetting;
 import com.limegroup.gnutella.settings.ColorSetting;
 import com.limegroup.gnutella.settings.FontNameSetting;
@@ -100,8 +101,8 @@ public final class ThemeFileHandler {
 	 * so that future startups can display the splash screen quickly.
 	 */
 	public static void copySplashImage(File dir) {
-	    File src = new File(dir, "splash.gif");
-	    File dst = new File(CommonUtils.getUserSettingsDir(), "splash.gif");
+	    File src = new File(dir, "splash.png");
+	    File dst = new File(CommonUtils.getUserSettingsDir(), Main.SPLASH_FILE);
 	    if(src.exists()) {
 	        if(!dst.exists() || src.length() != dst.length() || src.lastModified() != dst.lastModified()) {
     	        dst.delete();

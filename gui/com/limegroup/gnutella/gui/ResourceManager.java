@@ -5,7 +5,6 @@ import java.awt.Font;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
@@ -35,8 +34,6 @@ import com.limegroup.gnutella.gui.themes.LimePlasticTheme;
 import com.limegroup.gnutella.gui.themes.ThemeFileHandler;
 import com.limegroup.gnutella.gui.themes.ThemeSettings;
 import com.limegroup.gnutella.settings.ApplicationSettings;
-import com.limegroup.gnutella.settings.SharingSettings;
-import com.limegroup.gnutella.updates.UpdateManager;
 import com.limegroup.gnutella.util.CommonUtils;
 import com.limegroup.gnutella.util.Expand;
 
@@ -598,11 +595,13 @@ public final class ResourceManager {
                 UIManager.setLookAndFeel(other);
             } else if(ThemeSettings.isNativeTheme()) {
                 if(CommonUtils.isWindows() && isPlasticWindowsAvailable()) {
-                    UIManager.setLookAndFeel("com.jgoodies.plaf.windows.ExtWindowsLookAndFeel");
-                } else {
-                    String lafName = UIManager.getSystemLookAndFeelClassName();
-                    UIManager.setLookAndFeel(lafName);
-                }
+                    try {
+                        UIManager.setLookAndFeel("com.jgoodies.plaf.windows.ExtWindowsLookAndFeel");
+                    } catch (NullPointerException npe) {
+                        UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());   
+                    }
+                } else
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
                 if(CommonUtils.isMacOSX()) {
                     if(!_fontReduced) {

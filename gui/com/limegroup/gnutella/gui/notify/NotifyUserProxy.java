@@ -10,13 +10,7 @@ import com.limegroup.gnutella.util.CommonUtils;
 public class NotifyUserProxy implements NotifyUser {
 
     /**
-     * Variable for following singleton.
-     */
-    private static final NotifyUserProxy INSTANCE =
-        new NotifyUserProxy();
-    
-    /**
-     * Variable for the NotifyUser object that this class is serving as a
+     * The NotifyUser object that this class is serving as a
      * proxy for.
      */
     private NotifyUser _notifier;
@@ -26,6 +20,12 @@ public class NotifyUserProxy implements NotifyUser {
      */
     private boolean _inTray = false;
 
+    /**
+     * Singleton.
+     */
+    private static final NotifyUserProxy INSTANCE =
+        new NotifyUserProxy();
+    
     /**
      * Instance accessor method for the single object of this class,
      * following the singleton pattern.
@@ -41,24 +41,27 @@ public class NotifyUserProxy implements NotifyUser {
      * platform.  This class serves as a "proxy" for the object constructed.
      */
     private NotifyUserProxy() {
-        if(CommonUtils.supportsTray() &&
+        if (CommonUtils.supportsTray() &&
            ResourceManager.instance().isTrayLibraryLoaded()) {
         	if (CommonUtils.isWindows())
         		_notifier = new WindowsNotifyUser();
         	else 
         		_notifier = new LinuxNotifyUser();
             addNotify();
-        } else {
+        } else
             _notifier = new NonWindowsNotifyUser();
-        }
     }
 
     public void addNotify() {
+        if (_inTray)
+            return;
         _notifier.addNotify();
         _inTray = true;
     }
 
     public void removeNotify() {
+        if (!_inTray)
+            return;
         _notifier.removeNotify();
         _inTray = false;
     }
@@ -75,7 +78,12 @@ public class NotifyUserProxy implements NotifyUser {
         _notifier.updateImage(imageFileName);
     }
 
+    /**
+     * Hides the tray icon.  Not currently used.
+     */
     public void hideNotify() {
+        if (!_inTray)
+            return;
         _notifier.hideNotify();
     }
 }

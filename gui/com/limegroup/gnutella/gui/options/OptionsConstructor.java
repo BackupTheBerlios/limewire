@@ -72,7 +72,8 @@ public final class OptionsConstructor {
 	static final String UPDATE_KEY         = "OPTIONS_UPDATE_MAIN_TITLE";
 	static final String CHAT_KEY           = "OPTIONS_CHAT_MAIN_TITLE";
 	static final String PLAYER_KEY         = "OPTIONS_PLAYER_MAIN_TITLE";
-    static final String ITUNES_KEY			= "OPTIONS_ITUNES_MAIN_TITLE";
+    static final String STATUS_BAR_KEY     = "OPTIONS_STATUS_BAR_MAIN_TITLE";
+    static final String ITUNES_KEY		   = "OPTIONS_ITUNES_MAIN_TITLE";
     static final String ITUNES_IMPORT_KEY  = "OPTIONS_ITUNES_PREFERENCE_MAIN_TITLE";
     static final String ITUNES_DAAP_KEY    = "OPTIONS_ITUNES_DAAP_MAIN_TITLE";
 	static final String POPUPS_KEY         = "OPTIONS_POPUPS_MAIN_TITLE";
@@ -178,7 +179,8 @@ public final class OptionsConstructor {
 		addOption(OptionsMediator.ROOT_NODE_KEY, SHUTDOWN_KEY);
 		addOption(OptionsMediator.ROOT_NODE_KEY, UPDATE_KEY);
 		addOption(OptionsMediator.ROOT_NODE_KEY, CHAT_KEY);
-		addOption(OptionsMediator.ROOT_NODE_KEY, PLAYER_KEY);		
+		addOption(OptionsMediator.ROOT_NODE_KEY, PLAYER_KEY);	
+        addOption(OptionsMediator.ROOT_NODE_KEY, STATUS_BAR_KEY);
 
 		if (CommonUtils.isJava14OrLater() || CommonUtils.isMacOSX()) {
 			addGroupTreeNode(OptionsMediator.ROOT_NODE_KEY, ITUNES_KEY);

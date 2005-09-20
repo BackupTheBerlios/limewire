@@ -14,8 +14,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JTextField;
 
-import com.limegroup.gnutella.ErrorService;
-import com.limegroup.gnutella.RouterService;
 import com.limegroup.gnutella.gui.ButtonRow;
 import com.limegroup.gnutella.gui.FileChooserHandler;
 import com.limegroup.gnutella.gui.GUIMediator;

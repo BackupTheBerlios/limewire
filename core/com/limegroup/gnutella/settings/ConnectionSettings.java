@@ -43,7 +43,15 @@ public final class ConnectionSettings extends LimeProps {
 	 * Settings for the number of connections to maintain.
 	 */
 	public static final IntSetting NUM_CONNECTIONS =
-        FACTORY.createIntSetting("NUM_CONNECTIONS", 32);
+        FACTORY.createSettableIntSetting("NUM_CONNECTIONS", 32, "ConnectionSettings.numConnections",96,16);
+    
+    /** The maximum ratio of non-limewire peers to allow */
+    public static final FloatSetting MAX_NON_LIME_PEERS =
+        FACTORY.createSettableFloatSetting("MAX_NON_LIME_PEERS",0.2f,"ConnectionSettings.maxLimePeers",0.5f,0f);
+    
+    /** The minimum ratio of non-limewire peers to allow */
+    public static final FloatSetting MIN_NON_LIME_PEERS =
+        FACTORY.createSettableFloatSetting("MIN_NON_LIME_PEERS",0.1f,"ConnectionSettings.minLimePeers",0.2f,0f);
 
 	
     /**
@@ -323,6 +331,12 @@ public final class ConnectionSettings extends LimeProps {
      */
     public static final StringArraySetting EVIL_HOSTS =
         FACTORY.createSettableStringArraySetting("EVIL_HOSTS", new String[0], "evil_hosts");
+    
+    /**
+     * How many connections to maintain as a leaf when idle
+     */
+    public static final IntSetting IDLE_CONNECTIONS =
+        FACTORY.createSettableIntSetting("IDLE_CONNECTIONS",1,"ConnectionSettings.IdleConnections",3,1);
     
     
     /**

@@ -2,7 +2,7 @@
  * (PD) 2003 The Bitzi Corporation Please see http://bitzi.com/publicdomain for
  * more info.
  * 
- * $Id: TigerTree.java,v 1.1 2005/06/29 19:02:47 limepeer Exp $
+ * $Id: TigerTree.java,v 1.2 2005/09/20 09:30:59 limepeer Exp $
  */
 package com.limegroup.gnutella.security;
 
@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.limegroup.gnutella.Assert;
 import com.limegroup.gnutella.ErrorService;
 import com.limegroup.gnutella.util.CommonUtils;
 
@@ -69,6 +70,9 @@ public class TigerTree extends MessageDigest {
         }
     }
 
+    /** a Marker for the Stack */
+    private static final byte[] MARKER = new byte[0];
+
     /** 1024 byte buffer */
     private final byte[] buffer;
 
@@ -81,8 +85,8 @@ public class TigerTree extends MessageDigest {
     /** Internal Tiger MD instance */
     private MessageDigest tiger;
 
-    /** Interim tree node hash values */
-    private List nodes;
+    /** The List of Nodes */
+    private ArrayList nodes;
 
     /**
      * Constructor
@@ -92,7 +96,7 @@ public class TigerTree extends MessageDigest {
         buffer = new byte[BLOCKSIZE];
         bufferOffset = 0;
         byteCount = 0;
-        nodes = new ArrayList();
+	nodes = new ArrayList();
         if(USE_CRYPTIX) {
             try {
                 tiger = MessageDigest.getInstance("Tiger", "CryptixCrypto");
@@ -120,19 +124,27 @@ public class TigerTree extends MessageDigest {
 
     protected void engineUpdate(byte[] in, int offset, int length) {
         byteCount += length;
+	nodes.ensureCapacity(log2Ceil(byteCount / BLOCKSIZE));
 
-        int remaining;
-        while (length >= (remaining = BLOCKSIZE - bufferOffset)) {
-            System.arraycopy(in, offset, buffer, bufferOffset, remaining);
-            bufferOffset += remaining;
-            blockUpdate();
-            length -= remaining;
-            offset += remaining;
-            bufferOffset = 0;
+        if (bufferOffset > 0) {
+        	int remaining = BLOCKSIZE - bufferOffset;
+        	System.arraycopy(in,offset,buffer,bufferOffset, remaining);
+        	blockUpdate();
+        	bufferOffset = 0;
+        	length -= remaining;
+        	offset += remaining;
+        }
+        
+        while (length >= BLOCKSIZE) {
+            blockUpdate(in, offset, BLOCKSIZE);
+            length -= BLOCKSIZE;
+            offset += BLOCKSIZE;
         }
 
-        System.arraycopy(in, offset, buffer, bufferOffset, length);
-        bufferOffset += length;
+        if (length > 0) {
+        	System.arraycopy(in, offset, buffer, 0, length);
+        	bufferOffset = length;
+        }
     }
 
     protected byte[] engineDigest() {
@@ -153,34 +165,45 @@ public class TigerTree extends MessageDigest {
         // hash any remaining fragments
         blockUpdate();
 
-        // composite neighboring nodes together up to top value
-        while (nodes.size() > 1) {
-            List newNodes = new ArrayList();
-            Iterator iter = nodes.iterator();
-            while (iter.hasNext()) {
-                byte[] left = (byte[]) iter.next();
-                if (iter.hasNext()) {
-                    byte[] right = (byte[]) iter.next();
-                    tiger.reset();
-                    tiger.update((byte) 1); // node prefix
-                    tiger.update(left, 0, left.length);
-                    tiger.update(right, 0, right.length);
-                    newNodes.add(tiger.digest());
-                } else {
-                    newNodes.add(left);
-                }
-            }
-            nodes = newNodes;
-        }
-        System.arraycopy(nodes.get(0), 0, buf, offset, HASHSIZE);
+	byte []ret = collapse();
+        
+	Assert.that(ret != MARKER);
+        
+        System.arraycopy(ret,0,buf,offset,HASHSIZE);
         engineReset();
         return HASHSIZE;
+    }
+
+    /**
+     * collapse whatever the tree is now to a root.
+     */
+    private byte[] collapse() {
+        byte [] last = null;
+	for (int i = 0 ; i < nodes.size(); i++) {
+	    byte [] current = (byte[]) nodes.get(i);
+	    if (current == MARKER)
+		continue;
+	    
+	    if (last == null) 
+		last = current;
+	    else {
+	       	tiger.reset();
+		tiger.update((byte)1);
+		tiger.update(current);
+		tiger.update(last);
+		last = tiger.digest();
+	    }
+	
+	    nodes.set(i,MARKER);
+	}
+	Assert.that(last != null);
+	return last;
     }
 
     protected void engineReset() {
         bufferOffset = 0;
         byteCount = 0;
-        nodes = new ArrayList();
+	nodes = new ArrayList();
         tiger.reset();
     }
 
@@ -193,51 +216,53 @@ public class TigerTree extends MessageDigest {
         throw new CloneNotSupportedException();
     }
 
+    protected void blockUpdate() {
+    	blockUpdate(buffer, 0, bufferOffset);
+    }
     /**
      * Update the internal state with a single block of size 1024 (or less, in
      * final block) from the internal buffer.
      */
-    protected void blockUpdate() {
+    protected void blockUpdate(byte [] buf, int pos, int len) {
         tiger.reset();
         tiger.update((byte) 0); // leaf prefix
-        tiger.update(buffer, 0, bufferOffset);
-        if ((bufferOffset == 0) & (nodes.size() > 0))
+        tiger.update(buf, pos, len);
+        if ((len == 0) && (nodes.size() > 0))
             return; // don't remember a zero-size hash except at very beginning
-        nodes.add(tiger.digest());
+        byte [] digest = tiger.digest();
+        push(digest);
     }
 
-    /**
-     * Public 
-     * @param args
-     * @throws IOException
-     * @throws NoSuchAlgorithmException
-     */
-     /*
-    public static void main(String[] args)
-        throws IOException, NoSuchAlgorithmException {
-        if (args.length < 1) {
-            System.out.println("You must supply a filename.");
-            return;
-        }
-        MessageDigest tt = new TigerTree();
-        FileInputStream fis;
 
-        for (int i = 0; i < args.length; i++) {
-            fis = new FileInputStream(args[i]);
-            int read;
-            byte[] in = new byte[1024];
-            while ((read = fis.read(in)) > -1) {
-                tt.update(in, 0, read);
-            }
-            fis.close();
-            byte[] digest = tt.digest();
-            String hash = new BigInteger(1, digest).toString(16);
-            while (hash.length() < 48) {
-                hash = "0" + hash;
-            }
-            System.out.println("hex:" + hash);
-            System.out.println("b32:" + Base32.encode(digest));
-            tt.reset();
+    private void push(byte [] data) {
+	if (!nodes.isEmpty()) {
+	   for (int i = 0; i < nodes.size(); i++) {
+		byte[] node =  (byte[]) nodes.get(i);
+		if (node == MARKER) {
+		   nodes.set(i,data);
+		   return;
+		}
+		
+		tiger.reset();
+		tiger.update((byte)1);
+		tiger.update(node);
+		tiger.update(data);
+		data = tiger.digest();
+		nodes.set(i,MARKER);
+	   }	
+	} 
+        nodes.add(data);	
+    }   
+
+    // calculates the next n with 2^n > number
+    public static int log2Ceil(long number) {
+        int n = 0;
+        while (number > 1) {
+            number++; // for rounding up.
+            number >>>= 1;
+            n++;
         }
-    }*/
+        return n;
+    }
+
 }

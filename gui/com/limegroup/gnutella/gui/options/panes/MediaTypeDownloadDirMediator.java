@@ -1,6 +1,5 @@
 package com.limegroup.gnutella.gui.options.panes;
 
-import java.awt.Component;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -18,7 +17,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import com.limegroup.gnutella.MediaType;
-import com.limegroup.gnutella.RouterService;
 import com.limegroup.gnutella.gui.FileChooserHandler;
 import com.limegroup.gnutella.gui.GUIMediator;
 import com.limegroup.gnutella.gui.PaddedPanel;

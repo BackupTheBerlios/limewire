@@ -50,7 +50,7 @@ HAS_TIPS_OF_THE_DAY=false
 ################################################################################
 
 ################################################################################
-# Keys/value pairs for general strings that can be used in any components
+# Key/value pairs for general strings that can be used in any components
 ################################################################################
 #### GENERAL_OK_BUTTON_LABEL=OK
 GENERAL_OK_BUTTON_LABEL=موافق
@@ -86,7 +86,7 @@ GENERAL_BROWSE_HOST_TIP=عرض جميع الملفات على الكمبيوتر
 #? GENERAL_ADVANCED_SUB_MENU=
 
 ################################################################################
-# Keys/value pairs for right-click context menus.
+# Key/value pairs for right-click context menus.
 ################################################################################
 #### CONTEXT_MENU_UNDO=Undo
 #? CONTEXT_MENU_UNDO=
@@ -194,6 +194,26 @@ ABOUT_LICENSE_TIP=عرض بنود الاتفاقية الخاصة بالبرنا
 ABOUT_SCROLL_CHECK_BOX_LABEL=تمرير تلقائي
 #### ABOUT_BUTTON_TIP=Close This Window
 ABOUT_BUTTON_TIP=إغلاق النافذة.
+#### ABOUT_INTRODUCTION=Inspired by LimeWire's owner, Mark Gorton, the LimeWire project is a collaborative <a href="http://www.limewire.org/">open source effort</a> involving programmers and researchers from all over the world. The collaborative nature of Gnutella is also reflected in the Gnutella Developers Forum (GDF), of which LimeWire is a participant. The members of the GDF work in the trenches every day to make Gnutella a truly innovative collection of protocols that is constantly improving -- a testament to the power of open protocols and open standards.
+#? ABOUT_INTRODUCTION=
+#### ABOUT_DEV_BLURB=LimeWire is also, of course, the result of the countless hours of work by LimeWire's developers:
+#? ABOUT_DEV_BLURB=
+#### ABOUT_BIZDEV_BLURB=Behind the scenes business strategy and day-to-day affairs are handled by LimeWire's business developers:
+#? ABOUT_BIZDEV_BLURB=
+#### ABOUT_WEBDEV_BLURB=The LimeWire <a href="http://www.limewire.com/">web site</a> and LimeWire graphic design are the hard work of LimeWire's web team:
+#? ABOUT_WEBDEV_BLURB=
+#### ABOUT_SUPPORT_BLURB=LimeWire PRO questions are dutifully answered by LimeWire technical support:
+#? ABOUT_SUPPORT_BLURB=
+#### ABOUT_PREVIOUS_DEV_BLURB=In addition, the following developers have worked on the LimeWire team in the past but have since moved on to other projects:
+#? ABOUT_PREVIOUS_DEV_BLURB=
+#### ABOUT_CONTRIBUTORS_BLURB=LimeWire open source contributors have provided significant code and many bug fixes, ideas, research, etc. to the project as well. Those listed below have either written code that is distributed with every version of LimeWire, have identified serious bugs in the code, or both:
+#? ABOUT_CONTRIBUTORS_BLURB=
+#### ABOUT_I18N_BLURB=LimeWire would also like to thank the many contributors to the internationalization project, both for the application itself and for the LimeWire web site.
+#? ABOUT_I18N_BLURB=
+#### ABOUT_COMMUNITY_BLURB=Several colleagues in the Gnutella community merit special thanks. These include:
+#? ABOUT_COMMUNITY_BLURB=
+#### ABOUT_CONCLUSION=Finally, LimeWire would like to extend its sincere thanks to these developers, users, and all others who have contributed their ideas to the project. Without LimeWire users, the LimeWire network would not exist.
+#? ABOUT_CONCLUSION=
 
 ###################################################################
 # Key/value pairs for the tip of the day window (not the tips themselves)
@@ -210,6 +230,8 @@ TOTD_NEXT=التلميح التالي >>
 TOTD_PREVIOUS=<< التلميح السابق
 #### TOTD_CLOSE=Close
 TOTD_CLOSE=إغلاق
+#### TOTD_LOADING_TIPS=Loading tips...
+#? TOTD_LOADING_TIPS=
 
 ###################################################################
 # Key/value pairs for the Getting Started image
@@ -230,7 +252,7 @@ TOTD_CLOSE=إغلاق
 ###################################################################
 # Key/value pairs for the Windows system tray
 ###################################################################
-#### TRAY_TOOLTIP=LimeWire: Running the Gnutella Network
+#### TRAY_TOOLTIP=LimeWire
 TRAY_TOOLTIP=LimeWire: جاري تشغيل الشبكة.
 #### TRAY_RESTORE_LABEL=Restore
 TRAY_RESTORE_LABEL=استعادة
@@ -549,7 +571,25 @@ MENU_HELP_ERROR_MNEMONIC=E
 MENU_HELP_ERROR_ACCESSIBLE=تخليق خطأ منبثق للاختبار.
 
 ################################################################################
-# Keys/value pairs for general tables info
+# Key/value pairs for status bar components and right-click menu
+################################################################################
+#### STATUS_BAR_SHOW_CONNECTION_QUALITY=Show Connection Quality
+#? STATUS_BAR_SHOW_CONNECTION_QUALITY=
+#### STATUS_BAR_SHOW_SHARED_FILES_COUNT=Show Shared Files Count
+#? STATUS_BAR_SHOW_SHARED_FILES_COUNT=
+#### STATUS_BAR_SHOW_FIREWALL_STATUS=Show Firewall Status
+#? STATUS_BAR_SHOW_FIREWALL_STATUS=
+#### STATUS_BAR_SHOW_BANDWIDTH_CONSUMPTION=Show Bandwidth Consumption
+#? STATUS_BAR_SHOW_BANDWIDTH_CONSUMPTION=
+#### STATUS_BAR_SHOW_MEDIA_PLAYER=Show Media Player
+#? STATUS_BAR_SHOW_MEDIA_PLAYER=
+#### STATUS_BAR_FIREWALL_FOUND_TOOLTIP=LimeWire has detected a firewall
+#? STATUS_BAR_FIREWALL_FOUND_TOOLTIP=
+#### STATUS_BAR_FIREWALL_NOT_FOUND_TOOLTIP=LimeWire has not detected a firewall
+#? STATUS_BAR_FIREWALL_NOT_FOUND_TOOLTIP=
+
+################################################################################
+# Key/value pairs for general tables info
 ################################################################################
 #### TABLES_USE_ROWSTRIPE=Stripe Rows
 TABLES_USE_ROWSTRIPE=صفوف متباينة الألوان
@@ -559,7 +599,7 @@ TABLES_REAL_TIME_SORTING=ترتيب تلقائي
 TABLES_DISPLAY_TOOLTIPS=عرض تلميح الأدوات.
 
 ################################################################################
-# Keys/value pairs for SearchView stuff...
+# Key/value pairs for SearchView stuff
 ################################################################################
 #### SEARCH_NOT_CONNECTED=You are not connected to the network. To connect, select "Connect" from the "File" menu. Your search may not return any results until you connect.
 SEARCH_NOT_CONNECTED=أنت غير متصل باشبكة. للاتصال اختر "اتصال" من قائمة "ملف".
@@ -753,7 +793,7 @@ RESULT_PANEL_VENDOR=البائع
 #### RESULT_PANEL_LICENSE=License
 #? RESULT_PANEL_LICENSE=
 
-#Filter labels.
+#Filter labels
 #### SEARCH_FILTER_ALL=All
 SEARCH_FILTER_ALL=الجميع
 #### SEARCH_FILTER_OPTION=Option
@@ -843,7 +883,6 @@ LIBRARY_RESUME_BUTTON_TIP=استأنف تنزيل الملفات المختار�
 #### LIBRARY_SHARED_FILES_CONFIGURE_MENU=Configure Sharing Options
 #? LIBRARY_SHARED_FILES_CONFIGURE_MENU=
 
-
 #### PLAYLIST_LOAD_BUTTON_LABEL=Open...
 PLAYLIST_LOAD_BUTTON_LABEL=فتح...
 #### PLAYLIST_LOAD_BUTTON_TIP=Open an Existing Playlist
@@ -860,7 +899,7 @@ PLAYLIST_DELETE_BUTTON_TIP=حذف الملفات المختارة من قائم�
 PLAYLIST_FILE_DESCRIPTION=ملفات قائمة القراءة (*.m3u)
 
 ################################################################################
-# Key/value pairs for the integrated media player...
+# Key/value pairs for the integrated media player
 ################################################################################
 #### MEDIA_PLAYER_DEFAULT_STRING=LimeWire Media Player
 MEDIA_PLAYER_DEFAULT_STRING=LimeWire Media Player
@@ -898,7 +937,7 @@ PASSWORD_DIALOG_PASSWORD_FIELD_LABEL=كلمة السر
 #### DOWNLOADER_DIALOG_ERROR_LABEL=Error: {0}
 #? DOWNLOADER_DIALOG_ERROR_LABEL=
 # {0} a short warning message which is localized independently
-#### DOWNLOADER_DIALOG_WARNING_LABEL=Warning: {0} 
+#### DOWNLOADER_DIALOG_WARNING_LABEL=Warning: {0}
 #? DOWNLOADER_DIALOG_WARNING_LABEL=
 # {0} the full path name of the file in question
 #### DOWNLOADER_DIALOG_NOTE_LABEL=<b>Note</b>: A file with the same content already exists in the library at {0}
@@ -949,7 +988,7 @@ PASSWORD_DIALOG_PASSWORD_FIELD_LABEL=كلمة السر
 #### SAVE_LOCATION_DIRECTORY_NOT_WRITEABLE_ERROR=Could not save download to the folder {0}, because you do not have write access to it.
 #? SAVE_LOCATION_DIRECTORY_NOT_WRITEABLE_ERROR=
 # {0} the full path name of the folder
-#### SAVE_LOCATION_DIRECTORY_DOES_NOT_EXIST_ERROR=Could not save download to folder {0}, because the folder does not exist. 
+#### SAVE_LOCATION_DIRECTORY_DOES_NOT_EXIST_ERROR=Could not save download to folder {0}, because the folder does not exist.
 #? SAVE_LOCATION_DIRECTORY_DOES_NOT_EXIST_ERROR=
 # {0} the full path name of the folder/file
 #### SAVE_LOCATION_NOT_A_DIRECOTRY_ERROR=Could not set download folder to {0}, because it represents an individual file, not a folder.
@@ -1015,49 +1054,49 @@ PASSWORD_DIALOG_PASSWORD_FIELD_LABEL=كلمة السر
 STATISTICS_AVAILABLE=متاح
 #### STATISTICS_FILES=Files
 STATISTICS_FILES=ملفات
+#### STATISTICS_FILES_TOOLTIP=files
+#? STATISTICS_FILES_TOOLTIP=
+#### STATISTICS_FILES_TOOLTIP_PENDING=files (Loading...)
+#? STATISTICS_FILES_TOOLTIP_PENDING=
 #### STATISTICS_DISCONNECTED=Disconnected / no files available
 STATISTICS_DISCONNECTED=قطع اتصال / لايوجد ملفات متاحة
-#### STATISTICS_SHARING=Sharing
-STATISTICS_SHARING=مشاركة
-#### STATISTICS_SHARING_TOOLTIP=The number of files you are sharing.
+#### STATISTICS_SHARING_TOOLTIP=You are sharing
 STATISTICS_SHARING_TOOLTIP=عدد الملفات التي تشاركها.
 #### STATISTICS_CONNECTION_DISCONNECTED=Disconnected
 STATISTICS_CONNECTION_DISCONNECTED=لا يوجد اتصال
 #### STATISTICS_CONNECTION_DISCONNECTED_TIP=You are disconnected from the network. To connect, choose Connect from the File menu.
 STATISTICS_CONNECTION_DISCONNECTED_TIP=أنت غير متصل باشبكة. للاتصال اختر اتصال من قائمة ملف.
-#### STATISTICS_CONNECTION_CONNECTING=Connecting
+#### STATISTICS_CONNECTION_CONNECTING=Starting
 STATISTICS_CONNECTION_CONNECTING=يتم الآن الاتصال
-#### STATISTICS_CONNECTION_CONNECTING_TIP=You are currently connecting to the network.
+#### STATISTICS_CONNECTION_CONNECTING_TIP=You are currently connecting to the network
 STATISTICS_CONNECTION_CONNECTING_TIP=أنت الآن تتصل بالشبكة.
 #### STATISTICS_CONNECTION_POOR=Poor
 STATISTICS_CONNECTION_POOR=ضعيف
-#### STATISTICS_CONNECTION_POOR_TIP=You are connected to few hosts and have an unstable connection the network.
+#### STATISTICS_CONNECTION_POOR_TIP=You are connected to few hosts and have an unstable connection the network
 STATISTICS_CONNECTION_POOR_TIP=أنت متصل بعدد محدود من المضيفين واتصالك بالشبكة غير مستقر.
 #### STATISTICS_CONNECTION_FAIR=Fair
 STATISTICS_CONNECTION_FAIR=معتدل
-#### STATISTICS_CONNECTION_FAIR_TIP=Your connection to the network is getting stronger.
+#### STATISTICS_CONNECTION_FAIR_TIP=Your connection to the network is getting stronger
 STATISTICS_CONNECTION_FAIR_TIP=اتصالك بالشبكة يتجه للأفضل.
 #### STATISTICS_CONNECTION_GOOD=Good
 STATISTICS_CONNECTION_GOOD=جيد
-#### STATISTICS_CONNECTION_GOOD_TIP=You are not yet fully connected to the network, but have a very good connection.
+#### STATISTICS_CONNECTION_GOOD_TIP=You are not yet fully connected to the network, but have a very good connection
 STATISTICS_CONNECTION_GOOD_TIP=لا تمتلك أفضل اتصال بالشبكة، ولكن لديك اتصال جيد جدا.
 #### STATISTICS_CONNECTION_EXCELLENT=Excellent
 STATISTICS_CONNECTION_EXCELLENT=ممتاز
-#### STATISTICS_CONNECTION_EXCELLENT_TIP=Your connection to the network is very strong.
+#### STATISTICS_CONNECTION_EXCELLENT_TIP=Your connection to the network is very strong
 STATISTICS_CONNECTION_EXCELLENT_TIP=لديك اتصالا قويا بالشبكة.
 #### STATISTICS_CONNECTION_TURBO_CHARGED=Turbo-Charged
 STATISTICS_CONNECTION_TURBO_CHARGED=سريع مطور
-#### STATISTICS_CONNECTION_TURBO_CHARGED_TIP_FREE=You can experience Turbo-Charged connections all the time with LimeWire PRO.
+#### STATISTICS_CONNECTION_TURBO_CHARGED_TIP_FREE=You can experience Turbo-Charged connections all the time with LimeWire PRO!
 STATISTICS_CONNECTION_TURBO_CHARGED_TIP_FREE=يمكنك تجربة الاتصالات السريعة المطورة مع LimeWire Pro.
-#### STATISTICS_CONNECTION_TURBO_CHARGED_TIP_PRO=Your connection to the network is extremely strong.
+#### STATISTICS_CONNECTION_TURBO_CHARGED_TIP_PRO=Your connection to the network is extremely strong
 STATISTICS_CONNECTION_TURBO_CHARGED_TIP_PRO=لديك اتصالا قويا للغاية بالشبكة.
-#### STATISTICS_CONNECTION_QUALITY=Quality:
+#### STATISTICS_CONNECTION_QUALITY=Connection
 STATISTICS_CONNECTION_QUALITY=الجودة:
-#### STATISTICS_CONNECTION_IDLE=Idle
-#? STATISTICS_CONNECTION_IDLE=
 #### STATISTICS_CONNECTION_WAKING_UP=Waking Up
 #? STATISTICS_CONNECTION_WAKING_UP=
-#### STATISTICS_CONNECTION_WAKING_UP_TIP=LimeWire is waking up from sleep mode.
+#### STATISTICS_CONNECTION_WAKING_UP_TIP=LimeWire is waking up from sleep mode
 #? STATISTICS_CONNECTION_WAKING_UP_TIP=
 
 ################################################################################
@@ -1145,6 +1184,12 @@ DOWNLOAD_STATUS_SAVING=يتم الآن حفظ الملف...
 #? DOWNLOAD_STATUS_PAUSED=
 #### DOWNLOAD_AWAITING_SOURCES=A more specific search may be required...
 DOWNLOAD_AWAITING_SOURCES=قد يحتاج LimeWire إلى إجراء بحث متقدم...
+# {0} the name of the skin
+# {1} the localized name of the menu item "Refresh Skins"
+# {2} the localized name of the "View" menu
+# {3} the localized name of the "Apply Skins" menu
+#### DOWNLOAD_EXPLAIN_HOW_TO_CHANGE_THEME=You have downloaded a skin titled "{0}", you can activate the new skin by clicking "{1}" in the "{2}"->"{3}" menu and then selecting it from the list of available skins.
+#? DOWNLOAD_EXPLAIN_HOW_TO_CHANGE_THEME=
 #### DOWNLOAD_APPLY_NEW_THEME_START=You have downloaded a new skin titled "
 DOWNLOAD_APPLY_NEW_THEME_START=لقد قمت بتنزيل سمة جديدة باسم "
 #### DOWNLOAD_APPLY_NEW_THEME_END=." Would you like to use this new skin?
@@ -1175,6 +1220,8 @@ DOWNLOAD_COULD_NOT_READ_SNAPSHOT=معذرة، ولكن LimeWire لا يستطي�
 #? DOWNLOAD_PRIORITY_DOWN_BUTTON_TIP=
 #### DOWNLOAD_PRIORITY_PRIORITIZE=Queue
 #? DOWNLOAD_PRIORITY_PRIORITIZE=
+#### DOWNLOAD_SHOW_FIRST_DOWNLOAD_WARNING=LimeWire is unable to find a license for this file. Download anyway?\n\nPlease note: LimeWire cannot monitor or control the content of the Gnutella network. Please respect your local copyright laws.
+#? DOWNLOAD_SHOW_FIRST_DOWNLOAD_WARNING=
 
 ###################################################################
 # Key/value pairs for UploadView
@@ -1762,7 +1809,7 @@ LIST_EDITOR_REMOVE_BUTTON_TIP=إزالة العنصر المختار.
 INPUT_FIELD_GENERIC_CAPTION=مدخلات
 
 ################################################################################
-# Keys/value pairs for general button labels/tooltips used in various windows
+# Key/value pairs for general button labels/tooltips used in various windows
 ################################################################################
 #### GENERAL_CHAT_BUTTON_LABEL=Chat...
 GENERAL_CHAT_BUTTON_LABEL=دردشة...
@@ -1776,7 +1823,7 @@ GENERAL_LAUNCH_BUTTON_TIP=فتح الملف.
 #? GENERAL_CLEAR_HISTORY=
 
 ################################################################################
-# Keys/value pairs for ButtonRow labels and tooltips
+# Key/value pairs for ButtonRow labels and tooltips
 ################################################################################
 #### CHAT_BLOCK_BUTTON_LABEL=Block Host
 CHAT_BLOCK_BUTTON_LABEL=حظر المضيف
@@ -1804,75 +1851,75 @@ CHAT_YOU=أنت
 ###################################################################
 # Key/value pairs for splash screen status text
 ###################################################################
-#### SPLASH_STATUS_RESOURCE_MANAGER=Loading resources...
+#### SPLASH_STATUS_RESOURCE_MANAGER=Loading Resources...
 SPLASH_STATUS_RESOURCE_MANAGER=يتم الآن تحيل الموارد...
 #### SPLASH_STATUS_HTML_ENGINE=Loading HTML Engine...
 SPLASH_STATUS_HTML_ENGINE=يتم الآن تحميل HTML-engine...
-#### SPLASH_STATUS_SEARCH_WINDOW=Loading search window...
+#### SPLASH_STATUS_SEARCH_WINDOW=Loading Search Window...
 SPLASH_STATUS_SEARCH_WINDOW=يتم الآن تحميل نافذة البحث...
-#### SPLASH_STATUS_OPTIONS_WINDOW=Loading options window...
+#### SPLASH_STATUS_OPTIONS_WINDOW=Loading Options Window...
 SPLASH_STATUS_OPTIONS_WINDOW=يتم الآن تحميل نافذة الخيارات...
-#### SPLASH_STATUS_USER_SETTINGS=Loading user settings...
+#### SPLASH_STATUS_USER_SETTINGS=Loading Settings...
 SPLASH_STATUS_USER_SETTINGS=يتم الآن تحميل إعدادات المستخدم...
-#### SPLASH_STATUS_SHARED_FILES=Loading shared files...
+#### SPLASH_STATUS_SHARED_FILES=Loading Shared Files...
 SPLASH_STATUS_SHARED_FILES=يتم الآن تحميل الملفات المشارَكة...
-#### SPLASH_STATUS_INTERFACE=Loading user interface...
+#### SPLASH_STATUS_INTERFACE=Loading User Interface...
 SPLASH_STATUS_INTERFACE=يتم الآن تحميل واجهة المستخدم...
-#### SPLASH_STATUS_UPDATES=Checking for updates...
+#### SPLASH_STATUS_UPDATES=Checking for Updates...
 SPLASH_STATUS_UPDATES=يتم الآن مراجعة التحديثات...
-#### SPLASH_STATUS_CORE_COMPONENTS=Loading core components...
+#### SPLASH_STATUS_CORE_COMPONENTS=Loading Core Components...
 SPLASH_STATUS_CORE_COMPONENTS=جاري تحميل المكونات الداخلية...
-#### SPLASH_STATUS_DOWNLOAD_WINDOW=Loading download window...
+#### SPLASH_STATUS_DOWNLOAD_WINDOW=Loading Download Window...
 SPLASH_STATUS_DOWNLOAD_WINDOW=يتم الآن تحميل نافذة التنزيل...
-#### SPLASH_STATUS_LIBRARY_WINDOW=Loading library window...
+#### SPLASH_STATUS_LIBRARY_WINDOW=Loading Library Window...
 SPLASH_STATUS_LIBRARY_WINDOW=يتم الآن تحميل نافذة المكتبة...
-#### SPLASH_STATUS_UPLOAD_WINDOW=Loading upload window...
+#### SPLASH_STATUS_UPLOAD_WINDOW=Loading Upload Window...
 SPLASH_STATUS_UPLOAD_WINDOW=يتم الآن تحميل جاري التحميل...
-#### SPLASH_STATUS_MONITOR_WINDOW=Loading monitor window...
+#### SPLASH_STATUS_MONITOR_WINDOW=Loading Monitor Window...
 SPLASH_STATUS_MONITOR_WINDOW=يتم الآن تحميل نافذة المتابعة...
-#### SPLASH_STATUS_CONNECTION_WINDOW=Loading connection window...
+#### SPLASH_STATUS_CONNECTION_WINDOW=Loading Connections Window...
 SPLASH_STATUS_CONNECTION_WINDOW=يتم الآن تحميل نافذة الاتصال...
-#### SPLASH_STATUS_STATISTICS_WINDOW=Loading statistics window...
+#### SPLASH_STATUS_STATISTICS_WINDOW=Loading Statistics Window...
 SPLASH_STATUS_STATISTICS_WINDOW=يتم الآن تحميل نافذة الإحصائيات...
-#### SPLASH_STATUS_STATUS_WINDOW=Loading status window...
+#### SPLASH_STATUS_STATUS_WINDOW=Loading Status Window...
 SPLASH_STATUS_STATUS_WINDOW=يتم الآن تحميل نافذة إظهار الحالة...
-#### SPLASH_STATUS_PLAYLIST_WINDOW=Loading playlist window...
+#### SPLASH_STATUS_PLAYLIST_WINDOW=Loading Playlist Window...
 SPLASH_STATUS_PLAYLIST_WINDOW=يتم الآن تحميل نافذة قائمة القراءة...
-#### SPLASH_STATUS_MENUS=Loading menus...
+#### SPLASH_STATUS_MENUS=Loading Menus...
 SPLASH_STATUS_MENUS=يتم الآن تحميل القوائم...
-#### SPLASH_STATUS_MESSAGE_SERVICE=Loading messages...
+#### SPLASH_STATUS_MESSAGE_SERVICE=Loading Messages...
 SPLASH_STATUS_MESSAGE_SERVICE=يتم الآن تحميل الرسائل...
-#### SPLASH_STATUS_ICONS=Loading icons...
+#### SPLASH_STATUS_ICONS=Loading Icons...
 SPLASH_STATUS_ICONS=يتم الآن تحميل icons...
-#### SPLASH_STATUS_I18N=Loading internationalization support...
+#### SPLASH_STATUS_I18N=Loading Internationalization Support...
 SPLASH_STATUS_I18N=يتم الآن تحميل internationalization-support...
 #### SPLASH_STATUS_DAAP=Loading Digital Audio Access Protocol...
 SPLASH_STATUS_DAAP=يتم الآن تحميل Digital Audio Access Protocol...
-#### SPLASH_STATUS_COMPONENT_LOADING_ACCEPTOR=Loading connection listener...
+#### SPLASH_STATUS_COMPONENT_LOADING_ACCEPTOR=Loading Connection Listener...
 SPLASH_STATUS_COMPONENT_LOADING_ACCEPTOR=يتم الآن تحميل connection-listener...
-#### SPLASH_STATUS_COMPONENT_LOADING_MESSAGE_ROUTER=Loading message router...
+#### SPLASH_STATUS_COMPONENT_LOADING_MESSAGE_ROUTER=Loading Message Router...
 SPLASH_STATUS_COMPONENT_LOADING_MESSAGE_ROUTER=يتم الآن تحميل message-router...
-#### SPLASH_STATUS_COMPONENT_LOADING_CONNECTION_MANAGER=Loading connection management...
+#### SPLASH_STATUS_COMPONENT_LOADING_CONNECTION_MANAGER=Loading Connection Manager...
 SPLASH_STATUS_COMPONENT_LOADING_CONNECTION_MANAGER=يتم الآن تحميل نافذة connection-management...
-#### SPLASH_STATUS_COMPONENT_LOADING_HOST_CATCHER=Locating peers...
+#### SPLASH_STATUS_COMPONENT_LOADING_HOST_CATCHER=Locating Peers...
 #? SPLASH_STATUS_COMPONENT_LOADING_HOST_CATCHER=
-#### SPLASH_STATUS_COMPONENT_LOADING_FILE_MANAGER=Loading shared files...
+#### SPLASH_STATUS_COMPONENT_LOADING_FILE_MANAGER=Loading Shared Siles...
 SPLASH_STATUS_COMPONENT_LOADING_FILE_MANAGER=يتم الآن تحميل الملفات المشارَكة...
-#### SPLASH_STATUS_COMPONENT_LOADING_DOWNLOAD_MANAGER_POST_GUI=Loading old downloads...
+#### SPLASH_STATUS_COMPONENT_LOADING_DOWNLOAD_MANAGER_POST_GUI=Loading Old Downloads...
 SPLASH_STATUS_COMPONENT_LOADING_DOWNLOAD_MANAGER_POST_GUI=يتم الآن تحميل old-downloads...
-#### SPLASH_STATUS_COMPONENT_LOADING_UPDATE_MANAGER=Checking for updates...
+#### SPLASH_STATUS_COMPONENT_LOADING_UPDATE_MANAGER=Checking for Updates...
 #? SPLASH_STATUS_COMPONENT_LOADING_UPDATE_MANAGER=
-#### SPLASH_STATUS_COMPONENT_LOADING_QUERY_UNICASTER=Loading directed querier...
+#### SPLASH_STATUS_COMPONENT_LOADING_QUERY_UNICASTER=Loading Directed Querier...
 SPLASH_STATUS_COMPONENT_LOADING_QUERY_UNICASTER=يتم الآن تحميل directed-querier...
-#### SPLASH_STATUS_COMPONENT_LOADING_HTTPACCEPTOR=Loading MAGNET listener...
+#### SPLASH_STATUS_COMPONENT_LOADING_HTTPACCEPTOR=Loading Magnet Listener...
 SPLASH_STATUS_COMPONENT_LOADING_HTTPACCEPTOR=يتم الآن تحميل MAGNET-listener...
-#### SPLASH_STATUS_COMPONENT_LOADING_PINGER=Loading peer listener...
+#### SPLASH_STATUS_COMPONENT_LOADING_PINGER=Loading Peer Listener...
 SPLASH_STATUS_COMPONENT_LOADING_PINGER=يتم الآن تحميل peer-listener...
-#### SPLASH_STATUS_COMPONENT_LOADING_CONNECTION_WATCHDOG=Loading stale connection management...
+#### SPLASH_STATUS_COMPONENT_LOADING_CONNECTION_WATCHDOG=Loading Stale Connection Manager...
 SPLASH_STATUS_COMPONENT_LOADING_CONNECTION_WATCHDOG=يتم الآن تحميل stale-connection-management...
-#### SPLASH_STATUS_COMPONENT_LOADING_SAVED_FILE_MANAGER=Loading saved files...
+#### SPLASH_STATUS_COMPONENT_LOADING_SAVED_FILE_MANAGER=Loading Saved Files...
 SPLASH_STATUS_COMPONENT_LOADING_SAVED_FILE_MANAGER=يتم الآن تحميل saved-files...
-#### SPLASH_STATUS_COMPONENT_LOADING_SIMPP_MANAGER=Loading secure settings...
+#### SPLASH_STATUS_COMPONENT_LOADING_SIMPP_MANAGER=Loading Secure Settings...
 SPLASH_STATUS_COMPONENT_LOADING_SIMPP_MANAGER=يتم الآن تحميل secure-settings...
 
 ##################################################################
@@ -1889,23 +1936,23 @@ SPLASH_STATUS_COMPONENT_LOADING_SIMPP_MANAGER=يتم الآن تحميل secure-
 ##################################################################
 #### SUPPORT_LIMEWIRE_01=For Turbo-Charged searches get LimeWire PRO.
 SUPPORT_LIMEWIRE_01=لبحث سريع متطور، احصل على LimeWire Pro.
-#### SUPPORT_LIMEWIRE_02=Click here to support LimeWire's development of open, peer-to-peer networks.
+#### SUPPORT_LIMEWIRE_02=Support LimeWire's peer-to-peer development. Get PRO.
 SUPPORT_LIMEWIRE_02=انقر هنا لتطوير شبكات الند للند المفتوحة الخاصة ب LimeWire.
 #### SUPPORT_LIMEWIRE_03=Purchase LimeWire PRO to help us make downloads faster.
 SUPPORT_LIMEWIRE_03=اشتر LimeWire Pro لتساعدنا على الإسراع من التنزيلات.
 #### SUPPORT_LIMEWIRE_04=For Turbo-Charged downloads get LimeWire PRO.
 SUPPORT_LIMEWIRE_04=لتنزيلات سريعة مطورة، احصل على LimeWire Pro.
-#### SUPPORT_LIMEWIRE_05=Support open networks.
+#### SUPPORT_LIMEWIRE_05=Support open networks. Get LimeWire PRO.
 SUPPORT_LIMEWIRE_05=دعم الشبكات المفتوحة.
-#### SUPPORT_LIMEWIRE_06=Click here to support open source and open protocols.
+#### SUPPORT_LIMEWIRE_06=Support open source and open protocols. Get LimeWire PRO.
 SUPPORT_LIMEWIRE_06=انقر هنا لتدعيم البرامج ذات المصدر المفتوح والبروتوكولات المفتوحة.
-#### SUPPORT_LIMEWIRE_07=For Turbo-Charged Performance get LimeWire PRO.
+#### SUPPORT_LIMEWIRE_07=For Turbo-Charged performance get LimeWire PRO.
 SUPPORT_LIMEWIRE_07=لأداء سريع متطور، احصل على LimeWire Pro.
 #### SUPPORT_LIMEWIRE_08=Keep the Internet open. Get LimeWire PRO.
 SUPPORT_LIMEWIRE_08=حافظ على بقاء الإنترنت مفتوحة. احصل على Pro.
 #### SUPPORT_LIMEWIRE_09=Developing LimeWire costs real money. Get PRO.
 SUPPORT_LIMEWIRE_09=تطوير LimeWire يتكلف الكثير من المال. احصل على Pro.
-#### SUPPORT_LIMEWIRE_11=Help support sharing of independent media content.
+#### SUPPORT_LIMEWIRE_11=Support LimeWire and independent media content. Get PRO.
 SUPPORT_LIMEWIRE_11=ساعد على دعم مشاركة محتويات الوسائط المستقلة
 
 ################################################################################
@@ -1924,6 +1971,10 @@ UPDATE_MESSAGE_SMALL=يوجد نسخة أحدث. هل ترغب في التحدي
 #? UPDATE_NOW_LABEL=
 #### UPDATE_TIP=Visit http://www.limewire.com to update!
 #? UPDATE_TIP=
+#### UPDATE_RESTART=LimeWire needs to be restarted to install the update. If you choose not to update now, LimeWire will update automatically when you close. Would you like to update now?
+#? UPDATE_RESTART=
+#### UPDATE_RESTART_TITLE=Update Ready
+#? UPDATE_RESTART_TITLE=
 
 ################################################################################
 # Key/Value pairs for other messages displayed to the user
@@ -2025,9 +2076,9 @@ ERROR_LOCKED_BY_PROCESS_GENERIC=لم يتمكن LimeWire من فتح أحد ال
 ERROR_ACCESS_DENIED_DOWNLOAD=لم يكن LimeWire قادرا على إنشاء أو استكمال كتابة ملف غير كامل للملف المراد تنزيله وذلك لأنك لا تمتلك صلاحية كتابة الملفات في مجلد الملفات الغير تامة. لكي تستكمل استخدام LimeWire اختر مجلدا آخرا للحفظ.
 #### ERROR_ACCESS_DENIED_GENERIC=LimeWire was unable to write a necessary file because you do not have the necessary permissions. Your preferences may not be maintained the next time you start LimeWire, or LimeWire may behave in unexpected ways.
 ERROR_ACCESS_DENIED_GENERIC=لم يتمكن LimeWire من كتابة أحد الملفات الضرورية نتيجة عدم امتلاكك الصلاحيات الضرورية لذلك. قد لا يتم حفظ التفضيلات في المرة القادمة التي تقوم فيها بتشغيل LimeWire.
-#### ERROR_INVALID_NAME_DOWNLOAD=LimeWire was unable to open the incomplete file for the selected download because the file name contains characters which are not supported by your operating system.
+#### ERROR_INVALID_NAME_DOWNLOAD=LimeWire was unable to open the incomplete file for the selected download because the filename contains characters which are not supported by your operating system.
 #? ERROR_INVALID_NAME_DOWNLOAD=
-#### ERROR_INVALID_NAME_GENERIC=LimeWire cannot open a necessary file because the file name contain characters which are not supported by your operating system. LimeWire may behave in unexpected ways.
+#### ERROR_INVALID_NAME_GENERIC=LimeWire cannot open a necessary file because the filename contains characters which are not supported by your operating system. LimeWire may behave in unexpected ways.
 #? ERROR_INVALID_NAME_GENERIC=
 
 ################################################################################
@@ -2061,7 +2112,7 @@ ERROR_INTERNAL_SERVLET_FAILED=لم يتمكن LimeWire من الاتصال بم�
 ################################################################################
 # Key/Value pairs for error messages
 ################################################################################
-#### ERROR_INTERNET_IS_BLOCKED=LimeWire was unable to initialize and start.  This is usually due to a firewall program blocking LimeWire's access to the internet or loopback connections on the local machine.  Please allow LimeWire access to the internet and restart LimeWire.
+#### ERROR_INTERNET_IS_BLOCKED=LimeWire was unable to initialize and start. This is usually due to a firewall program blocking LimeWire's access to the internet or loopback connections on the local machine. Please allow LimeWire access to the internet and restart LimeWire.
 #? ERROR_INTERNET_IS_BLOCKED=
 #### ERROR_DAAP_LOOPBACK_FAILED=LimeWire was unable to start the Digital Audio Access Protocol (for sharing files in iTunes) because a Microsoft patch is required or a firewall is blocking access. LimeWire can direct you to Microsoft's page with information if you want to use this feature. Click 'Yes' to go to the patch, 'No' to disable this feature, or 'Cancel' to decide later.
 #? ERROR_DAAP_LOOPBACK_FAILED=
@@ -2265,7 +2316,7 @@ OPTIONS_UPLOAD_BASIC_MAIN_TITLE=أساسي
 OPTIONS_UPLOAD_SLOTS_MAIN_TITLE=الشرائح
 #### OPTIONS_CONNECTIONS_MAIN_TITLE=Connections
 OPTIONS_CONNECTIONS_MAIN_TITLE=اتصالات
-#### OPTIONS_SHUTDOWN_MAIN_TITLE=Shutdown
+#### OPTIONS_SHUTDOWN_MAIN_TITLE=System Tray
 OPTIONS_SHUTDOWN_MAIN_TITLE=إيقاف التشغيل
 #### OPTIONS_UPDATE_MAIN_TITLE=Updates
 #? OPTIONS_UPDATE_MAIN_TITLE=
@@ -2273,6 +2324,8 @@ OPTIONS_SHUTDOWN_MAIN_TITLE=إيقاف التشغيل
 OPTIONS_CHAT_MAIN_TITLE=دردشة
 #### OPTIONS_PLAYER_MAIN_TITLE=Player
 OPTIONS_PLAYER_MAIN_TITLE=المشغل
+#### OPTIONS_STATUS_BAR_MAIN_TITLE=Status Bar
+#? OPTIONS_STATUS_BAR_MAIN_TITLE=
 #### OPTIONS_ITUNES_MAIN_TITLE=iTunes
 OPTIONS_ITUNES_MAIN_TITLE=iTunes
 #### OPTIONS_ITUNES_PREFERENCE_MAIN_TITLE=Importing
@@ -2295,7 +2348,7 @@ OPTIONS_THEME_MAIN_TITLE=سمة
 OPTIONS_SKIN_MAIN_TITLE=سطح
 #### OPTIONS_SEARCH_MAIN_TITLE=Searching
 OPTIONS_SEARCH_MAIN_TITLE=بحث
-#### OPTIONS_SEARCH_LIMIT_MAIN_TITLE=Limit
+#### OPTIONS_SEARCH_LIMIT_MAIN_TITLE=Basic
 OPTIONS_SEARCH_LIMIT_MAIN_TITLE=الحد
 #### OPTIONS_SEARCH_QUALITY_MAIN_TITLE=Quality
 OPTIONS_SEARCH_QUALITY_MAIN_TITLE=الجودة
@@ -2401,7 +2454,7 @@ OPTIONS_SHARED_DIRS_BUTTON_TIP=مشاركة المجلد.
 #? OPTIONS_SHARED_SHARE_SPECIALLY_TITLE=
 #### OPTIONS_SHARED_SHARE_SPECIALLY_LABEL=You can share files that you download to unshared folders.
 #? OPTIONS_SHARED_SHARE_SPECIALLY_LABEL=
-#### OPTIONS_SHARED_NEW_SAVE_FOLDERS=Would you like to share your new save folders?  The following new folders will be shared:\n\n
+#### OPTIONS_SHARED_NEW_SAVE_FOLDERS=Would you like to share your new save folders? The following new folders will be shared:\n\n
 #? OPTIONS_SHARED_NEW_SAVE_FOLDERS=
 
 ################################################################################
@@ -2469,7 +2522,7 @@ OPTIONS_DOWNLOAD_MAX_NUMBER_LABEL=أقصى عدد لتنزيل الملفات:
 OPTIONS_DOWNLOAD_CLEAR_TITLE=مسح الملفات التي تم تنزيلها
 #### OPTIONS_DOWNLOAD_CLEAR_LABEL=You can choose whether or not to automatically clear downloads that have completed.
 OPTIONS_DOWNLOAD_CLEAR_LABEL=يمكنك الاختيار بين المسح التلقائي للملفات التي تم تنزيلها أو لا.
-#### OPTIONS_DOWNLOAD_CLEAR_CHECK_BOX_LABEL=Auto-clear Completed Downloads:
+#### OPTIONS_DOWNLOAD_CLEAR_CHECK_BOX_LABEL=Clear Completed Downloads:
 OPTIONS_DOWNLOAD_CLEAR_CHECK_BOX_LABEL=مسح تلقائي للملفات التي تم تنزيلها
 
 ################################################################################
@@ -2486,6 +2539,17 @@ OPTIONS_DOWNLOAD_BANDWIDTH_SLIDER_MAX_LABEL=غير محدد
 OPTIONS_DOWNLOAD_BANDWIDTH_SLIDER_LABEL_LABEL=سرعة الملفات:
 
 ################################################################################
+# Key/Value pairs for the options for download license warning
+# in the options window
+################################################################################
+#### OPTIONS_DOWNLOAD_LICENSE_WARNING_TITLE=License Warning
+#? OPTIONS_DOWNLOAD_LICENSE_WARNING_TITLE=
+#### OPTIONS_DOWNLOAD_LICENSE_WARNING_LABEL=You can choose whether to be warned about downloading a file without a license.
+#? OPTIONS_DOWNLOAD_LICENSE_WARNING_LABEL=
+#### OPTIONS_DOWNLOAD_LICENSE_WARNING_CHECK_BOX_LABEL=Show License Warning:
+#? OPTIONS_DOWNLOAD_LICENSE_WARNING_CHECK_BOX_LABEL=
+
+################################################################################
 # Key/Value pairs for the options for automatically clearing uploads
 # in the options window
 ################################################################################
@@ -2493,7 +2557,7 @@ OPTIONS_DOWNLOAD_BANDWIDTH_SLIDER_LABEL_LABEL=سرعة الملفات:
 OPTIONS_UPLOAD_CLEAR_TITLE=مسح الملفات التي تم تحميلها
 #### OPTIONS_UPLOAD_CLEAR_LABEL=You can choose whether or not to automatically clear uploads that have completed.
 OPTIONS_UPLOAD_CLEAR_LABEL=يمكنك الاختيار بين مسح الملفات التي تم تحميلها بالكامل أو لا.
-#### OPTIONS_UPLOAD_CLEAR_CHECK_BOX_LABEL=Auto-clear Completed Uploads:
+#### OPTIONS_UPLOAD_CLEAR_CHECK_BOX_LABEL=Automatically Clear Completed Uploads:
 OPTIONS_UPLOAD_CLEAR_CHECK_BOX_LABEL=مسح تلقائي للملفات التي يتم تحميلها
 
 ################################################################################
@@ -2563,7 +2627,7 @@ OPTIONS_CONNECT_ON_STARTUP_CHECK_BOX_LABEL=اتصل عند بدء التشغيل
 ################################################################################
 # Key/Value pairs for shutdown options
 ################################################################################
-#### OPTIONS_SHUTDOWN_TITLE=Shutdown Options
+#### OPTIONS_SHUTDOWN_TITLE=Shutdown Behavior
 OPTIONS_SHUTDOWN_TITLE=خيارات إيقاف التشغيل
 #### OPTIONS_SHUTDOWN_LABEL=You can choose the default shutdown behavior.
 OPTIONS_SHUTDOWN_LABEL=يمكنك اختيار طريقة إيقاف التشغيل التلقائية.
@@ -2573,6 +2637,12 @@ OPTIONS_SHUTDOWN_IMMEDIATELY_LABEL=إيقاف التشغيل في الحال
 OPTIONS_SHUTDOWN_AFTER_TRANSFERS_LABEL=إيقاف التشغيل بعد الانتهاء من التحويلات
 #### OPTIONS_SHUTDOWN_TO_TRAY_LABEL=Minimize to System Tray
 OPTIONS_SHUTDOWN_TO_TRAY_LABEL=تصغير لمنطقة الإعلام
+#### OPTIONS_TRAY_ICON_DISPLAY_CHECK_BOX_LABEL=Show System Tray Icon:
+#? OPTIONS_TRAY_ICON_DISPLAY_CHECK_BOX_LABEL=
+#### OPTIONS_TRAY_ICON_DISPLAY_TITLE=System Tray Icon
+#? OPTIONS_TRAY_ICON_DISPLAY_TITLE=
+#### OPTIONS_TRAY_ICON_DISPLAY_LABEL=You can display the system tray icon while LimeWire is visible.
+#? OPTIONS_TRAY_ICON_DISPLAY_LABEL=
 
 ################################################################################
 # Key/Value pairs for update options
@@ -2605,8 +2675,40 @@ OPTIONS_CHAT_ACTIVE_LABEL=يمكنك تمكين أو إيقاف تشغيل ال�
 OPTIONS_PLAYER_ACTIVE_CHECK_BOX_LABEL=استخدم مشغل LimeWire لملفات MP3.
 #### OPTIONS_PLAYER_PREFERENCE_TITLE=Player Options
 OPTIONS_PLAYER_PREFERENCE_TITLE=خيارات المشغل
-#### OPTIONS_PLAYER_PREFERENCE_LABEL=You can choose to play media with LimeWire or your system's default player.  The media player and playlist will appear only if this option is set.  A restart will be required when enabling or disabling the media controls.
+#### OPTIONS_PLAYER_PREFERENCE_LABEL=You can choose to play media with LimeWire or your system's default player. The media player and playlist will appear only if this option is set. A restart will be required when enabling or disabling the media controls.
 OPTIONS_PLAYER_PREFERENCE_LABEL=يمكنك استخدام المشغل الداخلي أو المشغل الافتراضي للنظام. لتفعيل/عدم تفعيل تحكمات المشغل لا بد من إعادة التشغيل.
+
+################################################################################
+# Key/Value pairs for the status bar options in the options window
+################################################################################
+#### OPTIONS_STATUS_BAR_CONNECTION_QUALITY_CHECK_BOX_LABEL=Show Connection Quality Indicator:
+#? OPTIONS_STATUS_BAR_CONNECTION_QUALITY_CHECK_BOX_LABEL=
+#### OPTIONS_STATUS_BAR_CONNECTION_QUALITY_TITLE=Connection Quality Indicator
+#? OPTIONS_STATUS_BAR_CONNECTION_QUALITY_TITLE=
+#### OPTIONS_STATUS_BAR_CONNECTION_QUALITY_LABEL=You can display a measurement of your connection quality in the status bar.
+#? OPTIONS_STATUS_BAR_CONNECTION_QUALITY_LABEL=
+#### OPTIONS_STATUS_BAR_SHARED_FILES_CHECK_BOX_LABEL=Show Shared Files Indicator:
+#? OPTIONS_STATUS_BAR_SHARED_FILES_CHECK_BOX_LABEL=
+#### OPTIONS_STATUS_BAR_SHARED_FILES_TITLE=Shared Files Indicator
+#? OPTIONS_STATUS_BAR_SHARED_FILES_TITLE=
+#### OPTIONS_STATUS_BAR_SHARED_FILES_LABEL=You can display how many files you are sharing in the status bar.
+#? OPTIONS_STATUS_BAR_SHARED_FILES_LABEL=
+#### OPTIONS_STATUS_BAR_FIREWALL_CHECK_BOX_LABEL=Show Firewall Indicator:
+#? OPTIONS_STATUS_BAR_FIREWALL_CHECK_BOX_LABEL=
+#### OPTIONS_STATUS_BAR_FIREWALL_TITLE=Firewall Indicator
+#? OPTIONS_STATUS_BAR_FIREWALL_TITLE=
+#### OPTIONS_STATUS_BAR_FIREWALL_LABEL=You can display your firewall status in the status bar.
+#? OPTIONS_STATUS_BAR_FIREWALL_LABEL=
+#### OPTIONS_STATUS_BAR_BANDWIDTH_CHECK_BOX_LABEL=Show Bandwidth Indicator:
+#? OPTIONS_STATUS_BAR_BANDWIDTH_CHECK_BOX_LABEL=
+#### OPTIONS_STATUS_BAR_BANDWIDTH_TITLE=Bandwidth Indicator
+#? OPTIONS_STATUS_BAR_BANDWIDTH_TITLE=
+#### OPTIONS_STATUS_BAR_BANDWIDTH_LABEL=You can display your bandwidth consumption in the status bar.
+#? OPTIONS_STATUS_BAR_BANDWIDTH_LABEL=
+#### OPTIONS_STATUS_BAR_BANDWIDTH_DOWNLOADS=Downloads:
+#? OPTIONS_STATUS_BAR_BANDWIDTH_DOWNLOADS=
+#### OPTIONS_STATUS_BAR_BANDWIDTH_UPLOADS=Uploads:
+#? OPTIONS_STATUS_BAR_BANDWIDTH_UPLOADS=
 
 ################################################################################
 # Key/Value pairs for the iTunes options in the options window
@@ -2674,7 +2776,7 @@ OPTIONS_AUDIO_PLAYER_BOX_LABEL=مشغل ملفات الصوت
 ################################################################################
 #### OPTIONS_BUGS_TITLE=Bug Reports
 OPTIONS_BUGS_TITLE=تقارير الخطأ
-#### OPTIONS_BUGS_LABEL=You can choose how bug reports should be sent. To view an example bug report, click 'View Example'. Choosing 'Always Send Immediately' will immediately contact the bug server when LimeWire encounters an internal error. Choosing 'Always Ask for Review' will tell LimeWire to ask for your approval before sending a bug to the bug server. Choosing 'Always Discard Bugs' will cause LimeWire to ignore all bugs (this is not recommended).
+#### OPTIONS_BUGS_LABEL=You can choose how bug reports should be sent. To view an example bug report, click 'View Example'. Choosing 'Always Send Immediately' will immediately contact the bug server when LimeWire encounters an internal error. Choosing 'Always Ask for Review' will tell LimeWire to ask for your approval before sending a bug to the bug server. Choosing 'Always Discard All Errors' will cause LimeWire to ignore all bugs (this is not recommended).
 #? OPTIONS_BUGS_LABEL=
 #### OPTIONS_BUGS_VIEW_EXAMPLE=View Example
 OPTIONS_BUGS_VIEW_EXAMPLE=عرض مثال
@@ -2846,6 +2948,8 @@ OPTIONS_IGNORE_RESULT_TYPES_LABEL=يمكنك تحديد أنواع عامة من
 OPTIONS_IGNORE_RESULT_TYPES_HTML_BOX_LABEL=تجاهل ملفات .htm/.html
 #### OPTIONS_IGNORE_RESULT_TYPES_VBS_BOX_LABEL=Ignore .vbs Files
 OPTIONS_IGNORE_RESULT_TYPES_VBS_BOX_LABEL=تجاهل ملفات .vbs
+#### OPTIONS_IGNORE_RESULT_TYPES_WMV_ASF_BOX_LABEL=Ignore .wmv/.asf files
+#? OPTIONS_IGNORE_RESULT_TYPES_WMV_ASF_BOX_LABEL=
 
 ################################################################################
 # Key/Value pairs for message filtering options in the options window
@@ -4034,6 +4138,8 @@ ERROR_VENDOR_INVALID_VERSION=إصدارة غير صالحة
 ERROR_VENDOR_INVALID_PAYLOAD=حمولة غير صالحة
 #### ERROR_VENDOR_UNRECOGNIZED=Unrecognized Vendor Message
 ERROR_VENDOR_UNRECOGNIZED=رسالة موزع غير متعارف عليها
+#### ERROR_STARTUP_WINDOWS_COMPATIBILITY=LimeWire has encountered a problem during startup and cannot proceed. You may be able to fix this problem by changing LimeWire's Windows Compatibility. Right-click on the LimeWire icon on your Desktop and select 'Properties' from the popup menu. Click the 'Compatibility' tab at the top, then click the 'Run this program in compatibility mode for' check box, and then select 'Windows 2000' in the box below the check box. Then click the 'OK' button at the bottom and restart LimeWire.
+#? ERROR_STARTUP_WINDOWS_COMPATIBILITY=
 
 ###############################################################################
 # Key/value pairs for general message labels

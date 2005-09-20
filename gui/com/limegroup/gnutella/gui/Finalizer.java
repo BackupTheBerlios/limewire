@@ -1,8 +1,5 @@
 package com.limegroup.gnutella.gui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.limegroup.gnutella.bugs.BugManager;
 import com.limegroup.gnutella.RouterService;
 import com.limegroup.gnutella.gui.notify.NotifyUserProxy;
@@ -34,6 +31,11 @@ final class Finalizer {
     /** Indicates whether file downloads are complete.
      */    
     private static boolean _downloadsComplete;    
+    
+    /**
+     * An update command to execute upon shutdown, if any.
+     */
+    private static volatile String _updateCommand;
 
 	/**
 	 * Suppress the default constructor to ensure that this class can never
@@ -56,7 +58,7 @@ final class Finalizer {
      * necessary cleanups.
      * @param toExecute a string to try to execute after shutting down.
      */
-    static void shutdown(final String toExecute) {
+    static void shutdown() {
         GUIMediator.applyWindowSettings();
         
         GUIMediator.setAppVisible(false);
@@ -68,6 +70,7 @@ final class Finalizer {
         // Do shutdown stuff in another thread.
         // We don't want to lockup the event thread
         // (which this was called on).
+        final String toExecute = _updateCommand;
         Thread shutdown = new Thread("Shutdown Thread") {
             public void run() {
                 try {
@@ -91,8 +94,8 @@ final class Finalizer {
         shutdown.start();
     }
     
-    static void shutdown() {
-        shutdown(null);
+    static void flagUpdate(String toExecute) {
+        _updateCommand = toExecute;
     }
     
     /** Exits the virtual machine, making calls to save

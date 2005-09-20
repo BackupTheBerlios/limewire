@@ -6,8 +6,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Collections;
+import java.util.ArrayList;
 
 import com.limegroup.gnutella.Assert;
 import com.limegroup.gnutella.ByteOrder;
@@ -26,11 +26,11 @@ public class IntervalSet {
     /**
      * The sorted set of intervals this contains.
      */
-    private final SortedSet /*of Interval*/ intervals;
+    private final List /*of Interval*/ intervals;
     
     //constructor.
     public IntervalSet() {
-        intervals = new TreeSet(IntervalComparator.INSTANCE);
+        intervals = new ArrayList();
     }
 
     /**
@@ -77,20 +77,20 @@ public class IntervalSet {
         //because there are typically few blocks.
         if (lower==null && higher==null) {
             //a) Doesn't overlap
-            intervals.add(new Interval(low, high));
+            addImpl(new Interval(low, high));
         } else if (lower!=null && higher!=null) {
             //b) Join two blocks
-            intervals.remove(higher);
-            intervals.remove(lower);
-            intervals.add(new Interval(lower.low, higher.high));
+            removeImpl(higher);
+            removeImpl(lower);
+            addImpl(new Interval(lower.low, higher.high));
         } else if (higher!=null) {
             //c) Join with higher
-            intervals.remove(higher);
-            intervals.add(new Interval(low, higher.high));
+            removeImpl(higher);
+            addImpl(new Interval(low, higher.high));
         } else /*if (lower!=null)*/ {
             //d) Join with lower
-            intervals.remove(lower);
-            intervals.add(new Interval(lower.low, high));
+            removeImpl(lower);
+            addImpl(new Interval(lower.low, high));
         }   
     }
     
@@ -155,7 +155,10 @@ public class IntervalSet {
      * @throws NoSuchElementException if no intervals exist.
      */
     public Interval getFirst() throws NoSuchElementException {
-        return (Interval)intervals.first();
+        if(intervals.isEmpty())
+            throw new NoSuchElementException();
+        
+        return (Interval)intervals.get(0);
     }
     
     /**
@@ -163,7 +166,10 @@ public class IntervalSet {
      * @throws NoSuchElementException if no intervals exist.
      */
     public Interval getLast() throws NoSuchElementException {
-        Interval ret = (Interval)intervals.last();
+        if(intervals.isEmpty())
+            throw new NoSuchElementException();
+        
+        Interval ret = (Interval)intervals.get(intervals.size()-1);
         return ret;
     }
     
@@ -329,7 +335,27 @@ public class IntervalSet {
             ret.intervals.add(iter.next());
         return ret;
     }
-
+    
+    /**
+     * Adds into the list, in order.
+     */
+    private void addImpl(Interval i) {
+        int point = Collections.binarySearch(intervals, i, IntervalComparator.INSTANCE);
+        if(point >= 0)
+            throw new IllegalStateException("interval (" + i + ") already in list: " + intervals);
+        point = -(point + 1);
+        intervals.add(point, i);
+    }
+    
+    /**
+     * Removes from the list, quickly.
+     */
+    private void removeImpl(Interval i) {
+        int point = Collections.binarySearch(intervals, i, IntervalComparator.INSTANCE);
+        if(point < 0)
+            throw new IllegalStateException("interval (" + i + ") doesn't exist in list: " + intervals);
+        intervals.remove(point);
+    }
 
     /**
      * Comparator for intervals.
@@ -339,7 +365,14 @@ public class IntervalSet {
         public int compare(Object a, Object b) {
             Interval ia=(Interval)a;
             Interval ib=(Interval)b;
-            return ia.low-ib.low;
+            if ( ia.low > ib.low ) 
+                return 1;
+            else if (ia.low < ib.low )
+                return -1;
+            else
+                return 0;
+                
+           // return ia.low-ib.low;
         }
     }
     
@@ -376,7 +409,7 @@ public class IntervalSet {
     	for (int i =0; i< data.length/8;i++) {
     		int low = (int)ByteOrder.uint2long(ByteOrder.beb2int(data,i*8));
     		int high = (int)ByteOrder.uint2long(ByteOrder.beb2int(data,i*8+4));
-            if (high < low)
+            if (high < low || high < 0 || low < 0)
                 throw new IOException();
     		ret.add(new Interval(low,high));
     	}

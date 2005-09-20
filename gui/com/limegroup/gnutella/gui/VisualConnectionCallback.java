@@ -9,7 +9,6 @@ import javax.swing.SwingUtilities;
 import com.limegroup.gnutella.ActivityCallback;
 import com.limegroup.gnutella.Connection;
 import com.limegroup.gnutella.Downloader;
-import com.limegroup.gnutella.FileDesc;
 import com.limegroup.gnutella.FileManagerEvent;
 import com.limegroup.gnutella.GUID;
 import com.limegroup.gnutella.MediaType;
@@ -23,8 +22,8 @@ import com.limegroup.gnutella.gui.download.DownloaderUtils;
 import com.limegroup.gnutella.gui.search.SearchInformation;
 import com.limegroup.gnutella.gui.search.SearchMediator;
 import com.limegroup.gnutella.search.HostData;
+import com.limegroup.gnutella.settings.DaapSettings;
 import com.limegroup.gnutella.settings.QuestionsHandler;
-import com.limegroup.gnutella.settings.SharingSettings;
 import com.limegroup.gnutella.util.CommonUtils;
 import com.limegroup.gnutella.util.StringUtils;
 import com.limegroup.gnutella.util.Switch;
@@ -190,6 +189,16 @@ public final class VisualConnectionCallback implements ActivityCallback {
      * File manager finished loading.
      */
     public void fileManagerLoaded() {
+        if (CommonUtils.isJava14OrLater() 
+                && DaapSettings.DAAP_ENABLED.getValue()) {
+            Runnable r = new Runnable() {
+                public void run() {
+                    DaapManager.instance().fileManagerLoaded();
+                }
+            };
+
+            GUIMediator.instance().schedule(r);
+        }
     }
     
 	/** 
@@ -216,29 +225,42 @@ public final class VisualConnectionCallback implements ActivityCallback {
 	 * or the Library.
 	 */
     public void handleFileManagerEvent(final FileManagerEvent evt) {
-        if (CommonUtils.isJava14OrLater()) {
+        if (CommonUtils.isJava14OrLater()
+                && DaapSettings.DAAP_ENABLED.getValue()
+                && DaapManager.instance().isEnabled()) {
             Runnable r = new Runnable() {
-                public void run(){
+                public void run() {
                     DaapManager.instance().handleFileManagerEvent(evt);
                 }
             };
-            
+
             GUIMediator.instance().schedule(r);
         }
-		
+
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-				mf().getLibraryMediator().handleFileManagerEvent(evt);
-    	    }
-    	 });
+                mf().getLibraryMediator().handleFileManagerEvent(evt);
+            }
+        });
     }
     
     public void fileManagerLoading() {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 mf().getLibraryMediator().clearLibrary();
-    	    }
-    	 });
+            }
+        });
+        
+        if (CommonUtils.isJava14OrLater() 
+                && DaapSettings.DAAP_ENABLED.getValue()) {
+            Runnable r = new Runnable() {
+                public void run() {
+                    DaapManager.instance().fileManagerLoading();
+                }
+            };
+
+            GUIMediator.instance().schedule(r);
+        }
     }
     
 
@@ -452,28 +474,18 @@ public final class VisualConnectionCallback implements ActivityCallback {
     }
     
     public void setAnnotateEnabled(final boolean enabled) {
-    	SwingUtilities.invokeLater(new Runnable() {
+    	    SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-            	mf().getLibraryMediator().setAnnotateEnabled(enabled);
+                mf().getLibraryMediator().setAnnotateEnabled(enabled);
             }
-    	});
-        
-    	if (CommonUtils.isJava14OrLater()) {
-    	    Runnable r = new Runnable() {
-    	        public void run() {
-    	            DaapManager.instance().setAnnotateEnabled(enabled);   
-    	        }
-    	    };
-    	    
-    	    GUIMediator.instance().schedule(r);
-    	}
+        });
     }
 
 	/**
      * Notification that a new update is available.
      */
     public void updateAvailable(UpdateInformation update) {
-        GUIMediator.instance().showUpdateNotification(true, update);
+        GUIMediator.instance().showUpdateNotification(update);
     }
     
     /**
@@ -536,6 +548,17 @@ public final class VisualConnectionCallback implements ActivityCallback {
             }
         });
     }       
+	
+	/**
+	 * Indicates that the firewalled state of this has changed. 
+	 */
+	public void acceptedIncomingChanged(final boolean status) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				GUIMediator.instance().getStatusLine().updateFirewallLabel(status);
+			}
+		});
+	}
 
 	public String getHostValue(String key) {
         return GUIMediator.getStringResource(key);
@@ -581,6 +604,3 @@ public final class VisualConnectionCallback implements ActivityCallback {
 		return true;
 	}
 }
-
-
-

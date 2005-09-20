@@ -17,12 +17,13 @@ import org.apache.commons.logging.LogFactory;
 import com.limegroup.gnutella.Assert;
 import com.limegroup.gnutella.ErrorService;
 import com.limegroup.gnutella.gui.BoxPanel;
+import com.limegroup.gnutella.gui.GUIConstants;
 import com.limegroup.gnutella.gui.GUIMediator;
 import com.limegroup.gnutella.gui.MediaButton;
 import com.limegroup.gnutella.gui.RefreshListener;
+import com.limegroup.gnutella.gui.playlist.PlaylistMediator;
 import com.limegroup.gnutella.gui.themes.ThemeMediator;
 import com.limegroup.gnutella.gui.themes.ThemeObserver;
-import com.limegroup.gnutella.gui.themes.ThemeSettings;
 import com.limegroup.gnutella.util.CommonUtils;
 import com.limegroup.gnutella.util.ProcessingQueue;
 
@@ -48,6 +49,7 @@ public final class MediaPlayerComponent
      * The ProgressBar for showing the name & play progress.
      */
     private /* final */ JProgressBar PROGRESS;
+    private Dimension _progressBarDimension = new Dimension(110,20);
     
     /**
      * The ProcessingQueue that plays songs.
@@ -88,32 +90,32 @@ public final class MediaPlayerComponent
      */
     private static final MediaButton PLAY_BUTTON = 
         new MediaButton("MEDIA_PLAY_BUTTON_TIP",
-            "play_up", "play_dn");
+            "play_small_up", "play_small_dn");
     
     /**
      * Constant for the pause button.
      */
     private static final MediaButton PAUSE_BUTTON = 
         new MediaButton("MEDIA_PAUSE_BUTTON_TIP",
-            "pause_up", "pause_dn");
+            "pause_small_up", "pause_small_dn");
     
     /** Constant for the stop button.
      */
     private static final MediaButton STOP_BUTTON = 
         new MediaButton("MEDIA_STOP_BUTTON_TIP",
-            "stop_up", "stop_dn");
+            "stop_small_up", "stop_small_dn");
     
     /** Constant for the forward button.
      */
     private static final MediaButton FORWARD_BUTTON = 
         new MediaButton("MEDIA_FORWARD_BUTTON_TIP",
-            "forward_up", "forward_dn");
+            "forward_small_up", "forward_small_dn");
     
     /** Constant for the rewind button.
      */
     private static final MediaButton REWIND_BUTTON = 
         new MediaButton("MEDIA_REWIND_BUTTON_TIP",
-            "rewind_up", "rewind_dn");
+            "rewind_small_up", "rewind_small_dn");
     
     /**
      * The lazily constructed media panel.
@@ -156,14 +158,6 @@ public final class MediaPlayerComponent
         STOP_BUTTON.updateTheme();
         FORWARD_BUTTON.updateTheme();
         REWIND_BUTTON.updateTheme();
-        Dimension progressBarDimension;
-        if(ThemeSettings.isNativeOSXTheme()) {
-            progressBarDimension = new Dimension(110,25);
-        } else {
-            progressBarDimension = new Dimension(110,15);
-        }
-        PROGRESS.setMaximumSize(progressBarDimension);
-        PROGRESS.setPreferredSize(progressBarDimension);
         PROGRESS.setString(GUIMediator.getStringResource("MEDIA_PLAYER_DEFAULT_STRING"));
     }
     
@@ -301,11 +295,14 @@ public final class MediaPlayerComponent
             myCurrentPlayingFile = playFile;
             setNextSong(null);
             try {
-                if(!PLAYER.play(playFile)) {
-                    myCurrentPlayingFile = null;
-                    return;
-                }   
-                GUIMediator.getPlayList().playStarted();                
+            	PlaylistMediator playlist = GUIMediator.getPlayList();
+            	if (playlist != null) {
+            		if(!PLAYER.play(playFile)) {
+            			myCurrentPlayingFile = null;
+            			return;
+            		}
+            		GUIMediator.getPlayList().playStarted();                
+            	}
             } catch (IOException ioe) {
                 myCurrentPlayingFile = null;
                 ErrorService.error(ioe);
@@ -317,10 +314,6 @@ public final class MediaPlayerComponent
      * Constructs the media panel.
      */
     private JPanel constructMediaPanel() {
-        JPanel retPanel = new BoxPanel(BoxPanel.X_AXIS);
-        
-        JPanel buttonPanel = new BoxPanel(BoxPanel.X_AXIS);
-        
         int tempWidth = 0, tempHeight = 0;        
         tempHeight += PLAY_BUTTON.getIcon().getIconHeight()   + 2;
         tempWidth  += PLAY_BUTTON.getIcon().getIconWidth()    + 2
@@ -331,14 +324,8 @@ public final class MediaPlayerComponent
         
         // create sliders
         PROGRESS = new SongProgressBar();
-        Dimension progressBarDimension;
-        if(CommonUtils.isMacOSX()) {
-            progressBarDimension = new Dimension(110,25);
-        } else {
-            progressBarDimension = new Dimension(110,15);
-        }
-        PROGRESS.setMaximumSize(progressBarDimension);
-        PROGRESS.setPreferredSize(progressBarDimension);
+        PROGRESS.setMaximumSize(_progressBarDimension);
+        PROGRESS.setPreferredSize(_progressBarDimension);
         PROGRESS.setString(GUIMediator.getStringResource("MEDIA_PLAYER_DEFAULT_STRING"));
         
         // setup buttons
@@ -352,26 +339,22 @@ public final class MediaPlayerComponent
         updatePBValue(0);
         
         // add everything
-        buttonPanel.add(Box.createHorizontalGlue());
+		JPanel buttonPanel = new BoxPanel(BoxPanel.X_AXIS);
         buttonPanel.setMaximumSize(new Dimension(tempWidth, tempHeight));
         buttonPanel.setMinimumSize(new Dimension(tempWidth, tempHeight));
+        buttonPanel.add(Box.createHorizontalGlue());
         buttonPanel.add(REWIND_BUTTON);
         buttonPanel.add(PLAY_BUTTON);
         buttonPanel.add(PAUSE_BUTTON);
         buttonPanel.add(STOP_BUTTON);
         buttonPanel.add(FORWARD_BUTTON);
-        buttonPanel.add(Box.createHorizontalGlue());
+        buttonPanel.add(Box.createHorizontalStrut(GUIConstants.SEPARATOR));
+        buttonPanel.add(PROGRESS);
+        if (CommonUtils.isMacOSX())
+            buttonPanel.add(Box.createHorizontalStrut(16));
+		buttonPanel.add(Box.createHorizontalGlue());
         
-        retPanel.add(Box.createVerticalGlue());
-        retPanel.add(buttonPanel);
-        retPanel.add(PROGRESS);
-        retPanel.add(Box.createVerticalGlue());
-        JPanel tempPanel = retPanel;
-        retPanel = new BoxPanel(BoxPanel.X_AXIS);
-        retPanel.add(Box.createHorizontalGlue());
-        retPanel.add(tempPanel);
-        
-        return retPanel;
+        return buttonPanel;
     }
     
     /**
@@ -390,11 +373,10 @@ public final class MediaPlayerComponent
         if(INSTANCE == null || f == null)
             return;
         
-        INSTANCE.stopWasLast = false;
+        MediaPlayerComponent.stopWasLast = false;
         // only do stuff if we're not already playing it.
-        if(!INSTANCE.isPlaying(f)) {
+        if (!MediaPlayerComponent.isPlaying(f))
             INSTANCE.setNextSong(f);
-        }
     }
     
     
@@ -402,11 +384,11 @@ public final class MediaPlayerComponent
      * Launches the specified song.
      */
     public static void launchAudio(File toPlay) {
-        if(INSTANCE == null || toPlay == null)
+        if (INSTANCE == null || toPlay == null)
             return;
 
-         // already playing this?
-        if(INSTANCE.isPlaying(toPlay))
+        // already playing this audio file?
+        if (MediaPlayerComponent.isPlaying(toPlay))
             return;
         
         switch(INSTANCE.PLAYER.getStatus()) {
@@ -500,15 +482,18 @@ public final class MediaPlayerComponent
         updatePBValue(PROGRESS.getMaximum());
         updatePBString("");
         
+        PlaylistMediator playlist = GUIMediator.getPlayList();
+        if (playlist == null)
+        	return;
         // inform the GUI on whether or not we're going to continue playing.
-        if (stopWasLast || !GUIMediator.getPlayList().isContinuous())
-            GUIMediator.getPlayList().playComplete(true);
+        if (stopWasLast || !playlist.isContinuous())
+            playlist.playComplete(true);
         else {
-            GUIMediator.getPlayList().playComplete(false);
+            playlist.playComplete(false);
             // if we don't already have another song to play,
             // get one.
-            if(getNextSong() == null)
-                setNextSong(GUIMediator.getPlayList().getFileToPlay());
+            if (getNextSong() == null)
+                setNextSong(playlist.getFileToPlay());
         }
     }
     

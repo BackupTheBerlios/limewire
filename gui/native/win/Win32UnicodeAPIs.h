@@ -11,7 +11,7 @@
 
 #include "StdAfx.h"
 
-#include <jni.h>
+#include "jni.h"
 
 #ifndef UAWIN32API
 #if defined LIMEWIRE_EXPORTS /* for now in limewire.dll */

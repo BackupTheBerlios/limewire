@@ -105,14 +105,6 @@ final class MainFrame implements ComponentListener, RefreshListener,
         LibraryMediator.instance();
 
     /**
-     * Constant handle to the <tt>PlayListGUI</tt> class that is
-     * responsible for displaying the user's playlist.
-     */
-    private final PlaylistMediator PLAYLIST_MEDIATOR =
-         PlayerSettings.PLAYER_ENABLED.getValue() ?
-                PlaylistMediator.instance() : null;
-
-    /**
      * Constant handle to the <tt>StatisticsMediator</tt> class that is
      * responsible for displaying statistics to the user.
      */
@@ -178,8 +170,8 @@ final class MainFrame implements ComponentListener, RefreshListener,
         buildTabs();
 
         TABBED_PANE.setPreferredSize(new Dimension(10000, 10000));
-        ImageIcon plugIcon = GUIMediator.getThemeImage(GUIConstants.LIMEWIRE_ICON);
-        FRAME.setIconImage(plugIcon.getImage());
+        ImageIcon limeIcon = GUIMediator.getThemeImage(GUIConstants.LIMEWIRE_ICON);
+        FRAME.setIconImage(limeIcon.getImage());
 
         FRAME.addWindowListener(new WindowAdapter() {
 
@@ -248,15 +240,16 @@ final class MainFrame implements ComponentListener, RefreshListener,
         JPanel contentPane = new JPanel();
         FRAME.setContentPane(contentPane);
         contentPane.setLayout(new GridBagLayout());
-        GridBagConstraints gc = new GridBagConstraints();
-        gc.weightx = 1;
-        gc.weighty = 1;
-        gc.fill = GridBagConstraints.BOTH;
-        gc.gridx = GridBagConstraints.REMAINDER;
-        contentPane.add(TABBED_PANE, gc);
-        gc.weightx = 0;
-        gc.weighty = 0;
-        contentPane.add(STATUS_LINE.getComponent(), gc);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridx = 0;
+        contentPane.add(TABBED_PANE, gbc);
+        gbc.weighty = 0;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        contentPane.add(STATUS_LINE.getComponent(), gbc);
       
 
         JLayeredPane layeredPane =
@@ -272,10 +265,10 @@ final class MainFrame implements ComponentListener, RefreshListener,
         //instead, make it unix-only.  It only gets in the way on other oses.
         //Since Mac OS X is based on BSD its a good idea to check that too
         if (!CommonUtils.isWindows() && !CommonUtils.isAnyMac()) 
-        	frame.addWindowListener(MagnetClipboardListener.getInstance());
+        	FRAME.addWindowListener(MagnetClipboardListener.getInstance());
         	
         PowerManager pm = new PowerManager();
-        frame.addWindowListener(pm);
+        FRAME.addWindowListener(pm);
         GUIMediator.addRefreshListener(pm);
     }
 
@@ -308,7 +301,7 @@ final class MainFrame implements ComponentListener, RefreshListener,
         TABS[0]=new SearchDownloadTab(SEARCH_MEDIATOR, DOWNLOAD_MEDIATOR);
         TABS[1]=new MonitorUploadTab(MONITOR_VIEW, UPLOAD_MEDIATOR);
         TABS[2]=new ConnectionsTab(CONNECTION_MEDIATOR);
-        TABS[3]=new LibraryPlayListTab(LIBRARY_MEDIATOR, PLAYLIST_MEDIATOR);
+        TABS[3]=new LibraryPlayListTab(LIBRARY_MEDIATOR);
     }
 
     
@@ -594,10 +587,12 @@ final class MainFrame implements ComponentListener, RefreshListener,
     /**
      * Returns a reference to the <tt>PlaylistMediator</tt> instance.
      *
-     * @return a reference to the <tt>PlaylistMediator</tt> instance
+     * @return a reference to the <tt>PlaylistMediator</tt> instance or
+     * <code>null</code> if the playlist is not enabled
      */
-    final PlaylistMediator getPlaylistMediator() {
-        return PLAYLIST_MEDIATOR;
+    static final PlaylistMediator getPlaylistMediator() {
+        return PlayerSettings.PLAYER_ENABLED.getValue() ?
+                PlaylistMediator.instance() : null;
     }    
 
     /**

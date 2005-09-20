@@ -2,6 +2,8 @@
  * Makes the native call to launch files their associated applications.
  */
 
+#include "stdafx.h"
+
 #include "com_limegroup_gnutella_util_WindowsLauncher.h"
 #include "windows.h"
 

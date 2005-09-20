@@ -18,7 +18,6 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.swing.Box;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -31,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 import com.limegroup.gnutella.MediaType;
 import com.limegroup.gnutella.browser.ExternalControl;
 import com.limegroup.gnutella.browser.MagnetOptions;
-import com.limegroup.gnutella.gui.ButtonRow;
 import com.limegroup.gnutella.gui.GUIMediator;
 import com.limegroup.gnutella.gui.MessageService;
 import com.limegroup.gnutella.gui.MultiLineLabel;

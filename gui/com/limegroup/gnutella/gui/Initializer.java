@@ -103,8 +103,10 @@ public final class Initializer {
         // Register MacOS X specific stuff.
         if (CommonUtils.isMacOSX()) {
             LOG.trace("START registering OSX events");
-            // Register GURL to receive AppleEvents, such as magnet links.
-            GURLHandler.getInstance().register();
+            
+            // Enable GURL and fwd enqueud magnets to ExternalControl
+            GURLHandler.getInstance().enable();
+            
             // Raise the number of allowed concurrent open files to 1024.
             SystemUtils.setOpenFileLimit(1024);
             LOG.trace("STOP registering OSX events");
@@ -248,9 +250,8 @@ public final class Initializer {
         // otherwise the user can close it and not see the
         // tray icon.
         LOG.trace("START NotifyUserProxy");
-        NotifyUserProxy notifyProxy = NotifyUserProxy.instance();
-        // Hide the notifier after it has been initialized.
-        notifyProxy.hideNotify();
+        if (ApplicationSettings.DISPLAY_TRAY_ICON.getValue())
+            NotifyUserProxy.instance();
         LOG.trace("STOP NotifyUserProxy");
         
         // Hide the splash screen and recycle its memory.

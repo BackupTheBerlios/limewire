@@ -1,7 +1,6 @@
 package com.limegroup.gnutella.gui.search;
 
 import java.awt.event.ActionListener;
-import java.util.List;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;

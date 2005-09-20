@@ -3,7 +3,6 @@ package com.limegroup.gnutella.downloader;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.HashSet;
@@ -18,8 +17,8 @@ import org.apache.commons.httpclient.methods.HeadMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.limegroup.gnutella.ActivityCallback;
 import com.limegroup.gnutella.Assert;
+import com.limegroup.gnutella.DownloadCallback;
 import com.limegroup.gnutella.DownloadManager;
 import com.limegroup.gnutella.Downloader;
 import com.limegroup.gnutella.FileManager;
@@ -95,7 +94,7 @@ public class MagnetDownloader extends ManagedDownloader implements Serializable 
     }
     
     public void initialize(DownloadManager manager, FileManager fileManager, 
-            ActivityCallback callback) {
+            DownloadCallback callback) {
 		Assert.that(getMagnet() != null);
         downloadSHA1 = getMagnet().getSHA1Urn();
         super.initialize(manager, fileManager, callback);
@@ -222,11 +221,11 @@ public class MagnetDownloader extends ManagedDownloader implements Serializable 
             //invalid URI, don't allow this URL.
             throw new IOException("invalid url: " + url);
         }
-    
+
+        HttpClient client = HttpClientManager.getNewClient();
         HttpMethod head = new HeadMethod(url.toExternalForm());
         head.addRequestHeader("User-Agent",
                               CommonUtils.getHttpServer());
-        HttpClient client = HttpClientManager.getNewClient();
         try {
             client.executeMethod(head);
             //Extract Content-length, but only if the response was 200 OK.
@@ -344,4 +343,14 @@ public class MagnetDownloader extends ManagedDownloader implements Serializable 
 		}
 		return magnet.getFileNameForSaving();
     }
+
+	/**
+	 * Overridden to make sure it calls the super method only if 
+	 * the filesize is known.
+	 */
+	protected void initializeIncompleteFile() throws IOException {
+		if (getContentLength() != -1) {
+			super.initializeIncompleteFile();
+		}
+	}
 }

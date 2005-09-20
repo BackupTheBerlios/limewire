@@ -8,8 +8,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -42,7 +40,7 @@ public final class TipOfTheDayMediator implements ThemeObserver {
     /**
      * The instance of this class.
      */
-    private static TipOfTheDayMediator instance;
+    private static TipOfTheDayMediator _instance;
     
     /**
      * The title for the TOTD window.
@@ -83,18 +81,18 @@ public final class TipOfTheDayMediator implements ThemeObserver {
     /**
      * The actual TOTD JDialog.
      */
-    private final JDialog TOTD = new JDialog();
+    private final JDialog _dialog = new JDialog();
     
     /**
      * The JTextComponent that displays the tip.
      */
-    private final JEditorPane TIP = new JEditorPane();
+    private final JEditorPane _tipPane = new JEditorPane();
     
     /**
      * The 'Previous' JButton.  Global so it can be
      * enabled/disabled.
      */
-    private final JButton PREVIOUS;
+    private final JButton _previous;
     
     /**
      * The prefix to use for general tips.
@@ -149,7 +147,7 @@ public final class TipOfTheDayMediator implements ThemeObserver {
     /**
      * The foreground color to use for text.
      */
-    private static Color foreground;
+    private static Color _foreground;
     
     /**
      * Whether or not we can display the TOTD dialog.
@@ -163,86 +161,90 @@ public final class TipOfTheDayMediator implements ThemeObserver {
     private TipOfTheDayMediator() {
         retrieveKeys();
         
-        TOTD.setModal(false);
-        TOTD.setResizable(false);
-        TOTD.setTitle(TOTD_TITLE);
-        GUIUtils.addHideAction((JComponent)TOTD.getContentPane());
+        _dialog.setModal(false);
+        _dialog.setResizable(false);
+        _dialog.setTitle(TOTD_TITLE);
+        GUIUtils.addHideAction((JComponent)_dialog.getContentPane());
         
         // Previous' listener must be added here instead of
         // in constructDialog because otherwise multiple
         // listeners will be added when the theme changes.
-        PREVIOUS = new JButton(TOTD_PREVIOUS);
-        PREVIOUS.addActionListener(new PreviousTipListener());        
+        _previous = new JButton(TOTD_PREVIOUS);
+        _previous.addActionListener(new PreviousTipListener());        
         constructDialog();
-        TIP.setText("...loading tips");
         ThemeMediator.addThemeObserver(this);
     }
         
     /**
      * Returns the sole instance of this class.
      */
-    public static TipOfTheDayMediator instance() {
-        if( instance == null )
-            instance = new TipOfTheDayMediator();
-        return instance;
+    public static synchronized TipOfTheDayMediator instance() {
+        if  (_instance == null)
+            _instance = new TipOfTheDayMediator();
+        return _instance;
     }
-    
+
     /**
-     * Retrieves the TOTD Dialog.
+     * Redraws the whole dialog upon theme change. 
      */
-    public JDialog getDialog() {
-        return TOTD;
+    public void updateComponentTreeUI() {
+        SwingUtilities.updateComponentTreeUI(_dialog);
     }
     
     /**
      * Causes the TOTD window to become visible.
      */
     public void displayTipWindow() {
-        if(!_canDisplay)
-            return;
-        
-        if(TOTD.isShowing()) {
-            TOTD.hide();
-            TOTD.show();
-            TOTD.toFront();
-            return;
-        }
-        
-        if(GUIMediator.isAppVisible())
-            TOTD.setLocationRelativeTo(GUIMediator.getAppFrame());
-        else
-            TOTD.setLocation(GUIMediator.getScreenCenterPoint(TOTD));
-    		
-        TOTD.show();
-        if(!"text/html".equals(TIP.getContentType())) {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    TIP.setContentType("text/html");
-                    setText(getRandomTip());
+        GUIMediator.safeInvokeLater(new Runnable() {
+            public void run() {
+                if (!_canDisplay)
+                    return;
+                
+                if (_dialog.isShowing()) {
+                    _dialog.setVisible(false);
+                    _dialog.setVisible(true);
+                    _dialog.toFront();
+                    return;
                 }
-            });
-        }
-        
-        TOTD.toFront();
+                
+                if (GUIMediator.isAppVisible())
+                    _dialog.setLocationRelativeTo(GUIMediator.getAppFrame());
+                else
+                    _dialog.setLocation(GUIMediator.getScreenCenterPoint(_dialog));
+                
+                _dialog.setVisible(true);
+                
+                if (!"text/html".equals(_tipPane.getContentType())) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            _tipPane.setContentType("text/html");
+                            setText(getRandomTip());
+                        }
+                    });
+                }
+                
+                _dialog.toFront();
+            }
+        });
     }
     
     /**
      * Hides the TOTD dialogue window.
      */
     public void hide() {
-        TOTD.hide();
+        _dialog.setVisible(false);
     }
     
     /**
      * Sets the text of the tip to a new tip.
      */
     private void setText(String tip) {
-        int r = foreground.getRed();
-        int g = foreground.getGreen();
-        int b = foreground.getBlue();
+        int r = _foreground.getRed();
+        int g = _foreground.getGreen();
+        int b = _foreground.getBlue();
         String foreHex = toHex(r) + toHex(g) + toHex(b);
-        TIP.setText("<html><body text='#" + foreHex + "'>" + tip + "</html>");
-        TIP.setCaretPosition(0);
+        _tipPane.setText("<html><body text='#" + foreHex + "'>" + tip + "</html>");
+        _tipPane.setCaretPosition(0);
     }
     
     /**
@@ -306,9 +308,9 @@ public final class TipOfTheDayMediator implements ThemeObserver {
         String k = (String)KEYS.get(++_currentTip);
         
         if(_currentTip == 0)
-            PREVIOUS.setEnabled(false);
+            _previous.setEnabled(false);
         else
-            PREVIOUS.setEnabled(true);
+            _previous.setEnabled(true);
         
         ResourceBundle bundle = ResourceManager.getTOTDResourceBundle();
         return bundle.getString(k);
@@ -318,24 +320,25 @@ public final class TipOfTheDayMediator implements ThemeObserver {
      * Recreates the dialog box to update the theme.
      */
     public void updateTheme() {
-        boolean wasShowing = TOTD.isShowing();
+        boolean wasShowing = _dialog.isShowing();
         
-        TOTD.hide();
-        TOTD.getContentPane().removeAll();
+        _dialog.setVisible(false);
+        _dialog.getContentPane().removeAll();
         // Lower the size of the font in the TIP because
         // it's going to get larger again.
         Font tipFont = new Font(
-            TIP.getFont().getName(),
-            TIP.getFont().getStyle(),
-            TIP.getFont().getSize()-2);
-        TIP.setFont(tipFont);
+            _tipPane.getFont().getName(),
+            _tipPane.getFont().getStyle(),
+            _tipPane.getFont().getSize()-2);
+        _tipPane.setFont(tipFont);
         constructDialog();
-        TIP.setContentType("text/html");
+        _tipPane.setContentType("text/html");
         setText(getRandomTip());
         
-        if(wasShowing) {
-            TOTD.show();
-            TOTD.toFront();
+        
+        if (wasShowing) {
+            _dialog.setVisible(true);
+            _dialog.toFront();
         }
     }
     
@@ -360,20 +363,21 @@ public final class TipOfTheDayMediator implements ThemeObserver {
         didYouKnowPanel.add(didYouKnow);
         
         JPanel tipPanel = new JPanel();
-        foreground = didYouKnow.getForeground();
+        _foreground = didYouKnow.getForeground();
         tipPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0,
                        ThemeFileHandler.TABLE_BACKGROUND_COLOR.getValue()));
         // THE HTML ENGINE TAKES TOO LONG TO LOAD, SO WE MUST LOAD AS TEXT.
-        TIP.setContentType("text");
-        TIP.setEditable(false);
-        TIP.setBackground(tipPanel.getBackground());
+        _tipPane.setContentType("text");
+        _tipPane.setEditable(false);
+        _tipPane.setBackground(tipPanel.getBackground());
         Font tipFont = new Font(
             "Dialog",
-            TIP.getFont().getStyle(),
-            TIP.getFont().getSize()+2);
-        TIP.setFont(tipFont);
-        TIP.addHyperlinkListener(GUIUtils.getHyperlinkListener());
-        JScrollPane tipScroller = new JScrollPane(TIP);
+            _tipPane.getFont().getStyle(),
+            _tipPane.getFont().getSize()+2);
+        _tipPane.setFont(tipFont);
+        _tipPane.addHyperlinkListener(GUIUtils.getHyperlinkListener());
+        _tipPane.setText(GUIMediator.getStringResource("TOTD_LOADING_TIPS"));
+        JScrollPane tipScroller = new JScrollPane(_tipPane);
         tipScroller.setPreferredSize(new Dimension(400, 100));
         tipScroller.setHorizontalScrollBarPolicy(
             JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -404,7 +408,7 @@ public final class TipOfTheDayMediator implements ThemeObserver {
         startupPanel.add(showTips);
         
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.add(PREVIOUS);
+        buttonPanel.add(_previous);
         JButton next = new JButton(TOTD_NEXT);
         buttonPanel.add(next);
         JButton close = new JButton(TOTD_CLOSE);
@@ -418,15 +422,15 @@ public final class TipOfTheDayMediator implements ThemeObserver {
         next.addActionListener(new NextTipListener());
         close.addActionListener(GUIUtils.getDisposeAction());
         
-        TOTD.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        _dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         
-        Container pane = TOTD.getContentPane();
+        Container pane = _dialog.getContentPane();
         pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
         pane.add(wholeTip);
         pane.add(Box.createVerticalStrut(5));
         pane.add(navigation);
         try {
-            TOTD.pack();
+            _dialog.pack();
         } catch(OutOfMemoryError oome) {
             // who knows why it happens, but it's an internal error.
             _canDisplay = false;

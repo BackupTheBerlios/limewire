@@ -15,8 +15,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -531,7 +529,6 @@ class SearchInputPanel extends JPanel {
      */
     private JScrollPane getVisibleScrollPane() {
         JComponent parent = (JComponent)getVisibleComponent().getComponent(0);
-        JScrollPane pane = null;
         for(int i = 0; i < parent.getComponentCount(); i++) {
             Component current = parent.getComponent(i);
             if(current.isVisible() && current instanceof JScrollPane) {

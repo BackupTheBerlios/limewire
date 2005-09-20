@@ -1,7 +1,6 @@
 package com.limegroup.gnutella.gui;
 
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.FontMetrics;
 
 import javax.swing.JLabel;

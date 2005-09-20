@@ -123,7 +123,7 @@ class FilterInputPanel extends BoxPanel {
         if(panel == null) {
             added = true;
             panel = new FilterPanel(rp);
-			new FilterPopupHandler(panel);
+			new FilterPopupMenuHandler(panel);
             FILTER_PANEL.add(panel, panel.getUniqueDescription());
             ACTIVE_FILTERS.put(rp, panel);
         }

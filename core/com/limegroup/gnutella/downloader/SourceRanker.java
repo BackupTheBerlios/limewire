@@ -86,7 +86,7 @@ public abstract class SourceRanker {
      * @return how much time we should wait before at least one host
      * will become non-busy
      */
-    public int calculateWaitTime() {
+    public synchronized int calculateWaitTime() {
         if (!hasMore())
             return 0;
         
@@ -114,7 +114,7 @@ public abstract class SourceRanker {
         meshHandler = null;
     }
     
-    protected abstract void clearState();
+    protected void clearState() {}
     
     /**
      * @return a ranker appropriate for our system's capabilities.
@@ -133,6 +133,9 @@ public abstract class SourceRanker {
      * the current one is stopped.
      */
     public static SourceRanker getAppropriateRanker(SourceRanker original) {
+        if(original == null)
+            return getAppropriateRanker();
+        
         SourceRanker better;
         if (RouterService.canReceiveSolicited() && 
                 DownloadSettings.USE_HEADPINGS.getValue()) {

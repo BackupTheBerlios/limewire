@@ -11,15 +11,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import javax.swing.JLabel;
-import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import com.limegroup.gnutella.gui.URLLabel;
-import com.limegroup.gnutella.gui.BoxPanel;
-import com.limegroup.gnutella.gui.GUIMediator;
 import com.limegroup.gnutella.gui.MagnetButton;
 import com.limegroup.gnutella.settings.UISettings;
 import com.limegroup.gnutella.gui.themes.ThemeMediator;

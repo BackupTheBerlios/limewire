@@ -240,13 +240,15 @@ public final class LibraryTableDataLine extends AbstractDataLine
 	    _file = file;
 		_name = _file.getName();
 		_type = "";
-		int index = _name.lastIndexOf(".");
-		int index2 = fullPath.lastIndexOf(File.separator);
-        _path = fullPath.substring(0,index2);
-		if (index != -1 && index != 0) {
-			_type = _name.substring(index+1);
-			_name = _name.substring(0, index);
-		}
+        if (!file.isDirectory()) {
+            int index = _name.lastIndexOf(".");
+            int index2 = fullPath.lastIndexOf(File.separator);
+            _path = fullPath.substring(0,index2);
+            if (index != -1 && index != 0) {
+                _type = _name.substring(index+1);
+                _name = _name.substring(0, index);
+            }
+        }
 		_size = (int)file.length();
     }
     

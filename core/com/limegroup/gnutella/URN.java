@@ -20,6 +20,7 @@ import com.limegroup.gnutella.http.HTTPHeaderValue;
 import com.limegroup.gnutella.security.SHA1;
 import com.limegroup.gnutella.util.IntWrapper;
 import com.limegroup.gnutella.util.SystemUtils;
+import com.limegroup.gnutella.settings.SharingSettings;
 
 /**
  * This class represents an individual Uniform Resource Name (URN), as
@@ -156,6 +157,18 @@ public final class URN implements HTTPHeaderValue, Serializable {
         else
             throw new IOException("unsupported or malformed URN");
 	}
+	
+	/**
+	 * Retrieves the TigerTree Root hash from a bitprint string.
+	 */
+	public static String getTigerTreeRoot(final String urnString) throws IOException {
+        String typeString = URN.getTypeString(urnString).toLowerCase(Locale.US);
+        if (typeString.indexOf(UrnType.BITPRINT_STRING) == 4)
+            return getTTRootFromBitprint(urnString);
+        else
+            throw new IOException("unsupported or malformed URN");
+    }
+	    
 
 	/**
 	 * Convenience method for creating a SHA1 <tt>URN</tt> from a <tt>URL</tt>.
@@ -265,6 +278,22 @@ public final class URN implements HTTPHeaderValue, Serializable {
 
         return createSHA1UrnFromString(
             UrnType.URN_NAMESPACE_ID + UrnType.SHA1_STRING + sha1);
+    }
+    
+	/**
+     * Gets the TTRoot from a bitprint string.
+     */
+    private static String getTTRootFromBitprint(final String bitprintString)
+      throws IOException {
+        int dotIdx = bitprintString.indexOf(DOT);
+        if(dotIdx == -1 || dotIdx == bitprintString.length() - 1)
+            throw new IOException("invalid bitprint: " + bitprintString);
+
+        String tt = bitprintString.substring(dotIdx + 1);
+        if(tt.length() != 39)
+            throw new IOException("wrong length: " + tt.length());
+
+        return tt;
     }
     
 	/**
@@ -557,7 +586,8 @@ public final class URN implements HTTPHeaderValue, Serializable {
                 long start = System.currentTimeMillis();
                 md.update(buffer,0,read);
                 progress.addInt( read );
-                if(SystemUtils.getIdleTime() < MIN_IDLE_TIME) {
+                if(SystemUtils.getIdleTime() < MIN_IDLE_TIME &&
+		    SharingSettings.FRIENDLY_HASHING.getValue()) {
                     long end = System.currentTimeMillis();
                     long interval = end - start;
                     if(interval > 0)

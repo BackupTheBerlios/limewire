@@ -2,7 +2,6 @@ package com.limegroup.gnutella.gui.options;
 
 import java.io.IOException;
 
-import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 
 import com.limegroup.gnutella.gui.GUIMediator;
@@ -152,6 +151,8 @@ public final class OptionsMediator implements ThemeObserver {
 	 * Determines if any of the settings are dirty.
 	 */
 	public final boolean isDirty() {
+        if (_paneManager == null)
+            return false;
 	    return _paneManager.isDirty();
     }
 	

@@ -6,7 +6,6 @@ import javax.swing.JComponent;
 
 import com.limegroup.gnutella.gui.GUIMediator;
 import com.limegroup.gnutella.gui.RefreshListener;
-import com.limegroup.gnutella.gui.themes.ThemeMediator;
 import com.limegroup.gnutella.gui.themes.ThemeObserver;
 import com.limegroup.gnutella.statistics.StatisticsManager;
 

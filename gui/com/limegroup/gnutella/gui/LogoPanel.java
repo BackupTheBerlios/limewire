@@ -4,12 +4,9 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
-
-import com.limegroup.gnutella.gui.themes.ThemeSettings;
 
 /**
  * This class contains the logo and the searching icon for the application.

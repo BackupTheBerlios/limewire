@@ -204,18 +204,20 @@ public class DownloadWorker implements Runnable {
                 throw new InterruptedException();
             
             connectAndDownload();
-        } catch (Throwable e) {
-             // Ignore InterruptedException -- the JVM throws
-             // them for some reason at odd times, even though
-             // we've caught and handled all of them
-             // appropriately.
-            if(!(e instanceof InterruptedException)) {
-                //This is a "firewall" for reporting unhandled
-                //errors.  We don't really try to recover at
-                //this point, but we do attempt to display the
-                //error in the GUI for debugging purposes.
-                ErrorService.error(e);
-            }
+        }
+        // Ignore InterruptedException -- the JVM throws
+        // them for some reason at odd times, even though
+        // we've caught and handled all of them
+        // appropriately.
+        catch (InterruptedException ignored){}
+        catch (Throwable e) {
+            LOG.debug("got an exception in run()",e);
+
+            //This is a "firewall" for reporting unhandled
+            //errors.  We don't really try to recover at
+            //this point, but we do attempt to display the
+            //error in the GUI for debugging purposes.
+            ErrorService.error(e);
         } finally {
             _manager.workerFinished(this);
         }
@@ -290,6 +292,7 @@ public class DownloadWorker implements Runnable {
                 // consume the prior request's body
                 // if there was any.
                 _downloader.consumeBodyIfNecessary();
+                _downloader.forgetRanges();
                 
                 // if we didn't get queued doing the tree request,
                 // request another file.
@@ -301,8 +304,13 @@ public class DownloadWorker implements Runnable {
                             _manager.addPossibleSources(_downloader.getLocationsReceived());
                         } finally {
                             // clear ranges did not connect
-                            if( status == null || !status.isConnected() )
-                                releaseRanges();
+                        	try {
+                        		if( status == null || !status.isConnected() )
+                        			releaseRanges();
+                        	} catch (AssertFailure bad) {
+                        		throw new AssertFailure("status "+status+" worker failed "+getInfo()+
+                        				" all workers: "+_manager.getWorkersInfo(),bad);
+                        	}
                         }
                 }
                 
@@ -360,11 +368,18 @@ public class DownloadWorker implements Runnable {
             //Step 3. OK, we have successfully connected, start saving the
             // file to disk
             // If the download failed, don't keep trying to download.
+            boolean downloaded = false;
             try {
-                if(!doDownload(http11))
+                downloaded = doDownload(http11);
+                if(!downloaded)
                     break;
             }finally {
-                releaseRanges();
+                try {
+                    releaseRanges();
+                } catch (AssertFailure bad) {
+                    throw new AssertFailure("downloaded "+downloaded+" worker failed "+getInfo()+
+                            " all workers: "+_manager.getWorkersInfo(),bad);
+                }
             }
         } // end of while(http11)
     }
@@ -377,7 +392,8 @@ public class DownloadWorker implements Runnable {
         // isn't good enough or we don't have a tree) and another
         // worker isn't currently requesting one
         if (_downloader.hasHashTree() &&
-                (ourTree == null || !ourTree.isDepthGoodEnough())) {
+                (ourTree == null || !ourTree.isDepthGoodEnough()) &&
+                _manager.getSHA1Urn() != null) {
             
             
             synchronized(_commonOutFile) {
@@ -386,7 +402,7 @@ public class DownloadWorker implements Runnable {
                 _commonOutFile.setHashTreeRequested(true);
             }
             
-            status = _downloader.requestHashTree();
+            status = _downloader.requestHashTree(_manager.getSHA1Urn());
             _commonOutFile.setHashTreeRequested(false);
             if(status.isThexResponse()) {
                 HashTree temp = status.getHashTree();
@@ -407,12 +423,19 @@ public class DownloadWorker implements Runnable {
             return;
         _shouldRelease = false;
         
+        // do not release if the file is complete
+        if (_commonOutFile.isComplete())
+            return;
+        
+        HTTPDownloader downloader = _downloader;
         int high, low;
-        synchronized(_downloader) {
-            // do not release ranges for downloaders that we have stolen from
-            // since they are still marked as leased
-            low=_downloader.getInitialReadingPoint()+_downloader.getAmountRead();
-            high = _downloader.getInitialReadingPoint()+_downloader.getAmountToRead()-1;
+        synchronized(downloader) {
+        	
+            // If this downloader was a thief and had to skip any ranges, do not
+            // release them.
+            low = downloader.getInitialReadingPoint() + downloader.getAmountRead();
+            low = Math.max(low,downloader.getInitialWritingPoint());
+            high = downloader.getInitialReadingPoint() + downloader.getAmountToRead()-1;
         }
         
         if( (high-low)>=0) {//dloader failed to download a part assigned to it?
@@ -421,6 +444,7 @@ public class DownloadWorker implements Runnable {
                 LOG.debug("releasing ranges "+new Interval(low,high));
             
             _commonOutFile.releaseBlock(new Interval(low,high));
+            downloader.forgetRanges();
         } else 
 			LOG.debug("nothing to release!");
     }
@@ -491,7 +515,6 @@ public class DownloadWorker implements Runnable {
             return;
         }
 
-        HTTPDownloader ret = null;
         boolean needsPush = _rfd.needsPush();
         
         
@@ -523,10 +546,10 @@ public class DownloadWorker implements Runnable {
         // but older ones didn't understand them
         if( _rfd.isReplyToMulticast() ) {
             try {
-                ret = connectWithPush();
+                _downloader = connectWithPush();
             } catch(IOException e) {
                 try {
-                    ret = connectDirectly();
+                    _downloader = connectDirectly();
                 } catch(IOException e2) {
                     return ; // impossible to connect.
                 }
@@ -539,23 +562,21 @@ public class DownloadWorker implements Runnable {
         // if we don't, try direct and if that fails try a push.        
         if( !needsPush ) {
             try {
-                ret = connectDirectly();
+                _downloader = connectDirectly();
             } catch(IOException e) {
                 // fall through to the push ...
             }
         }
         
-        if (ret == null) {
+        if (_downloader == null) {
             try {
-                ret = connectWithPush();
+                _downloader = connectWithPush();
             } catch(IOException e) {
                 // even the push failed :(
-                _manager.forgetRFD(_rfd);
+            	if (needsPush)
+            		_manager.forgetRFD(_rfd);
             }
         }
-        
-        // did we connect at all?
-        _downloader = ret;
         
         // if we didn't connect at all, tell the rest about this rfd
         if (_downloader == null)
@@ -575,7 +596,7 @@ public class DownloadWorker implements Runnable {
         LOG.trace("WORKER: attempt direct connection");
         HTTPDownloader ret;
         //Establish normal downloader.              
-        ret = new HTTPDownloader(_rfd, _commonOutFile);
+        ret = new HTTPDownloader(_rfd, _commonOutFile, _manager instanceof InNetworkDownloader);
         // Note that connectTCP can throw IOException
         // (and the subclassed CantConnectException)
         try {
@@ -602,39 +623,42 @@ public class DownloadWorker implements Runnable {
                      _rfd.getFileName(),_rfd.getIndex(),_rfd.getClientGUID());
        
         _manager.registerPushWaiter(this,mrfd);
-
-        boolean pushSent;
+        
         Socket pushSocket = null;
-        synchronized(this) {
-            // only wait if we actually were able to send the push
-            RouterService.getDownloadManager().sendPush(_rfd, this);
-            
-            //No loop is actually needed here, assuming spurious
-            //notify()'s don't occur.  (They are not allowed by the Java
-            //Language Specifications.)  Look at acceptDownload for
-            //details.
-            try {
-                wait(_rfd.isFromAlternateLocation()? 
-                        UDP_PUSH_CONNECT_TIME: 
-                            PUSH_CONNECT_TIME);
-                pushSocket = _pushSocket;
-                _pushSocket = null;
-            } catch(InterruptedException e) {
-                DownloadStat.PUSH_FAILURE_INTERRUPTED.incrementStat();
-                throw new IOException("push interupted.");
+        try {
+            synchronized(this) {
+                // only wait if we actually were able to send the push
+                RouterService.getDownloadManager().sendPush(_rfd, this);
+                
+                //No loop is actually needed here, assuming spurious
+                //notify()'s don't occur.  (They are not allowed by the Java
+                //Language Specifications.)  Look at acceptDownload for
+                //details.
+                try {
+                    wait(_rfd.isFromAlternateLocation()? 
+                            UDP_PUSH_CONNECT_TIME: 
+                                PUSH_CONNECT_TIME);
+                    pushSocket = _pushSocket;
+                    _pushSocket = null;
+                } catch(InterruptedException e) {
+                    DownloadStat.PUSH_FAILURE_INTERRUPTED.incrementStat();
+                    throw new IOException("push interupted.");
+                }
+                
             }
             
+            //Done waiting or were notified.
+            if (pushSocket==null) {
+                DownloadStat.PUSH_FAILURE_NO_RESPONSE.incrementStat();
+                
+                throw new IOException("push socket is null");
+            }
+        } finally {
+            _manager.unregisterPushWaiter(mrfd); //we are not going to use it after this
         }
         
-        //Done waiting or were notified.
-        if (pushSocket==null) {
-            DownloadStat.PUSH_FAILURE_NO_RESPONSE.incrementStat();
-            
-            throw new IOException("push socket is null");
-        }
-        
-        _manager.unregisterPushWaiter(mrfd);//we are not going to use it after this
-        ret = new HTTPDownloader(pushSocket, _rfd, _commonOutFile);
+        ret = new HTTPDownloader(pushSocket, _rfd, _commonOutFile, 
+                _manager instanceof InNetworkDownloader);
         
         //Socket.getInputStream() throws IOX if the connection is closed.
         //So this connectTCP *CAN* throw IOX.
@@ -681,9 +705,11 @@ public class DownloadWorker implements Runnable {
             _downloader.doDownload();
             _rfd.resetFailedCount();
             if(http11)
-                DownloadStat.SUCCESFULL_HTTP11.incrementStat();
+                DownloadStat.SUCCESSFUL_HTTP11.incrementStat();
             else
-                DownloadStat.SUCCESFULL_HTTP10.incrementStat();
+                DownloadStat.SUCCESSFUL_HTTP10.incrementStat();
+            
+            LOG.debug("WORKER: successfully finished download");
         } catch (DiskException e) {
             // something went wrong while writing to the file on disk.
             // kill the other threads and set
@@ -737,10 +763,11 @@ public class DownloadWorker implements Runnable {
                 return this + "hashcode " + hashCode() + " will release? "
                 + _shouldRelease + " interrupted? " + _interrupted
                 + " active? " + _downloader.isActive() 
+                + " victim? " + _downloader.isVictim()
                 + " initial reading " + _downloader.getInitialReadingPoint()
                 + " initial writing " + _downloader.getInitialWritingPoint()
                 + " amount to read " + _downloader.getAmountToRead()
-                + " amount read " + _downloader.getAmountRead();
+                + " amount read " + _downloader.getAmountRead()+"\n";
             }
         } else 
             return "worker not started";
@@ -1065,12 +1092,13 @@ public class DownloadWorker implements Runnable {
     }
     
     Interval getDownloadInterval() {
-        synchronized(_downloader) {
+        HTTPDownloader downloader = _downloader;
+        synchronized(downloader) {
             
-            int start = Math.max(_downloader.getInitialReadingPoint() + _downloader.getAmountRead(),
-                    _downloader.getInitialWritingPoint());
+            int start = Math.max(downloader.getInitialReadingPoint() + downloader.getAmountRead(),
+                    downloader.getInitialWritingPoint());
             
-            int stop = _downloader.getInitialReadingPoint() + _downloader.getAmountToRead();
+            int stop = downloader.getInitialReadingPoint() + downloader.getAmountToRead();
             
             return new Interval(start,stop);
         }

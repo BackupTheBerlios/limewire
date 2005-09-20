@@ -253,8 +253,10 @@ public class NamedMediaType implements IconAndNameHolder, Comparable {
             }
             
             // If still no name, capitalize the mime-type.
-            if(name == null)
+            if(name == null) {
+				name = type.getMimeType();
                 name = name.substring(0, 1).toUpperCase(Locale.US) + name.substring(1);
+            }
         } else {
             name = XMLUtils.getTitleForSchema(schema);
         }

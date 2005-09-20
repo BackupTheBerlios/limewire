@@ -16,8 +16,6 @@ import java.util.Iterator;
 
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -35,7 +33,6 @@ import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import com.limegroup.gnutella.gui.BoxPanel;
 import com.limegroup.gnutella.gui.GUIMediator;
 import com.limegroup.gnutella.gui.GUIUtils;
 import com.limegroup.gnutella.gui.tables.CircularIcon;
@@ -394,7 +391,7 @@ class FilterBox extends JPanel {
             TITLE.setText(title);
         } else {
             String extra;
-            if(sel == null || MODEL.isAll(sel)) {
+            if(sel == null || MetadataModel.isAll(sel)) {
                 int size = DELEGATOR.getSize() -1;
                 if(size == 1)
                     extra = size + " " + OPTION;

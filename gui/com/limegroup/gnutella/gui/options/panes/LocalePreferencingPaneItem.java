@@ -1,14 +1,10 @@
 package com.limegroup.gnutella.gui.options.panes;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.swing.JCheckBox;
 
 import com.limegroup.gnutella.gui.LabeledComponent;
-import com.limegroup.gnutella.gui.SizedWholeNumberField;
-import com.limegroup.gnutella.gui.WholeNumberField;
 import com.limegroup.gnutella.settings.ConnectionSettings;
 
 /**

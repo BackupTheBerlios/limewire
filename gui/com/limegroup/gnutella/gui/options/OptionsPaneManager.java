@@ -3,13 +3,11 @@ package com.limegroup.gnutella.gui.options;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.io.IOException;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.Iterator;
 
 import javax.swing.JPanel;
 

@@ -7,16 +7,13 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.IOException;
 
-import javax.swing.Box;
 import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 
 import com.limegroup.gnutella.RouterService;
 import com.limegroup.gnutella.gui.GUIUtils;
-import com.limegroup.gnutella.gui.BoxPanel;
 import com.limegroup.gnutella.gui.GUIMediator;
-import com.limegroup.gnutella.gui.LabeledComponent;
 import com.limegroup.gnutella.gui.SizedWholeNumberField;
 import com.limegroup.gnutella.gui.WholeNumberField;
 import com.limegroup.gnutella.settings.ConnectionSettings;

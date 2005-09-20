@@ -22,13 +22,13 @@ public class LegacyRanker extends SourceRanker {
 
 	private final Set rfds;  
 	
-	protected LegacyRanker() {
+	public LegacyRanker() {
 		rfds = new HashSet();
 	}
 	
 	public synchronized boolean addToPool(RemoteFileDesc host) {
         if (LOG.isDebugEnabled())
-            LOG.debug("adding host "+host+" to be ranked",new Exception());
+            LOG.debug("adding host "+host+" to be ranked");
 		return rfds.add(host);
 	}
 
@@ -44,7 +44,9 @@ public class LegacyRanker extends SourceRanker {
      * @return the best file/endpoint location 
      */
 	public synchronized RemoteFileDesc getBest() {
-		
+		if (!hasMore())
+            return null;
+        
         RemoteFileDesc ret = getBest(rfds.iterator());
         //The best rfd found so far
         boolean removed = rfds.remove(ret);
@@ -96,10 +98,6 @@ public class LegacyRanker extends SourceRanker {
         return ret;
     }
 	
-    protected synchronized void clearState() {
-        rfds.clear();
-    }
-    
 	public boolean hasMore() {
 		return !rfds.isEmpty();
 	}

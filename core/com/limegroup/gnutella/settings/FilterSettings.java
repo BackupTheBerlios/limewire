@@ -37,6 +37,12 @@ public class FilterSettings extends LimeProps {
         FACTORY.createBooleanSetting("FILTER_HTML", false);
     
     /**
+     * Sets whether or not search results of the wmv and asf types are banned.
+     */
+    public static final BooleanSetting FILTER_WMV_ASF =
+    	FACTORY.createBooleanSetting("FILTER_WMV_ASF",true);
+    
+    /**
 	 * Sets whether or not duplicate search results are
 	 * banned.
 	 */
@@ -80,4 +86,8 @@ public class FilterSettings extends LimeProps {
      */
     public static final BooleanSetting FILTER_HASH_QUERIES =
         FACTORY.createSettableBooleanSetting("FILTER_HASH_QUERIES",false,"filter_hash");
+    
+    public static final IntSetting MIN_MATCHING_WORDS =
+    	FACTORY.createSettableIntSetting("MIN_MATCHING_WORDS",0,
+    			"FilterSettings.minMatchingWords", 30, 0);
 }

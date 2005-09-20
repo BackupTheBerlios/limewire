@@ -92,7 +92,7 @@ public final class ThemeSettings extends LimeProps {
     /**
      * The full path to the LimeWire theme file.
      */
-    static final File LIMEWIRE_THEME_FILE =
+    public static final File LIMEWIRE_THEME_FILE =
 		new File(THEME_DIR_FILE, LIMEWIRE_THEME_NAME);
     
     /**

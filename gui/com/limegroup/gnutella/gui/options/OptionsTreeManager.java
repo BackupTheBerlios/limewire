@@ -7,9 +7,10 @@ import java.util.Enumeration;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
-import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+
+import com.limegroup.gnutella.gui.trees.LimeTreeCellRenderer;
 
 /**
  * Manages the <code>JTree</code> instance of the the options window.  This
@@ -51,15 +52,7 @@ final class OptionsTreeManager {
 		TREE.putClientProperty("JTree.lineStyle", "None");
 		TREE.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);	
 		TREE.addTreeSelectionListener(new OptionsTreeSelectionListener(TREE));
-		
-		DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
-		renderer.setOpaque(false); 
-		renderer.setBackground(null);
-		renderer.setBackgroundNonSelectionColor(null);
-		renderer.setLeafIcon(null);
-		renderer.setOpenIcon(null);
-		renderer.setClosedIcon(null);
-		TREE.setCellRenderer(renderer);
+        TREE.setCellRenderer(new LimeTreeCellRenderer());
 
 		TREE.setModel(TREE_MODEL);
 

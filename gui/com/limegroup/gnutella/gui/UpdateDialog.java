@@ -148,9 +148,23 @@ final class UpdateDialog extends JDialog {
 	    b.setToolTipText(GUIMediator.getStringResource("UPDATE_TIP"));
 	    b.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	            GUIMediator.openURL(info.getUpdateURL());
-	            setVisible(false);
-	            dispose();
+                
+                String updateCommand = info.getUpdateCommand();
+                
+                if (updateCommand != null) {
+                    GUIMediator.flagUpdate(updateCommand);
+        
+                    int restartNow = 
+                        GUIMediator.showYesNoTitledMessage("UPDATE_RESTART","UPDATE_RESTART_TITLE");
+                    
+                    if (restartNow == MessageService.YES_OPTION)
+                        GUIMediator.shutdown();
+                    
+                } else 
+                    GUIMediator.openURL(info.getUpdateURL());
+                
+                setVisible(false);
+                dispose();
 	        }
         });
         
@@ -158,7 +172,7 @@ final class UpdateDialog extends JDialog {
     }
     
 	private JButton makeButton2(final UpdateInformation info) {
-	    String text = info.getButton1Text();
+	    String text = info.getButton2Text();
 	    if(text == null)
 	        text = GUIMediator.getStringResource("UPDATE_LATER_LABEL");
 	    

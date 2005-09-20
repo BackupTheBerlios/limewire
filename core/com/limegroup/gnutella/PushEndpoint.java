@@ -113,6 +113,10 @@ public class PushEndpoint implements HTTPHeaderValue, IpPort {
      */
 	private static final Map GUID_PROXY_MAP = 
 	    Collections.synchronizedMap(new WeakHashMap());
+    
+    static {
+        RouterService.schedule(new WeakCleaner(),30*1000,30*1000);
+    }
 	
 	/**
 	 * the client guid of the endpoint
@@ -396,8 +400,9 @@ public class PushEndpoint implements HTTPHeaderValue, IpPort {
 
 	    GuidSetWrapper current = (GuidSetWrapper)GUID_PROXY_MAP.get(_guid);
 
-	    Assert.that(current != null);	    
-
+	    if (current == null)
+            return Collections.EMPTY_SET;
+        
 	    return current.getProxies();
 	}
 	
@@ -806,5 +811,11 @@ public class PushEndpoint implements HTTPHeaderValue, IpPort {
 	        return (GUID) _guidRef.get();
 	    }
 	}
+    
+    private static final class WeakCleaner implements Runnable {
+        public void run() {
+            GUID_PROXY_MAP.size();
+        }
+    }
 	
 }

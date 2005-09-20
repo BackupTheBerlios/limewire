@@ -669,6 +669,7 @@ public final class UploadDataLine extends AbstractDataLine {
 	void setEndTime(long time) {
 	    _endTime = time;
         UPLOADER = new FakeUploader(UPLOADER);
+        super.initialize(UPLOADER);
 	}
     
     private static class FakeUploader implements Uploader {

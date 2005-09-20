@@ -549,6 +549,7 @@ public final class TableLine extends AbstractDataLine {
         case SearchTableColumns.COUNT_IDX:
         case SearchTableColumns.ICON_IDX: 
         case SearchTableColumns.CHAT_IDX:
+        case SearchTableColumns.LICENSE_IDX:
             return false;
         default:
             return true;

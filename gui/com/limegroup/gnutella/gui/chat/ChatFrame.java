@@ -30,7 +30,6 @@ import com.limegroup.gnutella.gui.ButtonRow;
 import com.limegroup.gnutella.gui.GUIConstants;
 import com.limegroup.gnutella.gui.GUIMediator;
 import com.limegroup.gnutella.gui.PaddedPanel;
-import com.limegroup.gnutella.gui.themes.ThemeMediator;
 import com.limegroup.gnutella.gui.themes.ThemeObserver;
 
 /**
@@ -318,7 +317,6 @@ public class ChatFrame extends JFrame implements ThemeObserver {
 	/** enable state for the send button */
 	private class JTextFieldKeyListener implements KeyListener {
 		public void keyTyped(KeyEvent k) {
-			int key = k.getKeyChar();
 			if (k.getKeyChar() == KeyEvent.VK_ENTER)
 				send();                              // send the message
 		}

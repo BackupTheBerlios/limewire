@@ -1,7 +1,6 @@
 package com.limegroup.gnutella.gui;
 
 import javax.swing.*;
-import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
 

@@ -33,6 +33,7 @@ import com.limegroup.gnutella.simpp.SimppManager;
 import com.limegroup.gnutella.statistics.OutOfBandThroughputStat;
 import com.limegroup.gnutella.statistics.ReceivedMessageStatHandler;
 import com.limegroup.gnutella.updates.UpdateManager;
+import com.limegroup.gnutella.util.DataUtils;
 import com.limegroup.gnutella.util.BandwidthThrottle;
 import com.limegroup.gnutella.util.ManagedThread;
 import com.limegroup.gnutella.util.ThrottledOutputStream;
@@ -228,15 +229,15 @@ public class ManagedConnection extends Connection
     private static long TIMED_GUID_LIFETIME = 10 * 60 * 1000;
 
     /**
-     * Whether or not horizon counting is enabled from this connection.
-     */
-    private boolean _horizonEnabled = true;
-    
-    /**
      * Whether or not this was a supernode <-> client connection when message
      * looping started.
      */
     private boolean supernodeClientAtLooping = false;
+    
+    /**
+     * The last clientGUID a Hops=0 QueryReply had.
+     */
+    private byte[] clientGUID = DataUtils.EMPTY_GUID;
 
     /**
      * Creates a new outgoing connection to the specified host on the
@@ -556,10 +557,13 @@ public class ManagedConnection extends Connection
      */
     private void startOutput() {
         MessageQueue queue;
-		if(isSupernodeSupernodeConnection())
+        // Taking this change out until we can safely handle attacks and overflow 
+        // TODO: make a cheaper Queue that still prevents flooding of ultrapeer
+        //       and ensures that clogged leaf doesn't drop QRP messages.
+		//if(isSupernodeSupernodeConnection())
 		    queue = new CompositeQueue();
-		else
-		    queue = new BasicQueue();
+		//else
+		    //queue = new BasicQueue();
 
 		if(isAsynchronous()) {
 		    MessageWriter messager = new MessageWriter(_connectionStats, queue, this);
@@ -710,6 +714,8 @@ public class ManagedConnection extends Connection
 			ReceivedMessageStatHandler.TCP_FILTERED_MESSAGES.addMessage(m);
             _connectionStats.addReceivedDropped();
         } else {
+            if(m instanceof QueryReply && m.getHops() == 0)
+                clientGUID = ((QueryReply)m).getClientGUID();
         
             //special handling for proxying.
             if(supernodeClientAtLooping) {
@@ -896,6 +902,13 @@ public class ManagedConnection extends Connection
         
         send(queryReply);
     }
+    
+    /**
+     * Gets the clientGUID of the remote host of the connection.
+     */
+    public byte[] getClientGUID() {
+        return clientGUID;
+    }
 
     /**
      * This method is called when a PushRequest is received for a QueryReply
@@ -945,10 +958,12 @@ public class ManagedConnection extends Connection
             }
             
             // see if there's a new update message.
-            if(capVM.supportsUpdate() > UpdateHandler.instance().getLatestId()) {
-                // request an update message.
+            int latestId = UpdateHandler.instance().getLatestId();
+            int currentId = capVM.supportsUpdate();
+            if(currentId > latestId)
                 send(new UpdateRequest());
-            }
+            else if(currentId == latestId)
+                UpdateHandler.instance().handleUpdateAvailable(this, currentId);
                 
         }
         else if (vm instanceof MessagesSupportedVendorMessage) {        
@@ -1093,33 +1108,6 @@ public class ManagedConnection extends Connection
             return 0;
         }
         return retValue;
-    }
-
-    /** 
-     * @modifies this
-     * @effects enables or disables updateHorizon. Typically this method
-     *  is used to temporarily disable horizon statistics before sending a 
-     *  ping with a small TTL to make sure a connection is up.
-     */
-    public synchronized void setHorizonEnabled(boolean enable) {
-        _horizonEnabled=enable;
-    }
-
-    /**
-     * This method is called when a reply is received by this connection for a
-     * PingRequest that originated from LimeWire.
-     * 
-     * @modifies this 
-     * @effects adds the statistics from pingReply to this' horizon statistics,
-     *  unless horizon statistics have been disabled via setHorizonEnabled(false).
-     *  It's possible that the horizon statistics will not actually be updated
-     *  until refreshHorizonStats is called.
-     */
-    public synchronized void updateHorizonStats(PingReply pingReply) {
-        if (! _horizonEnabled)
-            return;
-        
-        HorizonCounter.instance().addPong(pingReply);
     }
 
     //

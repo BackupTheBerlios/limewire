@@ -14,7 +14,6 @@ import com.limegroup.gnutella.Assert;
 import com.limegroup.gnutella.FileDesc;
 import com.limegroup.gnutella.gui.GUIMediator;
 import com.limegroup.gnutella.gui.GUIUtils;
-import com.limegroup.gnutella.gui.MessageService;
 import com.limegroup.gnutella.gui.library.LibraryMediator;
 import com.limegroup.gnutella.gui.xml.MetaEditorFrame;
 import com.limegroup.gnutella.gui.xml.editor.audio.AudioTabbedPane;

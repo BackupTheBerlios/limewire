@@ -1,4 +1,3 @@
-
 package com.limegroup.gnutella.gui.tables;
 
 import java.awt.Color;
@@ -25,7 +24,6 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
@@ -320,7 +318,7 @@ public abstract class AbstractTableMediator
         TABLE.setIntercellSpacing(ZERO_DIMENSION);
         TABLE.setColumnSelectionAllowed(false);
         TABLE.setTableSettings(SETTINGS);
-        TABLE.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
+        TABLE.getTableHeader().addMouseListener(new FlexibleColumnResizeAdapter());
     }
     
     /**

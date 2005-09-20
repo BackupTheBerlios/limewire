@@ -6,8 +6,9 @@ import java.awt.Dimension;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
-import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeSelectionModel;
+
+import com.limegroup.gnutella.gui.trees.LimeTreeCellRenderer;
 
 /**
  * Manages the <code>JTree</code> instance of the the statistics window.  This
@@ -39,15 +40,7 @@ final class StatisticsTreeManager {
 	 * and the <tt>JScrollPane</tt>.
 	 */
 	StatisticsTreeManager() {
-        DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
-        renderer.setOpaque(false);
-        renderer.setBackground(null);
-        renderer.setBackgroundNonSelectionColor(null);
-        renderer.setLeafIcon(null);
-        renderer.setOpenIcon(null);
-        renderer.setClosedIcon(null);
-        TREE.setCellRenderer(renderer);
-	    
+        TREE.setCellRenderer(new LimeTreeCellRenderer());
 		TREE.setEditable(false);
 		TREE.setShowsRootHandles(true);	
 		TREE.setRootVisible(false);

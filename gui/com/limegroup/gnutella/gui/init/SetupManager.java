@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 
 import com.limegroup.gnutella.gui.GUIMediator;
 import com.limegroup.gnutella.gui.GUIUtils;
+import com.limegroup.gnutella.gui.SplashWindow;
 import com.limegroup.gnutella.settings.ApplicationSettings;
 import com.limegroup.gnutella.settings.InstallSettings;
 import com.limegroup.gnutella.settings.SettingsHandler;
@@ -245,6 +246,7 @@ public class SetupManager {
 
 		_dialog.pack();
 		_dialog.toFront();
+		SplashWindow.instance().toBack();
 		_dialog.setVisible(true);
 
 	}

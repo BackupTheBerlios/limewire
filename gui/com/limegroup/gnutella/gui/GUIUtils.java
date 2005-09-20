@@ -288,7 +288,7 @@ public final class GUIUtils {
      * Converts an rate into a human readable and localized KB/s speed.
      */
     public static String rate2speed(double rate) {
-        return NUMBER_FORMAT0.format(rate) + GENERAL_UNIT_KBPSEC;
+        return NUMBER_FORMAT0.format(rate) + " " + GENERAL_UNIT_KBPSEC;
     }
     
     /**

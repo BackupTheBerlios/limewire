@@ -9,6 +9,7 @@ import com.limegroup.gnutella.Assert;
 import com.limegroup.gnutella.Downloader;
 import com.limegroup.gnutella.Endpoint;
 import com.limegroup.gnutella.InsufficientDataException;
+import com.limegroup.gnutella.downloader.VerifyingFile;
 import com.limegroup.gnutella.gui.GUIMediator;
 import com.limegroup.gnutella.gui.GUIUtils;
 import com.limegroup.gnutella.gui.IconManager;
@@ -556,9 +557,12 @@ public final class DownloadDataLine extends AbstractDataLine
                          DOWNLOADER.getNumberOfInvalidAlternateLocations();
 		int chunkSize = DOWNLOADER.getChunkSize();
 		String numChunks,lost;
+        int totalPending = VerifyingFile.getNumPendingItems();
 		synchronized(DOWNLOADER) {
 			numChunks = CHUNKS + ": "+DOWNLOADER.getAmountVerified() / chunkSize +"/"+
-				DOWNLOADER.getAmountRead() / chunkSize+ "/"+
+				DOWNLOADER.getAmountRead() / chunkSize+ "["+ 
+                DOWNLOADER.getAmountPending()+"|"+totalPending+"]"+ 
+                "/"+
 				DOWNLOADER.getContentLength() / chunkSize+
 				", "+chunkSize/1024+KB;
 		
@@ -808,13 +812,7 @@ public final class DownloadDataLine extends AbstractDataLine
      * which d is downloading.
      */
     private void updateHostCount(Downloader d) {
-        int count=0;
-        Endpoint last=null;
-        
-        for (Iterator iter=d.getHosts(); iter.hasNext(); ) {
-            last=(Endpoint)iter.next();
-            count++;
-        }
+        int count = d.getNumHosts();
 
         // we are in between chunks with this host,
         // use the previous count so-as not to confuse

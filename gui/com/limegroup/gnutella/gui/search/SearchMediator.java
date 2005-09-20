@@ -493,10 +493,13 @@ public final class SearchMediator {
      */
     private static void downloadLine(TableLine line, GUID guid, File saveDir,
 			String fileName, boolean saveAs) {
-		// TODO throw nullpointer exception here instead of silently returning
-        if(line == null)
-            return;
+        if (line == null)
+            throw new NullPointerException("Tried to download null line");
         
+		//  do not download if no license and user does not acknowledge
+		if (!line.isLicenseAvailable() && !GUIMediator.showFirstDownloadDialog())
+			return;
+		
         RemoteFileDesc[] rfds;
         Set /* of EndpointPoint */ alts = new HashSet();
         List /* of RemoteFileDesc */ otherRFDs = new LinkedList();

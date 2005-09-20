@@ -15,4 +15,4 @@ export CLASSPATH
 PATH=$PATH:../lib/native/linux
 export PATH
 
-java  -Djava.library.path=../lib/native/linux com.limegroup.gnutella.gui.Main -Djava.net.preferIPv4Stack=true $*
+java  -Xms32m -Djava.library.path=../lib/native/linux com.limegroup.gnutella.gui.Main -Djava.net.preferIPv4Stack=true $*

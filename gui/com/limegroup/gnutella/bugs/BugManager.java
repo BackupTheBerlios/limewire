@@ -65,72 +65,6 @@ public final class BugManager {
         GUIMediator.getStringResource("ERROR_INTERNAL_TITLE");
         
     /**
-     * The main error message
-     */
-    private static final String ERROR_MESSAGE =
-        GUIMediator.getStringResource("ERROR_INTERNAL_SERVLET");
-        
-    /**
-     * The error message for clients that won't send us a message.
-     */
-    private static final String OLD_ERROR_MESSAGE =
-        GUIMediator.getStringResource("ERROR_INTERNAL_OLD");
-        
-    /**
-     * The error message to use if the servlet send fails.
-     */
-    private static final String SERVLET_FAILED_MESSAGE =
-        GUIMediator.getStringResource("ERROR_INTERNAL_SERVLET_FAILED");
-        
-    /**
-     * The 'send' string.
-     */
-    private static final String SEND =
-        GUIMediator.getStringResource("ERROR_INTERNAL_SEND");
-
-    /**
-     * The 'review' string.
-     */
-    private static final String REVIEW =
-        GUIMediator.getStringResource("ERROR_INTERNAL_REVIEW");
-        
-    /**
-     * The 'discard' string.
-     */
-    private static final String DISCARD =
-        GUIMediator.getStringResource("ERROR_INTERNAL_DISCARD");
-        
-    /**
-     * The 'Copy Selection' string
-     */
-    private static final String COPY =
-        GUIMediator.getStringResource("ERROR_INTERNAL_COPY");
-        
-    /**
-     * The 'OK' string
-     */
-    private static final String OK =
-        GUIMediator.getStringResource("ERROR_INTERNAL_OK");
-        
-    /**
-     * The 'Always Send Immediately' string
-     */
-    private static final String ALWAYS_SEND =
-        GUIMediator.getStringResource("ERROR_INTERNAL_ALWAYS_SEND");
-        
-    /**
-     * The 'Always Ask For Review' string
-     */
-    private static final String ALWAYS_REVIEW =
-        GUIMediator.getStringResource("ERROR_INTERNAL_ALWAYS_REVIEW");
-        
-    /**
-     * The 'Always Discard Bugs' string
-     */
-    private static final String ALWAYS_DISCARD =
-        GUIMediator.getStringResource("ERROR_INTERNAL_ALWAYS_DISCARD");
-    
-    /**
      * The queue that processes processes the bugs.
      */
     private final ProcessingQueue BUGS_QUEUE =
@@ -151,9 +85,9 @@ public final class BugManager {
 	private final Object WRITE_LOCK = new Object();
 	
 	/**
-	 * A seperate between bug reports.
+	 * A separator between bug reports.
 	 */
-	private static final byte[] SEPERATOR = "-----------------\n".getBytes();
+	private static final byte[] SEPARATOR = "-----------------\n".getBytes();
 	
 	/**
 	 * The next time we're allowed to send any bug.
@@ -262,7 +196,7 @@ public final class BugManager {
                         new FileOutputStream(f.getPath(), true));
                 os.write((new Date().toString() + "\n").getBytes());
                 os.write(info.toBugReport().getBytes());
-                os.write(SEPERATOR);
+                os.write(SEPARATOR);
                 os.flush();
             }
         } catch(IOException ignored) {
@@ -404,16 +338,16 @@ public final class BugManager {
         MultiLineLabel label;
         
         if(sendable)
-            label = new MultiLineLabel(ERROR_MESSAGE, 400);
+            label = new MultiLineLabel(GUIMediator.getStringResource("ERROR_INTERNAL_SERVLET"), 400);
         else
-            label = new MultiLineLabel(OLD_ERROR_MESSAGE, 400);
+            label = new MultiLineLabel(GUIMediator.getStringResource("ERROR_INTERNAL_OLD"), 400);
 		JPanel labelPanel = new JPanel();
 		labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
 		labelPanel.add(Box.createHorizontalGlue());
 		labelPanel.add(label);
 
         JPanel buttonPanel = new JPanel();
-        JButton sendButton = new JButton(SEND);
+        JButton sendButton = new JButton(GUIMediator.getStringResource("ERROR_INTERNAL_SEND"));
         sendButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				sendToServlet(info);
@@ -421,7 +355,7 @@ public final class BugManager {
 				_dialogsShowing--;
 			}
 		});
-        JButton reviewButton = new JButton(REVIEW);
+        JButton reviewButton = new JButton(GUIMediator.getStringResource("ERROR_INTERNAL_REVIEW"));
         reviewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
                 JTextArea textArea = new JTextArea(info.toBugReport());
@@ -434,7 +368,7 @@ public final class BugManager {
                 MessageService.instance().showMessage(scroller);
 			}
 		});
-		JButton discardButton = new JButton(DISCARD);
+		JButton discardButton = new JButton(GUIMediator.getStringResource("ERROR_INTERNAL_DISCARD"));
 		discardButton.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent e) {
 		        DIALOG.dispose();
@@ -451,9 +385,9 @@ public final class BugManager {
         ButtonGroup bg = new ButtonGroup();
         innerPanel.setLayout( new BoxLayout(innerPanel, BoxLayout.Y_AXIS));
         optionsPanel.setLayout(new BorderLayout());
-        final JRadioButton alwaysSend = new JRadioButton(ALWAYS_SEND);
-        final JRadioButton alwaysReview = new JRadioButton(ALWAYS_REVIEW);
-        final JRadioButton alwaysDiscard = new JRadioButton(ALWAYS_DISCARD);
+        final JRadioButton alwaysSend = new JRadioButton(GUIMediator.getStringResource("ERROR_INTERNAL_ALWAYS_SEND"));
+        final JRadioButton alwaysReview = new JRadioButton(GUIMediator.getStringResource("ERROR_INTERNAL_ALWAYS_REVIEW"));
+        final JRadioButton alwaysDiscard = new JRadioButton(GUIMediator.getStringResource("ERROR_INTERNAL_ALWAYS_DISCARD"));
 		innerPanel.add(Box.createVerticalStrut(6));        
         if(!CommonUtils.isTestingVersion()) {
     		if(sendable)
@@ -501,7 +435,7 @@ public final class BugManager {
 		}
 
 		try {
-		    DIALOG.show();
+		    DIALOG.setVisible(true);
         } catch(InternalError ie) {
             //happens occasionally, ignore.
         } catch(ArrayIndexOutOfBoundsException npe) {
@@ -527,7 +461,7 @@ public final class BugManager {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
-        MultiLineLabel label = new MultiLineLabel(SERVLET_FAILED_MESSAGE, 400);
+        MultiLineLabel label = new MultiLineLabel(GUIMediator.getStringResource("ERROR_INTERNAL_SERVLET_FAILED"), 400);
 		JPanel labelPanel = new JPanel();
 		JPanel innerPanel = new JPanel();
 		labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
@@ -556,7 +490,7 @@ public final class BugManager {
         scroller.setPreferredSize(ERROR_DIMENSION);		
 
         JPanel buttonPanel = new JPanel();
-        JButton copyButton = new JButton(COPY);
+        JButton copyButton = new JButton(GUIMediator.getStringResource("ERROR_INTERNAL_COPY"));
         copyButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			    textArea.selectAll();
@@ -564,7 +498,7 @@ public final class BugManager {
 				textArea.setCaretPosition(0);
 			}
 		});
-        JButton quitButton = new JButton(OK);
+        JButton quitButton = new JButton(GUIMediator.getStringResource("ERROR_INTERNAL_OK"));
         quitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e){
 				DIALOG.dispose();

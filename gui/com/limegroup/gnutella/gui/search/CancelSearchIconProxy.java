@@ -7,7 +7,6 @@ import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.util.MissingResourceException;
 import javax.swing.JButton;
-import javax.swing.UIManager;
 import javax.swing.JInternalFrame;
 import javax.swing.ImageIcon;
 import javax.swing.Icon;

@@ -73,7 +73,7 @@ public final class DaapManager implements FinalizeListener {
     private DaapServer server;
     private RendezvousService rendezvous;
     
-    private boolean annotateEnabled = false;
+    private boolean enabled = false;
     private int maxPlaylistSize;
     
     private DaapManager() {
@@ -89,7 +89,7 @@ public final class DaapManager implements FinalizeListener {
     public synchronized void init() {
         
         if (isServerRunning()) {
-            setAnnotateEnabled(annotateEnabled);
+            setEnabled(enabled);
         }
     }
     
@@ -430,7 +430,7 @@ public final class DaapManager implements FinalizeListener {
      * Called by VisualConnectionCallback
      */
     public synchronized void handleFileManagerEvent(FileManagerEvent evt) {
-        if (!isServerRunning())
+        if (!enabled || !isServerRunning())
             return;
               
         if (evt.isChangeEvent())
@@ -446,10 +446,29 @@ public final class DaapManager implements FinalizeListener {
     /**
      * Called by VisualConnectionCallback/MetaFileManager.
      */
-    public synchronized void setAnnotateEnabled(boolean enabled) {        
-        this.annotateEnabled = enabled;        
-        if (!isServerRunning() || !enabled)
-            return;         
+    public void fileManagerLoading() {
+        setEnabled(false);
+    }
+    
+    /**
+     * Called by VisualConnectionCallback/MetaFileManager.
+     */
+    public void fileManagerLoaded() {
+        setEnabled(true);
+    }
+    
+    public synchronized boolean isEnabled() {
+        return enabled;
+    }
+    
+    private synchronized void setEnabled(boolean enabled) {
+        
+        this.enabled = enabled;
+        //System.out.println("setEnabled: " + enabled);
+        
+        if (!enabled || !isServerRunning())
+            return;
+        
         int size = database.getMasterPlaylist().size();        
         Transaction txn = library.open(false);        
         SongURNMap tmpMap = new SongURNMap();        

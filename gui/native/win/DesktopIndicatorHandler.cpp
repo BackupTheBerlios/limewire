@@ -320,9 +320,13 @@ DesktopIndicatorHandler::doEnable()
     wndClass.cbSize = sizeof(wndClass);
     wndClass.lpszClassName = TEXT("DesktopIndicatorHandlerClass");
     wndClass.lpfnWndProc = WndProc;
-    if (!RegisterClassEx(&wndClass)) {
+
+	static bool successfullyRegistered=false;
+    if (!successfullyRegistered && !RegisterClassEx(&wndClass)) {
         return;
     }
+	successfullyRegistered=true;
+
     // Create window
     m_hWnd = CreateWindow(
         TEXT("DesktopIndicatorHandlerClass"),
@@ -336,7 +340,8 @@ DesktopIndicatorHandler::doEnable()
     if (!m_hWnd) {
         return;
     }
-    // Set this pointer
+
+	// Set this pointer
     SetWindowLong(m_hWnd, GWL_USERDATA, (LONG)this);
 
     // Add shell icon
@@ -355,6 +360,7 @@ DesktopIndicatorHandler::doEnable()
         sizeof(iconData.szTip) / sizeof(iconData.szTip[0]) - 1]
         = L'\0';
     UShell_NotifyIcon(NIM_ADD, &iconData);
+
 }
 
 /////////////////////////////////////////////////////////////////////////////

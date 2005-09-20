@@ -1,18 +1,11 @@
 package com.limegroup.gnutella.gui.xml;
 
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Locale;
-import java.util.StringTokenizer;
 
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.text.Document;
 import javax.swing.undo.UndoManager;

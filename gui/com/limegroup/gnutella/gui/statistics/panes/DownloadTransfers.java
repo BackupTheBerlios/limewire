@@ -17,9 +17,9 @@ public final class DownloadTransfers extends AbstractMessageGraphPaneItem {
 	 */
 	public DownloadTransfers(final String key) {
 		super(key);
-		registerStatistic(DownloadStat.SUCCESFULL_HTTP11,
+		registerStatistic(DownloadStat.SUCCESSFUL_HTTP11,
 						  GUIMediator.getStringResource("DOWNLOAD_SUCCESFULL_HTTP11"));
-		registerStatistic(DownloadStat.SUCCESFULL_HTTP10,
+		registerStatistic(DownloadStat.SUCCESSFUL_HTTP10,
 						  GUIMediator.getStringResource("DOWNLOAD_SUCCESFULL_HTTP10"));
 		registerStatistic(DownloadStat.FAILED_HTTP11,
 						  GUIMediator.getStringResource("DOWNLOAD_FAILED_HTTP11"));

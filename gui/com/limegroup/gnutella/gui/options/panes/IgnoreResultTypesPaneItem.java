@@ -33,6 +33,11 @@ public final class IgnoreResultTypesPaneItem extends AbstractPaneItem {
 	 * Handle to the check box for ignoring .vbs files.
 	 */
 	private JCheckBox IGNORE_VBS_CHECK_BOX = new JCheckBox();
+	
+	/**
+	 * Handle to the check box for ignoring .asf and .wmv files.
+	 */
+	private JCheckBox IGNORE_WMV_ASF_CHECK_BOX = new JCheckBox();
 
 	/**
 	 * Key for the locale-specifis string for the adult content check box 
@@ -51,6 +56,11 @@ public final class IgnoreResultTypesPaneItem extends AbstractPaneItem {
 	 * label.
 	 */
 	private String VBS_BOX_LABEL = "OPTIONS_IGNORE_RESULT_TYPES_VBS_BOX_LABEL";
+	
+	/**
+	 * Key for the locale-specific string for the wmv and asf file check box label.
+	 */
+	private String WMV_ASF_BOX_LABEL = "OPTIONS_IGNORE_RESULT_TYPES_WMV_ASF_BOX_LABEL";
 
 	/**
 	 * The constructor constructs all of the elements of this 
@@ -64,12 +74,14 @@ public final class IgnoreResultTypesPaneItem extends AbstractPaneItem {
 		IGNORE_ADULT_CHECK_BOX.setText(GUIMediator.getStringResource(ADULT_BOX_LABEL));
 		IGNORE_HTML_CHECK_BOX.setText(GUIMediator.getStringResource(HTML_BOX_LABEL));
 		IGNORE_VBS_CHECK_BOX.setText(GUIMediator.getStringResource(VBS_BOX_LABEL));
+		IGNORE_WMV_ASF_CHECK_BOX.setText(GUIMediator.getStringResource(WMV_ASF_BOX_LABEL));
 		BoxPanel checkBoxPanel = new BoxPanel(BoxPanel.X_AXIS);
 		BoxPanel checkBoxListPanel = new BoxPanel();
 		
 		checkBoxListPanel.add(IGNORE_ADULT_CHECK_BOX);
 		checkBoxListPanel.add(IGNORE_HTML_CHECK_BOX);
 		checkBoxListPanel.add(IGNORE_VBS_CHECK_BOX);
+		checkBoxListPanel.add(IGNORE_WMV_ASF_CHECK_BOX);
 		
 		checkBoxPanel.add(Box.createHorizontalGlue());
 		checkBoxPanel.add(checkBoxListPanel);
@@ -87,6 +99,7 @@ public final class IgnoreResultTypesPaneItem extends AbstractPaneItem {
 		IGNORE_ADULT_CHECK_BOX.setSelected(FilterSettings.FILTER_ADULT.getValue());
 		IGNORE_HTML_CHECK_BOX.setSelected(FilterSettings.FILTER_HTML.getValue());
 		IGNORE_VBS_CHECK_BOX.setSelected(FilterSettings.FILTER_VBS.getValue());
+		IGNORE_WMV_ASF_CHECK_BOX.setSelected(FilterSettings.FILTER_WMV_ASF.getValue());
 	}
 
 	/**
@@ -104,6 +117,7 @@ public final class IgnoreResultTypesPaneItem extends AbstractPaneItem {
 		FilterSettings.FILTER_ADULT.setValue(IGNORE_ADULT_CHECK_BOX.isSelected());
 		FilterSettings.FILTER_VBS.setValue(IGNORE_VBS_CHECK_BOX.isSelected());
 		FilterSettings.FILTER_HTML.setValue(IGNORE_HTML_CHECK_BOX.isSelected());
+		FilterSettings.FILTER_WMV_ASF.setValue(IGNORE_WMV_ASF_CHECK_BOX.isSelected());
 		RouterService.adjustSpamFilters();
 		if(adultChanged)
 		    SearchMediator.rebuildInputPanel();
@@ -113,6 +127,7 @@ public final class IgnoreResultTypesPaneItem extends AbstractPaneItem {
     public boolean isDirty() {
         return FilterSettings.FILTER_ADULT.getValue() != IGNORE_ADULT_CHECK_BOX.isSelected() ||
                FilterSettings.FILTER_VBS.getValue() != IGNORE_VBS_CHECK_BOX.isSelected() ||
-               FilterSettings.FILTER_HTML.getValue() != IGNORE_HTML_CHECK_BOX.isSelected();
+               FilterSettings.FILTER_HTML.getValue() != IGNORE_HTML_CHECK_BOX.isSelected() ||
+               FilterSettings.FILTER_WMV_ASF.getValue() != IGNORE_WMV_ASF_CHECK_BOX.isSelected();
     }	
 }

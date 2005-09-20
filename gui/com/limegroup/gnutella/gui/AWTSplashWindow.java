@@ -13,7 +13,6 @@
 package com.limegroup.gnutella.gui;
  
 import java.awt.*;
-import java.awt.event.*;
 
 /**
  * Splash Window to show an image during startup of an application.<p>
@@ -134,7 +133,7 @@ public class AWTSplashWindow extends Window {
 
         // Show the window.
         w.toFront();
-        w.show();
+        w.setVisible(true);
 
 
         // Note: To make sure the user gets a chance to see the

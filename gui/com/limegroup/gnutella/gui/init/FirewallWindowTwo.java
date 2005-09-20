@@ -9,7 +9,6 @@ import com.limegroup.gnutella.gui.GUIMediator;
 import com.limegroup.gnutella.gui.BoxPanel;
 import com.limegroup.gnutella.UPnPManager;
 import com.limegroup.gnutella.RouterService;
-import com.limegroup.gnutella.util.ManagedThread;
 import com.limegroup.gnutella.util.CommonUtils;
 import com.limegroup.gnutella.settings.ConnectionSettings;
 

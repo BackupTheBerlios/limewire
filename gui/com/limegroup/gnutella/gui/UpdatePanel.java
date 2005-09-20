@@ -7,98 +7,135 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.plaf.metal.MetalLabelUI;
 
 import com.limegroup.gnutella.version.UpdateInformation;
 
-final class UpdatePanel extends JPanel implements RefreshListener {
+final class UpdatePanel extends JLabel implements RefreshListener {
 
     private final String labelString = 
         GUIMediator.getStringResource("UPDATE_MESSAGE_SMALL");
 
-    private JLabel LABEL;
-    
-    private boolean visible;
+    /**
+     * Whether a new update is available.
+     */
+    private volatile boolean _updateAvailable;
 
-    private boolean blink;
-    
     /**
      * The most recent UpdateInformation we know about.
      */
-    private UpdateInformation info;
+    private UpdateInformation _info;
+    
+    /**
+     * Cached UpdateDialog.  Written to only from the awt thread, read from other threads.
+     */
+    private UpdateDialog _dialog;
 
     UpdatePanel() {
-         LABEL = new JLabel(labelString, SwingConstants.CENTER);
+        super(GUIMediator.getStringResource("UPDATE_MESSAGE_SMALL"), SwingConstants.CENTER);
         //make the font so that it looks like a link
-        LABEL.setUI(new LinkLabelUI());
-		FontMetrics fm = LABEL.getFontMetrics(LABEL.getFont());
+        setUI(new LinkLabelUI());
+		FontMetrics fm = getFontMetrics(getFont());
   		int width = fm.stringWidth(labelString);
   		Dimension dim = new Dimension(width, fm.getHeight());
         //link color, could grab system attribute as well
-		LABEL.setForeground(Color.red); 
-  		LABEL.setPreferredSize(dim);
-  		LABEL.setMaximumSize(dim);
+		setForeground(Color.red); 
+  		setPreferredSize(dim);
+  		setMaximumSize(dim);
 
         //add a mouse listener
-        LABEL.addMouseListener(new MouseAdapter() {
+        addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 UpdatePanel.this.handleClick();
             }
             //change cursor, we are on a link
             public void mouseEntered(MouseEvent e) { 
-                if(visible) 
+                if(_updateAvailable) 
                     e.getComponent().setCursor
                     (Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			}
             //change back to normal
 			public void mouseExited(MouseEvent e) {
-                if(visible)
+                if(_updateAvailable)
                     e.getComponent().setCursor(Cursor.getDefaultCursor()); 
 			}
         });
 
         //add the link
-        add(LABEL);
         GUIMediator.addRefreshListener(this);
         //keep it invisible
         setVisible(false);
-        visible = false;
-        blink = false;
+        _updateAvailable = false;
     }
     
-    public void makeVisible(boolean blink, UpdateInformation info) {
-        visible = true;
-        this.blink = blink;
-        this.info = info;
-        super.setVisible(true);
-    }
-    
-
-    private void handleClick() {
-        if(!visible) //not visible? no update yet
-            return;
+    public void makeVisible(boolean popup, UpdateInformation info) {
+        
+        // update the dialog and dispose the old one
+        Runnable disposer = null;
+        synchronized(this) {
+            _updateAvailable = true;
+            _info = info;
             
-        if(info != null) {
-            if(blink)
-                new UpdateDialog(info).setVisible(true);
-            else
-                GUIMediator.openURL(info.getUpdateURL());
+        	final UpdateDialog currentDialog = _dialog;
+        	
+        	if (_info != null )
+        		_dialog = new UpdateDialog(_info);
+        	
+        	if (currentDialog != null) {
+        		disposer = new Runnable() {
+        			public void run() {
+        				currentDialog.setVisible(false);
+        				currentDialog.dispose();        
+        			}
+        		};
+        	}
+        }
+        
+        if (disposer != null)
+        	GUIMediator.safeInvokeLater(disposer);
+        
+        super.setVisible(true);
+        
+        // if we blink, notify the user immediately
+        if (popup) {
+        	GUIMediator.safeInvokeLater(new Runnable() {
+             public void run() {
+                 handleClick();    
+             }
+            });
+        }
+    }
+
+	/**
+	 * Returns true if this update panel should be shown; namely, if
+	 * an update is available. 
+	 */
+	public boolean shouldBeShown() {
+		return _updateAvailable;
+	}
+	
+    private void handleClick() {
+        if(!_updateAvailable) //not visible? no update yet
+            return;
+        
+        synchronized(this) {
+        	if(_info != null)  
+        		_dialog.setVisible(true);
         }
     }
     
     public void refresh() {
-        if(!visible || !blink)
+        if (!_updateAvailable)
             return;
-        Color currCol = LABEL.getForeground();
-        if(currCol.equals(Color.red))
-           LABEL.setForeground(Color.black);
-        if(currCol.equals(Color.black))
-           LABEL.setForeground(Color.red);           
+        Color currCol = getForeground();
+        if (currCol.equals(Color.red))
+            setForeground(Color.black);
+        if (currCol.equals(Color.black))
+            setForeground(Color.red);           
     }
 
 
@@ -112,15 +149,14 @@ final class UpdatePanel extends JPanel implements RefreshListener {
         protected void paintEnabledText(JLabel l, Graphics g, String s, 
                                         int textX, int textY) {
             super.paintEnabledText(l, g, s, textX, textY);
-			if (LABEL.getText() == null)  return;
+			if (getText() == null)
+                return;
 			
 			FontMetrics fm = g.getFontMetrics();
 			g.fillRect(textX, fm.getAscent()+2, 
-                       fm.stringWidth(LABEL.getText()) - 
-					   LABEL.getInsets().right, 1); //X,Y,WIDTH,HEIGHT
+                       fm.stringWidth(getText()) - 
+					   getInsets().right, 1); //X,Y,WIDTH,HEIGHT
             
         }        
     }
 }
-
-

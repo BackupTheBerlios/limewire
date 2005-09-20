@@ -214,22 +214,33 @@ public final class MessageService {
 	 * @param message the message to display to the user
 	 */ 
 	final int showYesNoMessage(String message) {
-		int option;
-		try {
-		    option =
-		        JOptionPane.showConfirmDialog(getParentComponent(), 
-							  new MultiLineLabel(message), 
-							  GUIMediator.getStringResource("MESSAGE_CAPTION"),
-							  JOptionPane.YES_NO_OPTION);
+		return showYesNoMessage(message,GUIMediator.getStringResource("MESSAGE_CAPTION"));
+	}
+
+    /**
+     * Displays a message to the user and returns 
+     * MessageService.YES_OPTION if the user selects yes and
+     * MessageService.NO_OPTION if the user selects no.
+     *
+     * @param message the message to display to the user
+     * @title the title on the dialog
+     */ 
+    final int showYesNoMessage(String message, String title) {
+        int option;
+        try {
+            option =
+                JOptionPane.showConfirmDialog(getParentComponent(), 
+                              new MultiLineLabel(message), 
+                              title,
+                              JOptionPane.YES_NO_OPTION);
         } catch(InternalError ie) {
             // happens occasionally, assume no.
             option = JOptionPane.NO_OPTION;
         }
             
-		if(option == JOptionPane.YES_OPTION) return MessageService.YES_OPTION;
-		return MessageService.NO_OPTION;
-	}
-	
+        if(option == JOptionPane.YES_OPTION) return MessageService.YES_OPTION;
+        return MessageService.NO_OPTION;
+    }
 	/**
 	 * Displays a message to the user and returns 
 	 * MessageService.YES_OPTION if the user selects yes and
@@ -315,7 +326,7 @@ public final class MessageService {
 	 */ 
 	final int showYesNoCancelMessage(String message, IntSetting defValue) {
 	    // if default has a valid value, use it.
-	    if(defValue.getValue() == YES_OPTION || defValue.getValue() == NO_OPTION ||
+	    if (defValue.getValue() == YES_OPTION || defValue.getValue() == NO_OPTION ||
 	       defValue.getValue() == CANCEL_OPTION)
 	        return defValue.getValue();
 	        
@@ -336,15 +347,15 @@ public final class MessageService {
         }
                 
         int ret;                
-		if(option == JOptionPane.YES_OPTION)
+		if (option == JOptionPane.YES_OPTION)
 		    ret = MessageService.YES_OPTION;
-        else if(option == JOptionPane.NO_OPTION)
+        else if (option == JOptionPane.NO_OPTION)
             ret = MessageService.NO_OPTION;
         else
             ret = MessageService.CANCEL_OPTION;
             
         // If we wanted to remember the answer, remember it.            
-        if ( defValue.getValue() == REMEMBER_ANSWER )
+        if (defValue.getValue() == REMEMBER_ANSWER && ret != MessageService.CANCEL_OPTION)
             defValue.setValue(ret);
         else
             defValue.setValue(FORGET_ANSWER);

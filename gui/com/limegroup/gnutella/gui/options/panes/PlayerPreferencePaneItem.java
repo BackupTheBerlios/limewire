@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.swing.JCheckBox;
 
+import com.limegroup.gnutella.gui.GUIMediator;
 import com.limegroup.gnutella.gui.LabeledComponent;
 import com.limegroup.gnutella.settings.PlayerSettings;
 
@@ -61,10 +62,8 @@ public final class PlayerPreferencePaneItem extends AbstractPaneItem {
 	 * @throws IOException if the options could not be applied for some reason
 	 */
 	public boolean applyOptions() throws IOException {
-        boolean restartRequired =
-            CHECK_BOX.isSelected() != PlayerSettings.PLAYER_ENABLED.getValue();
-		PlayerSettings.PLAYER_ENABLED.setValue(CHECK_BOX.isSelected());
-        return restartRequired;
+		GUIMediator.instance().setPlayerEnabled(CHECK_BOX.isSelected());
+        return false;
 	}
 	
     public boolean isDirty() {

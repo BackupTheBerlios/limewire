@@ -151,7 +151,7 @@ final class LibraryTableModel extends HashBasedDataLineModel {
 	 *
 	 * @param row  The row of the file
 	 *
-	 * @return  A <code>int</code> object containing the size of the file
+	 * @return  An <code>int</code> containing the size of the file
 	 */
 	int getSize(int row) {
 	    return ((SizeHolder)(

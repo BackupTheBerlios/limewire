@@ -1,12 +1,9 @@
 package com.limegroup.gnutella.version;
 
-import org.apache.commons.httpclient.URI;
-import org.apache.commons.httpclient.URIException;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Iterator;
@@ -14,15 +11,15 @@ import java.io.StringReader;
 import java.io.IOException;
 import java.net.URLEncoder;
 
+
 import org.apache.xerces.parsers.DOMParser;
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.DOMException;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import com.limegroup.gnutella.URN;
 import com.limegroup.gnutella.xml.LimeXMLUtils;
 import com.limegroup.gnutella.util.CommonUtils;
 import com.limegroup.gnutella.settings.ApplicationSettings;
@@ -50,6 +47,11 @@ class UpdateCollection {
      * The list of UpdateData's in this collection.
      */
     private List updateDataList = new LinkedList();
+    
+    /**
+     * The list of DownloadDatas in this collection.
+     */
+    private List downloadDataList = new LinkedList();
     
     /**
      * Ensure that this is only created by using the factory constructor.
@@ -86,6 +88,13 @@ class UpdateCollection {
     }
     
     /**
+     * Gets all updates that have information so we can download them.
+     */
+    List getUpdatesWithDownloadInformation() {
+        return Collections.unmodifiableList(downloadDataList);
+    }
+    
+    /**
      * Gets the UpdateData that is relevant to us.
      * Returns null if there is no relevant update.
      */
@@ -103,7 +112,7 @@ class UpdateCollection {
                 if(lang.equals(next.getLanguage())) {
                     exactMatch = next;
                     break;
-                } else if("en".equals(next.getLanguage())) {
+                } else if("en".equals(next.getLanguage()) && englishMatch == null) {
                     englishMatch = next;
                 }
             }
@@ -188,7 +197,7 @@ class UpdateCollection {
         
         NodeList children = doc.getChildNodes();
         for(int i = 0; i < children.getLength(); i++) {
-            Node child = (Node)children.item(i);
+            Node child = children.item(i);
             if("msg".equals(child.getNodeName()))
                 parseMsgItem(child);
         }
@@ -210,6 +219,12 @@ class UpdateCollection {
      *      javato   -- OPTIONAL (if both are missing, all ranges are valid.  if one is missing, defaults to above or below that.)
      *      os       -- OPTIONAL (defaults to '*' -- accepts a comma delimited list.)
      *
+     * The below elements are necessary for downloading the update in the network.
+     *      urn      -- The BITPRINT of the download
+     *      ucommand -- The command to run to invoke the update.
+     *      uname    -- The filename on disk the update should have.
+     *      size     -- The size of the update when completed.
+     *
      * If any values exist but error while parsing, the entire block is considered
      * invalid and ignored.
      */
@@ -227,6 +242,39 @@ class UpdateCollection {
         String javaFrom = getAttributeText(attr, "javafrom");
         String javaTo = getAttributeText(attr, "javato");
         String os = getAttributeText(attr, "os");
+        String updateURN = getAttributeText(attr, "urn");
+        String updateCommand = getAttributeText(attr, "ucommand");
+        String updateName = getAttributeText(attr, "uname");
+        String fileSize = getAttributeText(attr, "size");
+        
+        if(updateURN != null) {
+            try {
+                URN urn = URN.createSHA1Urn(updateURN);
+                String tt = URN.getTigerTreeRoot(updateURN);
+                data.setUpdateURN(urn);
+                data.setUpdateTTRoot(tt);
+            } catch(IOException ignored) {
+                LOG.warn("Invalid bitprint urn: " + updateURN, ignored);
+            }
+        }
+        
+        data.setUpdateCommand(updateCommand);
+        data.setUpdateFileName(updateName);
+        
+        if(fileSize != null) {
+            try {
+                data.setUpdateSize(Integer.parseInt(fileSize));
+            } catch(NumberFormatException nfe) {
+                LOG.warn("Invalid size: " + fileSize);
+            }
+        }
+        
+        // if this has enough information for downloading, add it to the list of potentials.
+        if(data.getUpdateURN() != null && data.getUpdateFileName() != null && data.getSize() != 0) {
+            if (LOG.isDebugEnabled())
+                LOG.debug("Adding new download data item: " + data);
+            downloadDataList.add(data);
+        }
         
         if(forV == null || url == null || style == null) {
             LOG.error("Missing required for, url, or style.");
@@ -282,11 +330,10 @@ class UpdateCollection {
         if(os == null)
             os = "*";
         data.setOSList(OS.createFromList(os));
-        
-        
+                
         NodeList children = msg.getChildNodes();
         for(int i = 0; i < children.getLength(); i++) {
-            Node child = (Node)children.item(i);
+            Node child = children.item(i);
             if("lang".equals(child.getNodeName()))
                 parseLangItem((UpdateData)data.clone(), child);
         }

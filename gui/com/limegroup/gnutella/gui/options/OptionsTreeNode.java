@@ -1,10 +1,6 @@
 package com.limegroup.gnutella.gui.options;
 
-import java.util.Enumeration;
-
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
 
 /**
  * This class acts as a proxy and as a "decorator" for an underlying instance 

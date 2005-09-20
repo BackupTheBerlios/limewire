@@ -98,7 +98,7 @@ JNICALL   Java_com_limegroup_gnutella_gui_notify_WindowsNotifyUser_nativeEnable
             (HICON)jiImage, lpcwszTooltip);
     } else {
         // Create our handler
-        handler = new DesktopIndicatorHandler(jniEnv, jthis,
+		handler = new DesktopIndicatorHandler(jniEnv, jthis,
             (HICON)jiImage, lpcwszTooltip);
         // Enable it
         if (handler) {

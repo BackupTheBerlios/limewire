@@ -7,7 +7,6 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -271,10 +270,7 @@ public final class HTTPUploader implements Uploader {
             } catch(IOException ignored) {}
         }
         _fis = _fileDesc.createInputStream();
-        
-        File parent = _fileDesc.getFile().getParentFile();
-        if(parent != null)
-            _isForcedShare = parent.equals(FileManager.FORCED_SHARE);
+        _isForcedShare = FileManager.isForcedShare(_fileDesc);
 	}
 
 	/**
@@ -370,6 +366,9 @@ public final class HTTPUploader implements Uploader {
 			break;
         case BROWSE_HOST:
             _state = new BrowseHostUploadState(this);
+            break;
+        case BROWSER_CONTROL:
+            _state = new BrowserControlUploadState(this);
             break;
         case PUSH_PROXY:
             _state = new PushProxyUploadState(this);
@@ -471,8 +470,12 @@ public final class HTTPUploader implements Uploader {
 	 */
 	void setAmountUploaded(int amount) {
 		int newData = amount - _amountRead;
-		if(newData > 0)
-            BandwidthStat.HTTP_BODY_UPSTREAM_BANDWIDTH.addData(newData);
+		if(newData > 0) {
+            if (isForcedShare())
+                BandwidthStat.HTTP_BODY_UPSTREAM_INNETWORK_BANDWIDTH.addData(newData);
+            else
+                BandwidthStat.HTTP_BODY_UPSTREAM_BANDWIDTH.addData(newData);
+        }
 		_amountRead = amount;
 	}
     
@@ -758,8 +761,10 @@ public final class HTTPUploader implements Uploader {
                     break;
 
 
- 
-				BandwidthStat.
+                if (isForcedShare())
+                    BandwidthStat.HTTP_HEADER_DOWNSTREAM_INNETWORK_BANDWIDTH.addData(str.length());
+                else 
+                    BandwidthStat.
                         HTTP_HEADER_DOWNSTREAM_BANDWIDTH.addData(str.length());
                 if (LOG.isDebugEnabled())
                 	LOG.debug("HTTPUploader.readHeader(): str = " +  str);
@@ -976,6 +981,7 @@ public final class HTTPUploader implements Uploader {
         //Allow them to browse the host though
 		if (SharingSettings.ALLOW_BROWSER.getValue() == false
             && !(_stateNum == BROWSE_HOST)  
+            && !(_stateNum == BROWSER_CONTROL)  
             && !(_stateNum == PUSH_PROXY)  
 			&& !(_fileName.toUpperCase().startsWith("LIMEWIRE"))) {
 			// if we are not supposed to read from them

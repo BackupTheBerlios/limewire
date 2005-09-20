@@ -1,7 +1,6 @@
 package com.limegroup.gnutella;
 
 import java.io.File;
-import java.util.Iterator;
 
 /**
  * The downloader interface.  The UI maintains a list of Downloader's and uses
@@ -136,11 +135,15 @@ public interface Downloader extends BandwidthTracker {
     public int getAmountRead();
     
     /**
-     * Returns the locations from which this is currently downloading, as an
-     * iterator of Endpoint.  If this is swarming, may return multiple
-     * addresses.  Result meaningful only in the DOWNLOADING state.
+     * @return the amount of data pending to be written on disk (i.e. in cache, queue)
      */
-    public Iterator /* of Endpoint */ getHosts();
+    public int getAmountPending();
+    
+    /**
+     * @return the number locations from which this is currently downloading.
+     * Result meaningful only in the DOWNLOADING state.
+     */
+    public int getNumHosts();
     
     /**
      * Returns the vendor of the last downloading host.

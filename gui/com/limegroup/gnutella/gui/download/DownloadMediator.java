@@ -34,6 +34,7 @@ import com.limegroup.gnutella.gui.PaddedPanel;
 import com.limegroup.gnutella.gui.actions.BitziLookupAction;
 import com.limegroup.gnutella.gui.actions.CopyMagnetLinkToClipboardAction;
 import com.limegroup.gnutella.gui.actions.LimeAction;
+import com.limegroup.gnutella.gui.options.OptionsMediator;
 import com.limegroup.gnutella.gui.playlist.PlaylistMediator;
 import com.limegroup.gnutella.gui.search.SearchMediator;
 import com.limegroup.gnutella.gui.tables.AbstractTableMediator;
@@ -325,18 +326,30 @@ public final class DownloadMediator extends AbstractTableMediator
         Downloader dloader = (Downloader)downloader;
         int state = dloader.getState();
         
-        if(state == Downloader.COMPLETE &&
-         isThemeFile(dloader.getSaveFile().getName())) {
-            File themeFile = dloader.getDownloadFragment();
-            themeFile = copyToThemeDir(themeFile);
-            int response = GUIMediator.showYesNoMessage(
-                "DOWNLOAD_APPLY_NEW_THEME_START",
-                ThemeSettings.formatName(dloader.getSaveFile().getName()),
-                "DOWNLOAD_APPLY_NEW_THEME_END",
-                QuestionsHandler.THEME_DOWNLOADED);
-            if( response == GUIMediator.YES_OPTION ) {
-        ThemeMediator.changeTheme(themeFile);
-        }
+        if (state == Downloader.COMPLETE 
+        		&& isThemeFile(dloader.getSaveFile().getName())) {
+        	File themeFile = dloader.getDownloadFragment();
+        	themeFile = copyToThemeDir(themeFile);
+        	// don't allow changing of theme while options are visible,
+        	// but notify the user how to change the theme
+        	if (OptionsMediator.instance().isOptionsVisible()) {
+        		GUIMediator.showFormattedMessage("DOWNLOAD_EXPLAIN_HOW_TO_CHANGE_THEME",
+        				new String[] { ThemeSettings.formatName(dloader.getSaveFile().getName()),
+        				GUIMediator.getStringResource("MENU_VIEW_THEMES_REFRESH"),
+        				GUIMediator.getStringResource("MENU_VIEW_TITLE"),
+        				GUIMediator.getStringResource("MENU_VIEW_THEMES_TITLE"),
+        		});
+        	}
+        	else {
+        		int response = GUIMediator.showYesNoMessage(
+        				"DOWNLOAD_APPLY_NEW_THEME_START",
+        				ThemeSettings.formatName(dloader.getSaveFile().getName()),
+        				"DOWNLOAD_APPLY_NEW_THEME_END",
+        				QuestionsHandler.THEME_DOWNLOADED);
+        		if( response == GUIMediator.YES_OPTION ) {
+        			ThemeMediator.changeTheme(themeFile);
+        		}
+        	}
         }
         
         if(SharingSettings.CLEAR_DOWNLOAD.getValue()
@@ -388,7 +401,7 @@ public final class DownloadMediator extends AbstractTableMediator
                                                 QuestionsHandler.NO_PREVIEW_REPORT);
                         return;
                     }
-                    if (!_audioLaunched && PlaylistMediator.isPlayableFile(toLaunch)) {
+                    if (!_audioLaunched && PlaylistMediator.isPlayableFile(toLaunch) && GUIMediator.isPlaylistVisible()) {
                         GUIMediator.instance().launchAudio(toLaunch);
                         _audioLaunched = true;
                     } else {

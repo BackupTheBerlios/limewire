@@ -1,25 +1,44 @@
 package com.limegroup.gnutella.gui;
 
-import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.io.File;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.geom.RoundRectangle2D;
 
-import javax.swing.BorderFactory;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.Box;
-import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 
+import com.limegroup.gnutella.RouterService;
 import com.limegroup.gnutella.gui.mp3.MediaPlayerComponent;
-import com.limegroup.gnutella.gui.themes.ThemeFileHandler;
 import com.limegroup.gnutella.gui.themes.ThemeMediator;
 import com.limegroup.gnutella.gui.themes.ThemeObserver;
+import com.limegroup.gnutella.settings.ApplicationSettings;
+import com.limegroup.gnutella.settings.PlayerSettings;
+import com.limegroup.gnutella.settings.StatusBarSettings;
+import com.limegroup.gnutella.statistics.BandwidthStat;
 import com.limegroup.gnutella.util.CommonUtils;
+import com.limegroup.gnutella.version.UpdateInformation;
 
 /**
  * The component for the space at the bottom of the main application
@@ -27,111 +46,69 @@ import com.limegroup.gnutella.util.CommonUtils;
  */
 public final class StatusLine implements ThemeObserver {
 
-    /**
-     * Disconnected status.
+	/**
+     * The different connection status possibilities.
      */
     public static final int STATUS_DISCONNECTED = 0;
-
-    /**
-     * Connecting status.
-     */
     public static final int STATUS_CONNECTING = 1;
-
-    /**
-     * Poor status.
-     */
     public static final int STATUS_POOR = 2;
-
-    /**
-     * Fair status.
-     */
     public static final int STATUS_FAIR = 3;
-
-    /**
-     * Good status.
-     */
     public static final int STATUS_GOOD = 4;
-
-    /**
-     * Excellent status.
-     */
     public static final int STATUS_EXCELLENT = 5;
-
-    /**
-     * Turbocharged status.
-     */
     public static final int STATUS_TURBOCHARGED = 6;
-
-    /**
-     * Idle status.
-     */
     public static final int STATUS_IDLE = 7;
-    
-    /**
-     * Waking up status.
-     */
     public static final int STATUS_WAKING_UP = 8;
 
     /**
+     * The main container for the status line component.
+     */
+    private final JPanel BAR = new JPanel(new GridBagLayout());
+    
+    /**
      * The left most panel containing the connection quality.
-     * The switcher changes the actual image on this panel.
+     * The switcher changes the actual ImageIcons on this panel.
      */
-    private JPanel connectionQuality;
+    private final JLabel _connectionQualityMeter = new JLabel();
+    private final ImageIcon[] _connectionQualityMeterIcons = new ImageIcon[9];
 
     /**
-     * The images of the connection quality.
+     * The label with the firewall status.
      */
-    private JPanel[] qualityPanels = new JPanel[9];
+    private final JLabel _firewallStatus = new JLabel();
+	
+    /**
+     * The custom component for displaying the number of shared files.
+     */
+    private final SharedFilesLabel _sharedFiles = new SharedFilesLabel();
+    
+	/**
+	 * The labels for displaying the bandwidth usage.
+	 */
+	private final JLabel _bandwidthUsageDown = new JLabel(GUIMediator.getThemeImage("downloading_small")); 
+	private final JLabel _bandwidthUsageUp = new JLabel(GUIMediator.getThemeImage("uploading_small")); 
+    
+    /**
+     * Variables for the center portion of the status bar, which can display
+     * the StatusComponent (progress bar during program load), the UpdatePanel
+     * (notification that a new version of LimeWire is available), and the
+     * StatusLinkHandler (ads for going PRO).
+     */
+    private final StatusComponent STATUS_COMPONENT = new StatusComponent(StatusComponent.CENTER);
+    private final UpdatePanel _updatePanel = new UpdatePanel();
+	private final StatusLinkHandler _statusLinkHandler = new StatusLinkHandler();
+	private final JPanel _centerPanel = new JPanel(new GridBagLayout());
+	private Component _centerComponent = _updatePanel;
 
     /**
-     * <tt>CardLayout</tt> for switching between connected and
-     * disconnected views.
-     */
-    private CardLayout switcher;
-
-    /**
-     * The label with number of files being shared statistics.
-     */
-    private JLabel sharingLabel;
-
-    /**
-     * The panel that holds the text & status.
-     */
-    private JPanel connectionQualityText;
-
-    /**
-     * The label with the connection quality status.
-     */
-    private JLabel connectionStatus;
-
-
-    /**
-     * Takes care of all the MediaPlayer stuff.
+     * The media player.
      */
     private MediaPlayerComponent _mediaPlayer;
 
-    /**
-     * Update panel
-     */
-    private UpdatePanel _updatePanel;
-
-    /**
-     * Constant for the <tt>JPanel</tt> that displays the status line.
-     */
-    private final JPanel PANEL = new BoxPanel(BoxPanel.X_AXIS);
-
-    /**
-     * Constant for the center panel, containing either the updated
-     * status text or the donation text.
-     */
-    private final JPanel CENTER = new BoxPanel(BoxPanel.X_AXIS);
-
-    /**
-     * The status text.
-     */
-    private final StatusComponent STATUS_LABEL =
-        new StatusComponent(StatusComponent.CENTER);
-
+    
+    ///////////////////////////////////////////////////////////////////////////
+    //  Construction
+    ///////////////////////////////////////////////////////////////////////////
+        
     /**
      * Creates a new status line in the disconnected state.
      */
@@ -139,140 +116,378 @@ public final class StatusLine implements ThemeObserver {
         GUIMediator.setSplashScreenString(
             GUIMediator.getStringResource("SPLASH_STATUS_STATUS_WINDOW"));
 
-        //Make components
-        createConnectPanel();
+		GUIMediator.addRefreshListener(REFRESH_LISTENER);
+		BAR.addMouseListener(STATUS_BAR_LISTENER);
+		GUIMediator.getAppFrame().addComponentListener(new ComponentListener() {
+			public void componentResized(ComponentEvent arg0) { refresh(); }
+			public void componentMoved(ComponentEvent arg0) { }
+			public void componentShown(ComponentEvent arg0) { }
+			public void componentHidden(ComponentEvent arg0) { }
+		});
+        
+		//  make icons and panels for connection quality
+        createConnectionQualityPanel();
 
-        // add the 'Sharing X files' info
-        sharingLabel = new JLabel("           ");
-        sharingLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        String toolTip =
-            GUIMediator.getStringResource("STATISTICS_SHARING_TOOLTIP");
-        sharingLabel.setToolTipText(toolTip);
+        //  make the 'Firewall Status' label
+        createFirewallLabel();
+        
+        //  make the 'Sharing X Files' component
+		createSharingFilesLabel();
 
-        // add the 'Connection Quality: <status>' labels.
-        connectionQualityText = new BoxPanel(BoxPanel.X_AXIS);
-        JLabel connectionText = new JLabel(
-            GUIMediator.getStringResource("STATISTICS_CONNECTION_QUALITY") + " ");
-        connectionText.setAlignmentX(0.0f);
-        connectionStatus = new JLabel();
-        connectionStatus.setAlignmentX(0.0f);
-        connectionQualityText.add(connectionText);
-        connectionQualityText.add(connectionStatus);
-
-        // don't allow easy clipping
-        Dimension minimum = new Dimension(20, 3);
-        sharingLabel.setMinimumSize(minimum);
-        connectionStatus.setMinimumSize(minimum);
-        connectionQualityText.setMinimumSize(minimum);
-
-        // align far left.
-        connectionQualityText.setAlignmentX(0.0f);
-        sharingLabel.setAlignmentX(0.0f);
-
+		//  make the 'Bandwidth Usage' label
+		createBandwidthLabel();
+		
+		//  make the center panel
+		createCenterPanel();
+		
         // Set the bars to not be connected.
         setConnectionQuality(0);
 
-        // Tweak appearance
-        PANEL.setBorder(BorderFactory.createLoweredBevelBorder());
-
-        // Create the panel with the text descriptions.
-        JPanel textInfo = new BoxPanel(BoxPanel.Y_AXIS);
-        textInfo.add(connectionQualityText);
-        textInfo.add(sharingLabel);
-
-        // Put them together.
-        JPanel leftPanel = new BoxPanel(BoxPanel.X_AXIS);
-        // add connect icon and text panel
-        leftPanel.add(connectionQuality);
-        leftPanel.add(textInfo);
-        PANEL.add(leftPanel);
-
-        JPanel centerPanel = new BoxPanel(BoxPanel.Y_AXIS);
-
-        JPanel topCenter = new BoxPanel(BoxPanel.X_AXIS);
-        //add the panel to notify about updates
-        _updatePanel = new UpdatePanel();
-        topCenter.add(_updatePanel);
-
-        STATUS_LABEL.setProgressPreferredSize(new Dimension(250, 20));
-        CENTER.add(STATUS_LABEL);
-
-        centerPanel.add(topCenter);
-        centerPanel.add(CENTER);
-
-        PANEL.add(Box.createHorizontalGlue());
-        PANEL.add(centerPanel);
-        PANEL.add(Box.createHorizontalGlue());
-
-        Dimension prefer = new Dimension(PANEL.getWidth(), 45);
-        PANEL.setMinimumSize(prefer);
-
-        if (GUIMediator.isPlaylistVisible()) {
-            // now show the mp3 player...
-            _mediaPlayer = MediaPlayerComponent.instance();
-            JPanel mediaPanel = _mediaPlayer.getMediaPanel();
-            PANEL.add(mediaPanel);
-        }
-
 	    ThemeMediator.addThemeObserver(this);
+
+		refresh();
     }
 
+	/**
+	 * Redraws the status bar based on changes to StatusBarSettings,
+	 * and makes sure it has room to add an indicator before adding it.
+	 */
+	public void refresh() {
+		BAR.removeAll();
+        
+		//  figure out remaining width, and do not add indicators if no room
+		int sepWidth = Math.max(2, createSeparator().getWidth());
+		int remainingWidth = BAR.getWidth();
+		if (remainingWidth <= 0)
+			remainingWidth = ApplicationSettings.APP_WIDTH.getValue();
+		
+		//  subtract player as needed
+		if (GUIMediator.isPlaylistVisible()) {
+			if (_mediaPlayer == null)
+				_mediaPlayer = MediaPlayerComponent.instance();
+			remainingWidth -= sepWidth;
+			remainingWidth -= GUIConstants.SEPARATOR / 2;
+			remainingWidth -= Math.max(216, _mediaPlayer.getMediaPanel().getWidth());
+			remainingWidth -= GUIConstants.SEPARATOR;
+		}
+		
+		//  subtract center component
+		int indicatorWidth = _centerComponent.getWidth();
+		if (indicatorWidth <= 0)
+            if (_updatePanel.shouldBeShown()) {
+                indicatorWidth = 190;
+			    if (!GUIMediator.hasDonated()) 
+                    indicatorWidth = 280;
+            }
+		remainingWidth -= indicatorWidth;
+
+        //  add components to panel, if room
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(0,0,0,0);
+        gbc.weightx = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.gridx = GridBagConstraints.RELATIVE;
+
+        //  add connection quality indicator if there's room
+        indicatorWidth = GUIConstants.SEPARATOR +
+            Math.max((int)_connectionQualityMeter.getMinimumSize().getWidth(),
+                    _connectionQualityMeter.getWidth()) + sepWidth;
+        if (StatusBarSettings.CONNECTION_QUALITY_DISPLAY_ENABLED.getValue() &&
+                remainingWidth > indicatorWidth) {
+            BAR.add(Box.createHorizontalStrut(GUIConstants.SEPARATOR / 2), gbc);
+            BAR.add(_connectionQualityMeter, gbc);
+            BAR.add(Box.createHorizontalStrut(GUIConstants.SEPARATOR / 2), gbc);
+            BAR.add(createSeparator(), gbc);
+            remainingWidth -= indicatorWidth;
+        }
+        
+        //  then add firewall display if there's room
+        indicatorWidth = GUIConstants.SEPARATOR +
+            Math.max((int)_firewallStatus.getMinimumSize().getWidth(),
+                    _firewallStatus.getWidth()) + sepWidth;
+        if (StatusBarSettings.FIREWALL_DISPLAY_ENABLED.getValue() &&
+                remainingWidth > indicatorWidth) {
+            BAR.add(Box.createHorizontalStrut(GUIConstants.SEPARATOR / 2), gbc);
+            BAR.add(_firewallStatus, gbc);
+            BAR.add(Box.createHorizontalStrut(GUIConstants.SEPARATOR / 2), gbc);
+            BAR.add(createSeparator(), gbc);
+            remainingWidth -= indicatorWidth;
+        }
+        
+		//  add shared files indicator if there's room
+		indicatorWidth = GUIConstants.SEPARATOR +
+            Math.max((int)_sharedFiles.getMinimumSize().getWidth(),
+                    _sharedFiles.getWidth()) + sepWidth;
+        if (StatusBarSettings.SHARED_FILES_DISPLAY_ENABLED.getValue() &&
+				remainingWidth > indicatorWidth) {
+			BAR.add(Box.createHorizontalStrut(GUIConstants.SEPARATOR / 2), gbc);
+			BAR.add(_sharedFiles, gbc);
+			BAR.add(Box.createHorizontalStrut(GUIConstants.SEPARATOR / 2), gbc);
+			BAR.add(createSeparator(), gbc);
+			remainingWidth -= indicatorWidth;
+        }
+
+		//  add bandwidth display if there's room
+		indicatorWidth = GUIConstants.SEPARATOR + GUIConstants.SEPARATOR / 2 + sepWidth +
+			Math.max((int)_bandwidthUsageDown.getMinimumSize().getWidth(), _bandwidthUsageDown.getWidth()) +
+            Math.max((int)_bandwidthUsageUp.getMinimumSize().getWidth(), _bandwidthUsageUp.getWidth());
+        if (StatusBarSettings.BANDWIDTH_DISPLAY_ENABLED.getValue() &&
+				remainingWidth > indicatorWidth) {
+			BAR.add(Box.createHorizontalStrut(GUIConstants.SEPARATOR / 2), gbc);
+			BAR.add(_bandwidthUsageDown, gbc);
+			BAR.add(Box.createHorizontalStrut(GUIConstants.SEPARATOR), gbc);
+			BAR.add(_bandwidthUsageUp, gbc);
+			BAR.add(Box.createHorizontalStrut(GUIConstants.SEPARATOR / 2), gbc);
+			BAR.add(createSeparator(), gbc);
+			remainingWidth -= indicatorWidth;
+        }
+
+		BAR.add(Box.createHorizontalStrut(GUIConstants.SEPARATOR / 2), gbc);
+        //  make center panel stretchy
+        gbc.weightx = 1;
+		BAR.add(_centerPanel, gbc);
+        gbc.weightx = 0;
+		BAR.add(Box.createHorizontalStrut(GUIConstants.SEPARATOR / 2), gbc);
+
+        //  media player
+        if (GUIMediator.isPlaylistVisible()) {
+			JPanel jp = _mediaPlayer.getMediaPanel();
+			jp.setOpaque(false);
+			BAR.add(createSeparator(), gbc);
+			BAR.add(Box.createHorizontalStrut(GUIConstants.SEPARATOR / 2), gbc);
+			BAR.add(jp, gbc);
+			BAR.add(Box.createHorizontalStrut(GUIConstants.SEPARATOR), gbc);
+        }
+
+		BAR.validate();
+		BAR.repaint();
+	}
+
+	/**
+     * Creates a vertical separator for visually separating status bar elements 
+     */
+    private Component createSeparator() {
+        JSeparator sep = new JSeparator(SwingConstants.VERTICAL);
+        //  separators need preferred size in GridBagLayout
+        sep.setPreferredSize(new Dimension(2, 20));
+        sep.setMinimumSize(new Dimension(2, 20));
+        return sep;
+    }
+
+    /**
+     * Sets up _connectionQualityMeter's icons.
+     */
+    private void createConnectionQualityPanel() {
+		updateTheme();  // loads images
+		_connectionQualityMeter.setOpaque(false);
+        _connectionQualityMeter.setMinimumSize(new Dimension(34, 20));
+        _connectionQualityMeter.setMaximumSize(new Dimension(90, 30));
+		//   add right-click listener
+		_connectionQualityMeter.addMouseListener(STATUS_BAR_LISTENER);
+	}
+
+	/**
+	 * Sets up the 'Sharing X Files' label.
+	 */
+	private void createSharingFilesLabel() {
+        _sharedFiles.setHorizontalAlignment(SwingConstants.LEFT);
+	    // don't allow easy clipping
+		_sharedFiles.setMinimumSize(new Dimension(24, 20));
+		// add right-click listener
+		_sharedFiles.addMouseListener(STATUS_BAR_LISTENER);
+        //  initialize tool tip
+        _sharedFiles.setToolTipText(GUIMediator.getStringResource("STATISTICS_SHARING_TOOLTIP") +
+                " " + 0 + " " + GUIMediator.getStringResource("STATISTICS_FILES_TOOLTIP_PENDING"));
+	}
+
+	/**
+	 * Sets up the 'Firewall Status' label.
+	 */
+	private void createFirewallLabel() {
+		updateFirewall();
+		// don't allow easy clipping
+		_firewallStatus.setMinimumSize(new Dimension(20, 20));
+		// add right-click listener
+		_firewallStatus.addMouseListener(STATUS_BAR_LISTENER);
+	}
+
+	/**
+	 * Sets up the 'Bandwidth Usage' label.
+	 */
+	private void createBandwidthLabel() {
+		updateBandwidth();
+		// don't allow easy clipping
+		_bandwidthUsageDown.setMinimumSize(new Dimension(60, 20));
+		_bandwidthUsageUp.setMinimumSize(new Dimension(60, 20));
+		// add right-click listeners
+		_bandwidthUsageDown.addMouseListener(STATUS_BAR_LISTENER);
+		_bandwidthUsageUp.addMouseListener(STATUS_BAR_LISTENER);
+	}
+
+	/**
+	 * Sets up the center panel.
+	 */
+	private void createCenterPanel() {
+		_centerPanel.setOpaque(false);
+        _updatePanel.setOpaque(false);
+		((JComponent)_statusLinkHandler.getComponent()).setOpaque(false);
+        STATUS_COMPONENT.setProgressPreferredSize(new Dimension(250, 20));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.CENTER;
+		_centerPanel.add(STATUS_COMPONENT, gbc);
+
+		//  add right-click listeners
+		_statusLinkHandler.getComponent().addMouseListener(STATUS_BAR_LISTENER);
+		_centerPanel.addMouseListener(STATUS_BAR_LISTENER);
+		_updatePanel.addMouseListener(STATUS_BAR_LISTENER);
+		STATUS_COMPONENT.addMouseListener(STATUS_BAR_LISTENER);
+	}
+
+	/**
+	 * Updates the center panel if non-PRO.  Periodically rotates between
+	 * the update panel and the status link handler. 
+	 */
+	private void updateCenterPanel() {
+		long now = System.currentTimeMillis();
+		if (_nextUpdateTime > now)
+			return;
+
+		_nextUpdateTime = now + 1000 * 5; // update every minute
+		_centerPanel.removeAll();
+		if (GUIMediator.hasDonated()) {
+			if (_updatePanel.shouldBeShown())
+				_centerComponent = _updatePanel;
+			else
+				_centerComponent = new JLabel();
+		} else {
+			if ((_centerComponent == _statusLinkHandler.getComponent()) && _updatePanel.shouldBeShown())
+				_centerComponent = _updatePanel;
+			else
+				_centerComponent = _statusLinkHandler.getComponent();
+		}
+		
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.CENTER;
+        _centerPanel.add(_centerComponent, gbc);
+		
+		refresh();
+	}
+	private long _nextUpdateTime = System.currentTimeMillis();
+
+    /**
+     * Tells the status linke that the update panel should be shown with
+     * the given update information.
+     */
+    public void showUpdatePanel(boolean popup, UpdateInformation info) {
+        _updatePanel.makeVisible(popup, info);
+    }
+    
     /**
      * Updates the status text.
      */
     void setStatusText(final String text) {
         GUIMediator.safeInvokeAndWait(new Runnable() {
             public void run() {
-                STATUS_LABEL.setText(text);
+                STATUS_COMPONENT.setText(text);
             }
         });
     }
 
+	/**
+	 * Updates the firewall text. 
+	 */
+	public void updateFirewallLabel(boolean notFirewalled) {
+		if (notFirewalled) {
+			_firewallStatus.setIcon(GUIMediator.getThemeImage("firewall_no"));
+			_firewallStatus.setToolTipText(GUIMediator.getStringResource("STATUS_BAR_FIREWALL_NOT_FOUND_TOOLTIP"));
+		} else {
+			_firewallStatus.setIcon(GUIMediator.getThemeImage("firewall"));
+			_firewallStatus.setToolTipText(GUIMediator.getStringResource("STATUS_BAR_FIREWALL_FOUND_TOOLTIP"));
+		}
+	}
+	
+	/**
+	 * Updates the firewall text. 
+	 */
+	public void updateFirewall() {
+		updateFirewallLabel(RouterService.acceptedIncomingConnection());
+	}
+	
+
+    //  variables for time averaging the download and upload bandwidths
+    private int   _numTimeSlices = 3;
+    private int[] _pastDownloads = new int[_numTimeSlices];
+    private int[] _pastUploads   = new int[_numTimeSlices];
+    private int   _pastBandwidthIndex = 0;
+    
+	/**
+	 * Updates the bandwidth statistics.
+	 */
+	public void updateBandwidth() {
+		//  calculate time-averaged stats
+        _pastDownloads[_pastBandwidthIndex] = BandwidthStat.HTTP_DOWNSTREAM_BANDWIDTH.getLastStored();
+        _pastUploads[_pastBandwidthIndex] = BandwidthStat.HTTP_UPSTREAM_BANDWIDTH.getLastStored();
+        _pastBandwidthIndex = (_pastBandwidthIndex + 1) % _numTimeSlices;
+        int downBW = 0;
+        int upBW = 0; 
+        for (int i = 0; i < _numTimeSlices; i++)
+            downBW += _pastDownloads[i];
+        downBW /= _numTimeSlices;
+        for (int i = 0; i < _numTimeSlices; i++)
+            upBW += _pastUploads[i];
+        upBW /= _numTimeSlices;
+
+        //  format strings
+        String sDown = GUIUtils.rate2speed(downBW/1000f);
+		String sUp = GUIUtils.rate2speed(upBW/1000f);
+        int downloads = RouterService.getNumActiveDownloads();
+        int uploads = RouterService.getNumUploads();
+		_bandwidthUsageDown.setText(downloads + " @ " + sDown);
+		_bandwidthUsageUp.setText(uploads +   " @ " + sUp);
+        
+		//  create good-looking table tooltip
+		String tooltip = "<html><table>" +
+			"<tr><td>" + GUIMediator.getStringResource("OPTIONS_STATUS_BAR_BANDWIDTH_DOWNLOADS") + "</td><td>" + downloads +
+			"</td><td>@</td><td align=right>" + sDown + "</td></tr>" +
+			"<tr><td>" + GUIMediator.getStringResource("OPTIONS_STATUS_BAR_BANDWIDTH_UPLOADS") + "</td><td>" + uploads +
+			"</td><td>@</td><td align=right>" + sUp + "</td></tr></table></html>";
+		_bandwidthUsageDown.setToolTipText(tooltip);
+		_bandwidthUsageUp.setToolTipText(tooltip);
+	}
+	
     /**
      * Notification that loading has finished.
      *
-     * The loading label is removed and the donation component
-     * is added if necessary.
+     * The loading label is removed and the update notification
+     * component is added.  If necessary, the center panel will
+     * rotate back and forth between displaying the update
+     * notification and displaying the StatusLinkHandler.
      */
     void loadFinished() {
-        CENTER.removeAll();
-        if(!GUIMediator.hasDonated()) {
-            CENTER.add(new StatusLinkHandler().getComponent());
-        }
-        PANEL.repaint();
+		updateCenterPanel();
+		_centerPanel.revalidate();
+        _centerPanel.repaint();
+		refresh();
     }
 
-    /**
-     * Sets up switchedPanel and switcher so you have
-     * connect/disconnect icons.
-     *
-     * @modifies switchedPanel, switcher
-     */
-    private void createConnectPanel() {
-		updateTheme();
-        connectionQuality = new JPanel();
-        switcher = new CardLayout();
-        connectionQuality.setLayout(switcher);
-
-        // add the quality panels to the connectionQuality panel.
-        for(int i = 0; i < qualityPanels.length; i++)
-            connectionQuality.add(qualityPanels[i], Integer.toString(i));
-
-        connectionQuality.setMaximumSize(new Dimension(90, 30));
-    }
-
-	// inherit doc commment
+	/**
+     * Load connection quality theme icons
+	 */
 	public void updateTheme() {
-        for(int i = 0; i < qualityPanels.length; i++) {
-            Icon image = GUIMediator.getThemeImage("connect_" + i);
-            JPanel panel = new JPanel();
-            panel.setLayout(new FlowLayout(FlowLayout.LEFT));
-            JLabel label = new JLabel();
-            label.setIcon(image);
-            panel.add(label);
-            qualityPanels[i] = panel;
-        }
-		if(_mediaPlayer != null)
+        for (int i = 0; i < _connectionQualityMeterIcons.length; i++)
+            _connectionQualityMeterIcons[i] = GUIMediator.getThemeImage("connect_small_" + i);
+        
+		if (_mediaPlayer != null)
 			_mediaPlayer.updateTheme();
 	}
 
@@ -283,65 +498,57 @@ public final class StatusLine implements ThemeObserver {
      */
     public void setConnectionQuality(int quality) {
         // make sure we don't go over our bounds.
-        if(quality >= qualityPanels.length)
-            quality = qualityPanels.length - 1;
+        if (quality >= _connectionQualityMeterIcons.length)
+            quality = _connectionQualityMeterIcons.length - 1;
 
-        switcher.show(connectionQuality, Integer.toString(quality));
+        _connectionQualityMeter.setIcon(_connectionQualityMeterIcons[quality]);
 
         String status = null;
         String tip = null;
+        String connection = GUIMediator.getStringResource("STATISTICS_CONNECTION_QUALITY");
         switch(quality) {
             case STATUS_DISCONNECTED:
-                	status = STATISTICS_CONNECTION_DISCONNECTED;
-                    tip = TIP_CONNECTION_DISCONNECTED;
+                	status = GUIMediator.getStringResource("STATISTICS_CONNECTION_DISCONNECTED");
+                    tip = GUIMediator.getStringResource("STATISTICS_CONNECTION_DISCONNECTED_TIP");
                     break;
             case STATUS_CONNECTING:
-                    status = STATISTICS_CONNECTION_CONNECTING;
-                    tip = TIP_CONNECTION_CONNECTING;
+                    status = GUIMediator.getStringResource("STATISTICS_CONNECTION_CONNECTING") + " " + connection;
+                    tip = GUIMediator.getStringResource("STATISTICS_CONNECTION_CONNECTING_TIP");
                     break;
             case STATUS_POOR:
-                    status = STATISTICS_CONNECTION_POOR;
-                    tip = TIP_CONNECTION_POOR;
+                    status = GUIMediator.getStringResource("STATISTICS_CONNECTION_POOR") + " " + connection;
+                    tip = GUIMediator.getStringResource("STATISTICS_CONNECTION_POOR_TIP");
                     break;
             case STATUS_FAIR:
-                    status = STATISTICS_CONNECTION_FAIR;
-                    tip = TIP_CONNECTION_FAIR;
+                    status = GUIMediator.getStringResource("STATISTICS_CONNECTION_FAIR") + " " + connection;
+                    tip = GUIMediator.getStringResource("STATISTICS_CONNECTION_FAIR_TIP");
                     break;
             case STATUS_GOOD:
-                    status = STATISTICS_CONNECTION_GOOD;
-                    tip = TIP_CONNECTION_GOOD;
+                    status = GUIMediator.getStringResource("STATISTICS_CONNECTION_GOOD") + " " + connection;
+                    tip = GUIMediator.getStringResource("STATISTICS_CONNECTION_GOOD_TIP");
                     break;
             case STATUS_IDLE:
             case STATUS_EXCELLENT:
-                    status = STATISTICS_CONNECTION_EXCELLENT;
-                    tip = TIP_CONNECTION_EXCELLENT;
+                    status = GUIMediator.getStringResource("STATISTICS_CONNECTION_EXCELLENT") + " " + connection;
+                    tip = GUIMediator.getStringResource("STATISTICS_CONNECTION_EXCELLENT_TIP");
                     break;
             case STATUS_TURBOCHARGED:
-                    status = STATISTICS_CONNECTION_TURBO_CHARGED;
-                    tip = TIP_CONNECTION_TURBO_CHARGED;
+                    status = GUIMediator.getStringResource("STATISTICS_CONNECTION_TURBO_CHARGED") + " " + connection;
+                    tip = GUIMediator.getStringResource("STATISTICS_CONNECTION_TURBO_CHARGED_TIP_" +
+				            (CommonUtils.isPro() ? "PRO" : "FREE"));
                     break;
             //case STATUS_IDLE:
                     //status = STATISTICS_CONNECTION_IDLE;
                     //tip = null; // impossible to see this
                     //break;
             case STATUS_WAKING_UP:
-                    status = STATISTICS_CONNECTION_WAKING_UP;
-                    tip = TIP_CONNECTION_WAKING_UP;
+                    status = GUIMediator.getStringResource("STATISTICS_CONNECTION_WAKING_UP") + " " + connection;
+                    tip = GUIMediator.getStringResource("STATISTICS_CONNECTION_WAKING_UP_TIP");
                     break;
         }
-        connectionStatus.setText(status);
-        connectionQuality.setToolTipText(tip);
-        connectionQualityText.setToolTipText(tip);
-        if(quality == 0) {
-            connectionStatus.setForeground(
-                ThemeFileHandler.SEARCH_PRIVATE_IP_COLOR.getValue());
-        } else if(quality >= 1 && quality <= 3) {
-            connectionStatus.setForeground(
-                ThemeFileHandler.WINDOW8_COLOR.getValue());
-        } else {
-            connectionStatus.setForeground(
-                ThemeFileHandler.SEARCH_RESULT_SPEED_COLOR.getValue());
-        }
+        _connectionQualityMeter.setToolTipText(tip);
+        if (GUIMediator.hasDonated())
+            _connectionQualityMeter.setText(status);
     }
 
     /**
@@ -349,176 +556,8 @@ public final class StatusLine implements ThemeObserver {
      * @modifies this
      * @return A displayable Horizon string.
      */
-    public String setStatistics(long hosts, long files, long kbytes,
-                                int share,  int pending) {
-        //Shorten with KB/MB/GB/TB as needed.
-        String txt;
-        if (hosts == 0)
-            txt = STATS_DISCONNECTED_STRING;
-        else
-            txt = GUIUtils.toUnitnumber(files, false) +
-                  " " + STATS_FILE_STRING + " / " +
-                  GUIUtils.toUnitbytes(kbytes * 1024) +
-                  " " + STATS_AVAILABLE_STRING;
-
-        // if nothing is pending shared, display as normal
-        if( pending == 0 )
-            sharingLabel.setText(STATS_SHARING_STRING + " " +
-                                 String.valueOf(share) +
-                                 " " + STATS_FILE_STRING);
-        //otherwise display as  'shared / total'
-        else
-            sharingLabel.setText(STATS_SHARING_STRING + " " +
-                                String.valueOf(share) + " / " +
-                                String.valueOf(pending + share) +
-                                " " + STATS_FILE_STRING);
-
-        if (share == 0) {
-			Color notSharingColor =
-                ThemeFileHandler.NOT_SHARING_LABEL_COLOR.getValue();
-			sharingLabel.setForeground(notSharingColor);
-		} else
-            sharingLabel.setForeground(UIManager.getColor("Label.foreground"));
-
-        sharingLabel.setPreferredSize(
-            new Dimension(GUIUtils.width(sharingLabel), 20));
-        return txt;
-    }
-
-
-    /**
-     * The String for part of the stats string, ie "available".
-     */
-    private static final String STATS_AVAILABLE_STRING =
-        GUIMediator.getStringResource("STATISTICS_AVAILABLE");
-
-    /**
-     * The String for part of the stats string, ie "files".
-     */
-    private static final String STATS_FILE_STRING =
-        GUIMediator.getStringResource("STATISTICS_FILES");
-
-    /**
-     * The String for part of the stats string, ie "no files...".
-     */
-    private static final String STATS_DISCONNECTED_STRING =
-        GUIMediator.getStringResource("STATISTICS_DISCONNECTED");
-
-    /**
-     * The String for part of the stats string, ie "no files...".
-     */
-    private static final String STATS_SHARING_STRING =
-        GUIMediator.getStringResource("STATISTICS_SHARING");
-
-	/**
-     * Disconnected tip
-     */
-    private static final String TIP_CONNECTION_DISCONNECTED =
-        GUIMediator.getStringResource("STATISTICS_CONNECTION_DISCONNECTED_TIP");
-
-	/**
-     * Disconnected string.
-     */
-    private static final String STATISTICS_CONNECTION_DISCONNECTED =
-        GUIMediator.getStringResource("STATISTICS_CONNECTION_DISCONNECTED");
-
-    /**
-     * Connecting tip
-     */
-    private static final String TIP_CONNECTION_CONNECTING =
-        GUIMediator.getStringResource("STATISTICS_CONNECTION_CONNECTING_TIP");
-
-    /**
-     * Connecting string
-     */
-    private static final String STATISTICS_CONNECTION_CONNECTING =
-        GUIMediator.getStringResource("STATISTICS_CONNECTION_CONNECTING");
-
-    /**
-     * Poor tip.
-     */
-    private static final String TIP_CONNECTION_POOR =
-        GUIMediator.getStringResource("STATISTICS_CONNECTION_POOR_TIP");
-
-    /**
-     * Poor string.
-     */
-    private static final String STATISTICS_CONNECTION_POOR =
-        GUIMediator.getStringResource("STATISTICS_CONNECTION_POOR");
-
-	/**
-     * Mediocre tip
-     */
-    private static final String TIP_CONNECTION_FAIR =
-        GUIMediator.getStringResource("STATISTICS_CONNECTION_FAIR_TIP");
-
-	/**
-     * Mediocre string
-     */
-    private static final String STATISTICS_CONNECTION_FAIR =
-        GUIMediator.getStringResource("STATISTICS_CONNECTION_FAIR");
-
-    /**
-     * Good tip
-     */
-    private static final String TIP_CONNECTION_GOOD =
-        GUIMediator.getStringResource("STATISTICS_CONNECTION_GOOD_TIP");
-
-    /**
-     * Good string
-     */
-    private static final String STATISTICS_CONNECTION_GOOD =
-        GUIMediator.getStringResource("STATISTICS_CONNECTION_GOOD");
-
-    /**
-     * Excellent tip
-     */
-    private static final String TIP_CONNECTION_EXCELLENT =
-        GUIMediator.getStringResource("STATISTICS_CONNECTION_EXCELLENT_TIP");
-
-    /**
-     * Excellent string
-     */
-    private static final String STATISTICS_CONNECTION_EXCELLENT =
-        GUIMediator.getStringResource("STATISTICS_CONNECTION_EXCELLENT");
-
-	/**
-     * Turbo charged tip
-     */
-    private static final String TIP_CONNECTION_TURBO_CHARGED =
-        GUIMediator.getStringResource("STATISTICS_CONNECTION_TURBO_CHARGED_TIP_" +
-            (CommonUtils.isPro() ? "PRO" : "FREE") );
-
-	/**
-     * Turbo charged string
-     */
-    private static final String STATISTICS_CONNECTION_TURBO_CHARGED =
-        GUIMediator.getStringResource("STATISTICS_CONNECTION_TURBO_CHARGED");
-
-    /**
-     * Idle string.
-     */
-    private static final String STATISTICS_CONNECTION_IDLE =
-        GUIMediator.getStringResource("STATISTICS_CONNECTION_IDLE");
-        
-    /**
-     * Waking up string.
-     */
-    private static final String STATISTICS_CONNECTION_WAKING_UP =
-        GUIMediator.getStringResource("STATISTICS_CONNECTION_WAKING_UP");
-    
-    /**
-     * Waking up tip.
-     */
-    private static final String TIP_CONNECTION_WAKING_UP =
-        GUIMediator.getStringResource("STATISTICS_CONNECTION_WAKING_UP_TIP");
-
-    public void launchAudio(File toPlay) {
-        MediaPlayerComponent.launchAudio(toPlay);
-    }
-
-    public UpdatePanel getUpdatePanel() {
-        return _updatePanel;
+    public void setStatistics(int share, int pending) {
+		_sharedFiles.update(share, pending);
     }
 
     /**
@@ -529,7 +568,255 @@ public final class StatusLine implements ThemeObserver {
       *  of the panels for the status line
       */
     public JComponent getComponent() {
-        return PANEL;
+        return BAR;
     }
-}
+	
+    /**
+     * The refresh listener for updating the bandwidth usage every second.
+     */
+    private final RefreshListener REFRESH_LISTENER = new RefreshListener() {
+        public void refresh() {
+            if (StatusBarSettings.BANDWIDTH_DISPLAY_ENABLED.getValue())
+                updateBandwidth();
+            updateCenterPanel();
+        }
+    };
+    
+    /**
+     * The right-click listener for the status bar.
+     */
+	private final MouseAdapter STATUS_BAR_LISTENER = new MouseAdapter() {
+		public void mousePressed(MouseEvent me) { processMouseEvent(me); }
+		public void mouseReleased(MouseEvent me) { processMouseEvent(me); }
+		public void mouseClicked(MouseEvent me) { processMouseEvent(me); }
+		
+		public void processMouseEvent(MouseEvent me) {
+			if (me.isPopupTrigger()) {
+                JPopupMenu jpm = new JPopupMenu();
+                
+                //  add 'Show Connection Quality' menu item
+                JCheckBoxMenuItem jcbmi = new JCheckBoxMenuItem(new ShowConnectionQualityAction());
+                jcbmi.setState(StatusBarSettings.CONNECTION_QUALITY_DISPLAY_ENABLED.getValue());
+                jpm.add(jcbmi);
+                
+                //  add 'Show Firewall Status' menu item
+                jcbmi = new JCheckBoxMenuItem(new ShowFirewallStatusAction());
+                jcbmi.setState(StatusBarSettings.FIREWALL_DISPLAY_ENABLED.getValue());
+                jpm.add(jcbmi);
+                
+                //  add 'Show Shared Files Count' menu item 
+                jcbmi = new JCheckBoxMenuItem(new ShowSharedFilesCountAction());
+                jcbmi.setState(StatusBarSettings.SHARED_FILES_DISPLAY_ENABLED.getValue());
+                jpm.add(jcbmi);
+                
+                //  add 'Show Bandwidth Consumption' menu item
+                jcbmi = new JCheckBoxMenuItem(new ShowBandwidthConsumptionAction());
+                jcbmi.setState(StatusBarSettings.BANDWIDTH_DISPLAY_ENABLED.getValue());
+                jpm.add(jcbmi);
+                
+                jpm.addSeparator();
+                
+                //  add 'Show Media Player' menu item
+                jcbmi = new JCheckBoxMenuItem(new ShowMediaPlayerAction());
+                jcbmi.setState(PlayerSettings.PLAYER_ENABLED.getValue());
+                jpm.add(jcbmi);
+                
+                jpm.show(me.getComponent(), me.getX(), me.getY());
+            }
+		}
+	};
 
+	/**
+	 * Action for the 'Show Connection Quality' menu item. 
+	 */
+	private class ShowConnectionQualityAction extends AbstractAction {
+		
+		public ShowConnectionQualityAction() {
+			putValue(Action.NAME, GUIMediator.getStringResource
+					("STATUS_BAR_SHOW_CONNECTION_QUALITY"));
+		}
+		
+		public void actionPerformed(ActionEvent e) {
+			StatusBarSettings.CONNECTION_QUALITY_DISPLAY_ENABLED.invert();
+			refresh();
+		}
+	}
+	
+	/**
+	 * Action for the 'Show Shared Files Count' menu item. 
+	 */
+	private class ShowSharedFilesCountAction extends AbstractAction {
+		
+		public ShowSharedFilesCountAction() {
+			putValue(Action.NAME, GUIMediator.getStringResource
+					("STATUS_BAR_SHOW_SHARED_FILES_COUNT"));
+		}
+		
+		public void actionPerformed(ActionEvent e) {
+			StatusBarSettings.SHARED_FILES_DISPLAY_ENABLED.invert();
+			refresh();
+		}
+	}
+
+	/**
+	 * Action for the 'Show Firewall Status' menu item. 
+	 */
+	private class ShowFirewallStatusAction extends AbstractAction {
+		
+		public ShowFirewallStatusAction() {
+			putValue(Action.NAME, GUIMediator.getStringResource
+					("STATUS_BAR_SHOW_FIREWALL_STATUS"));
+		}
+		
+		public void actionPerformed(ActionEvent e) {
+			StatusBarSettings.FIREWALL_DISPLAY_ENABLED.invert();
+			refresh();
+		}
+	}
+	
+	/**
+	 * Action for the 'Show Bandwidth Consumption' menu item. 
+	 */
+	private class ShowBandwidthConsumptionAction extends AbstractAction {
+		
+		public ShowBandwidthConsumptionAction() {
+			putValue(Action.NAME, GUIMediator.getStringResource
+					("STATUS_BAR_SHOW_BANDWIDTH_CONSUMPTION"));
+		}
+		
+		public void actionPerformed(ActionEvent e) {
+			StatusBarSettings.BANDWIDTH_DISPLAY_ENABLED.invert();
+			refresh();
+		}
+	}
+	
+	/**
+	 * Action for the 'Show Media Player' menu item. 
+	 */
+	private class ShowMediaPlayerAction extends AbstractAction {
+		
+		public ShowMediaPlayerAction() {
+			putValue(Action.NAME, GUIMediator.getStringResource
+					("STATUS_BAR_SHOW_MEDIA_PLAYER"));
+		}
+		
+		public void actionPerformed(ActionEvent e) {
+			GUIMediator.instance().setPlayerEnabled(!PlayerSettings.PLAYER_ENABLED.getValue());
+		}
+	}
+	
+	/**
+	 * Custom component for displaying the number of shared files. 
+	 */
+	private class SharedFilesLabel extends JLabel {
+
+		/**
+		 * The height of this icon.
+		 */
+		private static final int _height = 20;
+		
+		/**
+		 * The width of this icon.
+		 */
+		private int _width = 26;
+		
+		private FontMetrics fm = null;
+
+		private String _string = "0...";
+		
+		private int _share;
+		private int _pending;
+
+		public Dimension getMinimumSize() {
+			return getPreferredSize();
+		}
+		
+		public Dimension getPreferredSize() {
+			return new Dimension(_width, _height);
+		}
+		
+		/**
+		 * Updates the component with information about the sharing state. 
+		 */
+		public void update(int share, int pending) {
+			boolean shareChanged = share != _share;
+			boolean pendingChanged = pending != _pending;
+			
+			_share = share;
+			_pending = pending;
+
+			//  if no changes, return
+			if (!(shareChanged || pendingChanged))
+				return;
+			
+			_string = GUIUtils.toLocalizedInteger(_share);
+			if (!RouterService.getFileManager().isLoadFinished() ||
+                    RouterService.getFileManager().isUpdating())
+				_string += "...";
+			
+			if (fm != null)
+				_width = fm.stringWidth(_string) + _height;
+			
+			revalidate();
+			repaint();
+
+			//  update tooltip
+			if (RouterService.getFileManager().isLoadFinished())
+				setToolTipText(GUIMediator.getStringResource("STATISTICS_SHARING_TOOLTIP") +
+						" " + share + " " + GUIMediator.getStringResource("STATISTICS_FILES_TOOLTIP"));
+			else
+				//otherwise display as  'shared / total'
+				setToolTipText(GUIMediator.getStringResource("STATISTICS_SHARING_TOOLTIP") +
+						" " + share + " " + GUIMediator.getStringResource("STATISTICS_FILES_TOOLTIP_PENDING"));
+		}
+		
+		/**
+		 * Paints the icon, and then paints the number of shared files on top of it.
+		 */
+		protected void paintComponent(Graphics g) {
+			Graphics2D g2 = (Graphics2D) g;
+			
+			RenderingHints rh = g2.getRenderingHints();
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+					RenderingHints.VALUE_ANTIALIAS_ON);
+			
+			if (fm == null)
+				fm = g2.getFontMetrics();
+			
+            //  create string, set background color
+			if (!RouterService.getFileManager().isLoadFinished() ||
+                    RouterService.getFileManager().isUpdating()) {
+                g2.setPaint(new Color(165, 165, 2));
+                if (!_string.endsWith("..."))
+                    _string += "...";
+            } else {
+                g2.setPaint(new Color(2, 137, 2));
+                if (_string.endsWith("..."))
+                    _string = _string.substring(0, _string.length() - 3);
+            }
+
+            //  figure out size
+            int width = fm.stringWidth(_string) + _height; 
+            if (width != _width) {
+                _width = width;
+                revalidate();
+            }
+
+			//  draw the round rectangle
+			RoundRectangle2D.Float rect
+				= new RoundRectangle2D.Float(0, 0, _width-2, _height-2, _height, _height);
+			g2.fill(rect);
+			
+			//  stroke the rectangle
+			g2.setColor(Color.black);
+			g2.draw(rect);
+			
+			//  then draw string
+			g2.setColor(Color.white);
+			g2.drawString(_string, (rect.width - fm.stringWidth(_string)) / 2f,
+					(rect.height + fm.getAscent() - fm.getDescent()) / 2f);
+			
+			g2.setRenderingHints(rh);
+		}
+	}
+}

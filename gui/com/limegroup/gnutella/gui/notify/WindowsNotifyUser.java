@@ -25,10 +25,14 @@ final class WindowsNotifyUser implements NotifyUser {
      * Handle to the name of the image file.
      */
     private String _imageFileName;
+    
+    /**
+     * Handle to the image icon.
+     */
+    private int _imageIconHandle = -1;
 
     public void addNotify() {
         String tip = GUIMediator.getStringResource("TRAY_TOOLTIP");
-        //String tip = "LimeWire: Running the Gnutella Network";
         updateNotify("LimeWire.ico", tip);
     }
 
@@ -39,20 +43,22 @@ final class WindowsNotifyUser implements NotifyUser {
     public void updateNotify(final String imageFile, 
                              final String tooltip) {
         _tooltip = tooltip;
-        _imageFileName = imageFile;   
-        int imageInt = nativeLoadImage(imageFile); 
+        if (_imageFileName == null || _imageIconHandle == -1 || !_imageFileName.equals(imageFile)) {
+            _imageFileName = imageFile;
+            _imageIconHandle = nativeLoadImage(imageFile); 
+        }
         
         // nothing we can do if the image does not load 
         // successfully
-        if(imageInt == -1) {
+        if (_imageIconHandle == -1)
             return;
-        }
         
-        nativeEnable(imageInt, _tooltip);
+        nativeEnable(_imageIconHandle, _tooltip);
     }
 
     public void updateImage(final String imageFileName) {
-        updateNotify(imageFileName, _tooltip);
+        _imageFileName = imageFileName;
+        updateNotify(_imageFileName, _tooltip);
     }
 
     public void updateDesc(final String desc) {

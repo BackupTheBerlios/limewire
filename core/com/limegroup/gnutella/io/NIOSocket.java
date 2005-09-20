@@ -50,6 +50,9 @@ public class NIOSocket extends Socket implements ConnectObserver, NIOMultiplexor
      */
     private InetAddress connectedTo;
     
+    /** Whether the socket has started shutting down */
+    private boolean shuttingDown;
+    
     /** Lock used to signal/wait for connecting */
     private final Object LOCK = new Object();
     
@@ -240,6 +243,12 @@ public class NIOSocket extends Socket implements ConnectObserver, NIOMultiplexor
      * Shuts down this socket & all its streams.
      */
     public void shutdown() {
+        synchronized(LOCK) {
+            if (shuttingDown)
+                return;
+            shuttingDown = true;
+        }
+        
         if(LOG.isDebugEnabled())
             LOG.debug("Shutting down socket & streams for: " + this);
         
@@ -256,7 +265,8 @@ public class NIOSocket extends Socket implements ConnectObserver, NIOMultiplexor
         
         try {
             socket.close();
-        } catch(IOException ignored) {}
+        } catch(IOException ignored) {
+        } catch(Error ignored) {} // nothing we can do about stupid internal errors.
             
         try {
             channel.close();
@@ -285,7 +295,11 @@ public class NIOSocket extends Socket implements ConnectObserver, NIOMultiplexor
     /** Connects to addr with the given timeout (in milliseconds) */
     public void connect(SocketAddress addr, int timeout) throws IOException {
         connectedTo = ((InetSocketAddress)addr).getAddress();
-
+        
+        InetSocketAddress iaddr = (InetSocketAddress)addr;
+        if (iaddr.isUnresolved())
+            throw new IOException("unresolved: "+addr);
+        
         synchronized(LOCK) {
             if(!channel.connect(addr)) {
                 NIODispatcher.instance().registerConnect(channel, this);

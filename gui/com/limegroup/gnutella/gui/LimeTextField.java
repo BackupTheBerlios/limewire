@@ -21,8 +21,6 @@ import javax.swing.undo.UndoManager;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CannotRedoException;
 
-import com.limegroup.gnutella.util.CommonUtils;
-
 /**
  * A better JTextField.
  */

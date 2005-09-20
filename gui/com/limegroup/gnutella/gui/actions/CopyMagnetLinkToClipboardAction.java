@@ -3,14 +3,11 @@ package com.limegroup.gnutella.gui.actions;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
-import java.net.InetSocketAddress;
-import java.net.URLEncoder;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
 import com.limegroup.gnutella.FileDetails;
-import com.limegroup.gnutella.URN;
 import com.limegroup.gnutella.browser.MagnetOptions;
 import com.limegroup.gnutella.gui.FileDetailsProvider;
 import com.limegroup.gnutella.gui.GUIMediator;

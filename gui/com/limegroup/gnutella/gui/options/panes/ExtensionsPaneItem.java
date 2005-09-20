@@ -6,13 +6,11 @@ import java.io.IOException;
 
 import javax.swing.JTextField;
 
-import com.limegroup.gnutella.FileManager;
 import com.limegroup.gnutella.RouterService;
 import com.limegroup.gnutella.gui.ButtonRow;
 import com.limegroup.gnutella.gui.LabeledComponent;
 import com.limegroup.gnutella.gui.SizedTextField;
 import com.limegroup.gnutella.settings.SharingSettings;
-import com.limegroup.gnutella.util.ManagedThread;
 
 /**
  * This class defines the panel in the options window that allows the user

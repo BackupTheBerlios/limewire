@@ -5,14 +5,12 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
@@ -101,18 +99,18 @@ public class ThemeMediator {
         		    GUIMediator.showMessage("THEME_CHANGED_MESSAGE");
         		else {
         		    GUIMediator.setAppVisible(false);
-        		    SplashWindow.instance().show();
+        		    SplashWindow.instance().setVisible(true);
         		    SplashWindow.refreshImage();
         		    ResourceManager.instance().themeChanged();
         
         		    SwingUtilities.updateComponentTreeUI(GUIMediator.getMainOptionsComponent());
         		    SwingUtilities.updateComponentTreeUI(StatisticsMediator.instance().getMainStatisticsComponent());
-        		    SwingUtilities.updateComponentTreeUI(TipOfTheDayMediator.instance().getDialog());
+                    TipOfTheDayMediator.instance().updateComponentTreeUI();
         		    SwingUtilities.updateComponentTreeUI(GUIMediator.getAppFrame());
         
         		    updateThemeObservers();
         		    GUIMediator.setAppVisible(true);
-        		    SplashWindow.instance().hide();
+        		    SplashWindow.instance().setVisible(false);
         		}
     	    }
     	}     
@@ -209,6 +207,6 @@ public class ThemeMediator {
     	d.getContentPane().add(body);
     	d.pack();
             d.setLocationRelativeTo(GUIMediator.getAppFrame());		
-    	d.show();
+    	d.setVisible(true);
     }
 }

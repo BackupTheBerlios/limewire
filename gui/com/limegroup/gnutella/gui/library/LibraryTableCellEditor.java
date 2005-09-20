@@ -5,7 +5,6 @@ import javax.swing.JTextField;
 import javax.swing.JTable;
 import javax.swing.event.*;
 
-import com.limegroup.gnutella.ErrorService;
 import com.limegroup.gnutella.gui.tables.LimeJTable;
 import com.limegroup.gnutella.gui.LimeTextField;
 

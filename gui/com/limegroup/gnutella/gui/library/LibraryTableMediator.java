@@ -2,7 +2,6 @@ package com.limegroup.gnutella.gui.library;
 
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -29,6 +28,7 @@ import com.limegroup.gnutella.FileDesc;
 import com.limegroup.gnutella.FileDetails;
 import com.limegroup.gnutella.FileManager;
 import com.limegroup.gnutella.FileManagerEvent;
+import com.limegroup.gnutella.IncompleteFileDesc;
 import com.limegroup.gnutella.RouterService;
 import com.limegroup.gnutella.SaveLocationException;
 import com.limegroup.gnutella.URN;
@@ -42,6 +42,7 @@ import com.limegroup.gnutella.gui.actions.ActionUtils;
 import com.limegroup.gnutella.gui.actions.BitziLookupAction;
 import com.limegroup.gnutella.gui.actions.CopyMagnetLinkToClipboardAction;
 import com.limegroup.gnutella.gui.actions.SearchAction;
+import com.limegroup.gnutella.gui.actions.LimeAction;
 import com.limegroup.gnutella.gui.playlist.PlaylistMediator;
 import com.limegroup.gnutella.gui.tables.AbstractTableMediator;
 import com.limegroup.gnutella.gui.tables.DataLine;
@@ -74,19 +75,23 @@ final class LibraryTableMediator extends AbstractTableMediator
 	/**
      * Variables so the PopupMenu & ButtonRow can have the same listeners
      */
-    public static ActionListener LAUNCH_LISTENER;
-    public static ActionListener ADD_PLAY_LIST_LISTENER;
-    public static Action ANNOTATE_LISTENER;
-    private Action BITZI_LOOKUP_ACTION;
-    private Action MAGNET_LOOKUP_ACTION;
-    public static ActionListener RESUME_LISTENER;
-    private Action LICENSE_ACTION;
-    public static ActionListener RENAME_LISTENER;
-	private Action COPY_MAGNET_TO_CLIPBOARD_ACTION;
+    public static Action LAUNCH_ACTION;
+    public static Action ENQUEUE_ACTION;
+	public static Action DELETE_ACTION;
+    public static Action ANNOTATE_ACTION;
+    public static Action RESUME_ACTION;
+	
+    public static Action RENAME_ACTION;
+	
 	public static Action SHARE_ACTION;
 	public static Action UNSHARE_ACTION;
 	public static Action SHARE_FOLDER_ACTION;
 	public static Action UNSHARE_FOLDER_ACTION;
+	
+    private Action BITZI_LOOKUP_ACTION;
+    private Action MAGNET_LOOKUP_ACTION;
+    private Action LICENSE_ACTION;
+	private Action COPY_MAGNET_TO_CLIPBOARD_ACTION;
 
     /**
      * Whether or not the incomplete directory is selected.
@@ -110,21 +115,24 @@ final class LibraryTableMediator extends AbstractTableMediator
      */
     protected void buildListeners() {
         super.buildListeners();
-        LAUNCH_LISTENER = new LaunchListener();
-        ADD_PLAY_LIST_LISTENER = new AddPLFileListener();
-        ANNOTATE_LISTENER = new AnnotateAction();
-        BITZI_LOOKUP_ACTION = new BitziLookupAction(this);
-        MAGNET_LOOKUP_ACTION = new MagnetLookupAction();
-        RESUME_LISTENER = new ResumeListener();
-        LICENSE_ACTION = new LicenseAction();
-        RENAME_LISTENER = new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                startRename();
-            }
-        };
-		COPY_MAGNET_TO_CLIPBOARD_ACTION = new CopyMagnetLinkToClipboardAction(this);
+
+        LAUNCH_ACTION = new LaunchAction();
+        ENQUEUE_ACTION = new EnqueueAction();
+		DELETE_ACTION = new RemoveAction();
+        ANNOTATE_ACTION = new AnnotateAction();
+        RESUME_ACTION = new ResumeAction();
+		
+        RENAME_ACTION = new RenameAction();
+		
 		SHARE_ACTION = new ShareFileAction();
 		UNSHARE_ACTION = new UnshareFileAction();
+		
+        BITZI_LOOKUP_ACTION = new BitziLookupAction(this);
+        MAGNET_LOOKUP_ACTION = new MagnetLookupAction();
+        LICENSE_ACTION = new LicenseAction();
+
+		COPY_MAGNET_TO_CLIPBOARD_ACTION = new CopyMagnetLinkToClipboardAction(this);
+
 		SHARE_FOLDER_ACTION = new ShareFolderAction();
 		UNSHARE_FOLDER_ACTION = new UnshareFolderAction();
     }
@@ -137,24 +145,34 @@ final class LibraryTableMediator extends AbstractTableMediator
 		DATA_MODEL = new LibraryTableModel();
 		TABLE = new LimeJTable(DATA_MODEL);
 		((LibraryTableModel)DATA_MODEL).setTable(TABLE);
-		BUTTON_ROW = (new LibraryTableButtons(this)).getComponent();
+		Action[] aa = new Action[] { 
+				LAUNCH_ACTION,
+				ENQUEUE_ACTION,
+				DELETE_ACTION,
+				ANNOTATE_ACTION,
+				RESUME_ACTION
+		};
+		
+		BUTTON_ROW = new ButtonRow(aa, ButtonRow.X_AXIS, ButtonRow.NO_GLUE);
     }
 
     // inherit doc comment
     protected JPopupMenu createPopupMenu() {
-        JPopupMenu menu = (new LibraryTablePopupMenu(this)).getComponent();
-        
 		if (TABLE.getSelectionModel().isSelectionEmpty())
 			return null;
         
-		DataLine[] dls = TABLE.getSelectedDataLines();
-		LICENSE_ACTION.setEnabled(dls != null && dls[0] !=null && ((LibraryTableDataLine)dls[0]).isLicensed());
-
-        menu.getComponent(LibraryTablePopupMenu.RENAME_INDEX).setEnabled(!_isIncomplete);
-        menu.getComponent(LibraryTablePopupMenu.RESUME_INDEX).setEnabled(_isIncomplete);
-        menu.getComponent(LibraryTablePopupMenu.LAUNCH_INDEX).setEnabled(true);
+        JPopupMenu menu = new JPopupMenu();
+        
+		menu.add(new JMenuItem(LAUNCH_ACTION));
+		menu.add(new JMenuItem(ENQUEUE_ACTION));
+		menu.add(new JMenuItem(DELETE_ACTION));
+		menu.add(new JMenuItem(ANNOTATE_ACTION));
+		menu.add(new JMenuItem(RESUME_ACTION));
+		menu.addSeparator();
+		menu.add(new JMenuItem(RENAME_ACTION));
 		menu.addSeparator();
 		
+		DataLine[] dls = TABLE.getSelectedDataLines();
 		boolean dirSelected = false;
 		boolean fileSelected = false;
 		for (int i = 0; i < dls.length; i++) {
@@ -168,9 +186,9 @@ final class LibraryTableMediator extends AbstractTableMediator
 		}
 		if (dirSelected) {
 	        if (GUIMediator.isPlaylistVisible())
-	            menu.getComponent(LibraryTablePopupMenu.PLAYLIST_INDEX).setEnabled(false);
-	        menu.getComponent(LibraryTablePopupMenu.DELETE_INDEX).setEnabled(false);
-	        menu.getComponent(LibraryTablePopupMenu.RENAME_INDEX).setEnabled(false);
+	            ENQUEUE_ACTION.setEnabled(false);
+	        DELETE_ACTION.setEnabled(false);
+	        RENAME_ACTION.setEnabled(false);
 			if (fileSelected) {
 				JMenu sharingMenu = new JMenu(GUIMediator.getStringResource("LIBRARY_TABLE_SHARING_SUB_MENU"));
 				sharingMenu.add(new JMenuItem(SHARE_ACTION));
@@ -185,16 +203,19 @@ final class LibraryTableMediator extends AbstractTableMediator
 			}
 		} else {
 	        if (GUIMediator.isPlaylistVisible())
-	            menu.getComponent(LibraryTablePopupMenu.PLAYLIST_INDEX).setEnabled(true);
-	        menu.getComponent(LibraryTablePopupMenu.DELETE_INDEX).setEnabled(true);
-	        menu.getComponent(LibraryTablePopupMenu.RENAME_INDEX).setEnabled(!_isIncomplete);
+	            ENQUEUE_ACTION.setEnabled(true);
+	        DELETE_ACTION.setEnabled(true);
+	        RENAME_ACTION.setEnabled(!_isIncomplete);
 			menu.add(new JMenuItem(SHARE_ACTION));
 			menu.add(new JMenuItem(UNSHARE_ACTION));
 		}
 		menu.addSeparator();
+		
 		menu.add(createSearchSubMenu((LibraryTableDataLine)dls[0]));
 		menu.add(createAdvancedMenu((LibraryTableDataLine)dls[0]));
 
+		LICENSE_ACTION.setEnabled(dls != null && dls[0] != null && ((LibraryTableDataLine)dls[0]).isLicensed());
+		
 		return menu;
     }
 
@@ -318,13 +339,11 @@ final class LibraryTableMediator extends AbstractTableMediator
 		
 	    //  disable the annotate buttons if we are turning annotation off
 	    if (!enabled) {
-		    setButtonEnabled(LibraryTableButtons.ANNOTATE_BUTTON, false);
-			ANNOTATE_LISTENER.setEnabled(false);
+			ANNOTATE_ACTION.setEnabled(false);
 	    } else if (!_isIncomplete && TABLE.getSelectedRowCount() == 1
 				&& ((LibraryTableModel)DATA_MODEL).getFileDesc(TABLE.getSelectedRow()) != null) {
 			//  if one non-incomplete item is selected, enable the annotate button
-			ANNOTATE_LISTENER.setEnabled(true);
-            setButtonEnabled(LibraryTableButtons.ANNOTATE_BUTTON, true);
+			ANNOTATE_ACTION.setEnabled(true);
         }        
 	}
 
@@ -339,9 +358,9 @@ final class LibraryTableMediator extends AbstractTableMediator
 	    _isIncomplete = enabled;
 	    //  enable/disable the resume buttons if we're not incomplete
 	    if (!enabled) {
-	        setButtonEnabled(LibraryTableButtons.RESUME_BUTTON, false);
+			RESUME_ACTION.setEnabled(false);
 	    } else if (!TABLE.getSelectionModel().isSelectionEmpty()) {
-	        setButtonEnabled(LibraryTableButtons.RESUME_BUTTON, true);
+			RESUME_ACTION.setEnabled(true);
 	    }
 	}
 	
@@ -369,10 +388,9 @@ final class LibraryTableMediator extends AbstractTableMediator
 		if (evt == null || holder == null)
 			return;
 			
+		File[] files = evt.getFiles();
 		FileDesc[] fds = evt.getFileDescs();
-		if (fds == null || fds.length <= 0)
-			return;
-			
+		
         if(LOG.isDebugEnabled())
             LOG.debug("Handling event: " + evt);
         switch(evt.getKind()) {
@@ -397,6 +415,22 @@ final class LibraryTableMediator extends AbstractTableMediator
             File now = fds[1].getFile();
             if(holder.accept(now)) {
                 ((LibraryTableModel)DATA_MODEL).reinitialize(old, now);
+                handleSelection(-1);
+            }
+            break;
+        case FileManagerEvent.ADD_FOLDER:
+			if (holder.accept(files[0])) {
+			    add(files[0]);
+	            handleSelection(-1);
+			}
+			break;
+        case FileManagerEvent.REMOVE_FOLDER:
+            f = files[0];
+            if(holder.accept(f)) {
+                ((LibraryTableModel)DATA_MODEL).reinitialize(f);
+                handleSelection(-1);
+            } else if(DATA_MODEL.contains(f)) {
+                DATA_MODEL.remove(f);
                 handleSelection(-1);
             }
             break;
@@ -503,39 +537,6 @@ final class LibraryTableMediator extends AbstractTableMediator
         }
     }
 
-	/**
-	 * Performs the Bitzi lookup for the selected files in the library.
-	 */
-    void doBitziLookup() {
-        // get the selected file. If there are more than 1 we just use the
-        // last one.
-        int[] rows = TABLE.getSelectedRows();
-        int k = rows.length;
-        if(k == 0)
-            return;
-        int index = rows[k-1];//this is the index of the last row selected
-        FileDesc fd = ((LibraryTableModel)DATA_MODEL).getFileDesc(index);
-        if (fd==null) {
-            // noop
-            return;
-        }
-        URN urn = fd.getSHA1Urn();
-		if(urn==null) {
-            // unable to do lookup -- perhaps SHA1 not calculated yet?;
-            // TODO could show dialog suggesting user try again later but won't for now
-            return;
-        }
-        String urnStr = urn.toString();
-        int hashstart = 1+urnStr.indexOf(":",4);
-        // TODO: grab this lookup URL from a template somewhere
-        String lookupUrl = "http://bitzi.com/lookup/"+urnStr.substring(hashstart)+"?ref=limewire";
-        try {
-            Launcher.openURL(lookupUrl);
-        } catch (IOException ioe) {
-            // do nothing
-        }
-    }
-    
     /**
      * Programatically starts a rename of the selected item.
      */
@@ -650,15 +651,18 @@ final class LibraryTableMediator extends AbstractTableMediator
 
 		for(int i = rows.length - 1; i >= 0; i--) {
 			File file = ((LibraryTableModel)DATA_MODEL).getFile(rows[i]);
-            RouterService.getFileManager().removeFileIfShared(file);
+            FileDesc fd = ((LibraryTableModel)DATA_MODEL).getFileDesc(rows[i]);
+            
+            if (fd instanceof IncompleteFileDesc) 
+                RouterService.getDownloadManager().getIncompleteFileManager().removeEntry(file);
+            else
+                RouterService.getFileManager().removeFileIfShared(file);
+            
             boolean removed = file.delete();
-            if(!removed) {
+            if(!removed && fd != null) {
                 // try again, telling UploadManager to kill any uploads
-                FileDesc fd = ((LibraryTableModel)DATA_MODEL).getFileDesc(rows[i]);
-                if(fd != null) {
-                    RouterService.getUploadManager().killUploadsForFileDesc(fd);
-                    removed = file.delete();
-                }
+                RouterService.getUploadManager().killUploadsForFileDesc(fd);
+                removed = file.delete();
             }
             
 			if(removed)
@@ -723,10 +727,11 @@ final class LibraryTableMediator extends AbstractTableMediator
 		File file;
 		for (int i = 0; i < rows.length; i++) {
 			file = ltm.getFile(rows[i]);
-			if (RouterService.getFileManager().isCompletelySharedDirectory(file)) {
-				LibraryMediator.setSelectedDirectory(file);
+			// if it's a directory try to select it in the library tree
+			// if it could be selected return
+			if (file.isDirectory() 
+				&& LibraryMediator.setSelectedDirectory(file))
 				return;
-			}
 		}
 		launch();
     }
@@ -817,8 +822,8 @@ final class LibraryTableMediator extends AbstractTableMediator
 		}
 
 		//  always turn on Launch, Delete, Magnet Lookup, Bitzi Lookup
-		setButtonEnabled(LibraryTableButtons.LAUNCH_BUTTON, true);
-		setButtonEnabled(LibraryTableButtons.DELETE_BUTTON, true);
+		LAUNCH_ACTION.setEnabled(true);
+		DELETE_ACTION.setEnabled(true);
 		
 		//  turn on Enqueue if play list is visible and a selected item is playable
 		int[] sel = TABLE.getSelectedRows();
@@ -829,22 +834,23 @@ final class LibraryTableMediator extends AbstractTableMediator
 					found = true;
 					break;
 	            }
-			setButtonEnabled(LibraryTableButtons.PLAYLIST_BUTTON, found);
-        }
+			ENQUEUE_ACTION.setEnabled(found);
+        } else
+			ENQUEUE_ACTION.setEnabled(false);
 
 		//  turn on Describe... for complete files when single selection
 		if (!_isIncomplete && _annotateEnabled && TABLE.getSelectedRowCount() == 1 &&
 			((LibraryTableModel)DATA_MODEL).getFileDesc(TABLE.getSelectedRow()) != null) {
-		    setButtonEnabled(LibraryTableButtons.ANNOTATE_BUTTON, true);
-			ANNOTATE_LISTENER.setEnabled(true);
-		} else {
-		    setButtonEnabled(LibraryTableButtons.ANNOTATE_BUTTON, false);
-			ANNOTATE_LISTENER.setEnabled(false);
-		}
+			ANNOTATE_ACTION.setEnabled(true);
+		} else
+			ANNOTATE_ACTION.setEnabled(false);
 
 		//  turn on Resume button if Incomplete folder is currently selected
-		setButtonEnabled(LibraryTableButtons.RESUME_BUTTON, _isIncomplete);
+		RESUME_ACTION.setEnabled(_isIncomplete);
 		
+		//  turn off Rename button if Incomplete folder is currently selected
+		RENAME_ACTION.setEnabled(!_isIncomplete);
+		 
 		//  enable Share File action when any selected file is not shared
 		boolean shareAllowed = false;
 		boolean unshareAllowed = false;
@@ -856,7 +862,7 @@ final class LibraryTableMediator extends AbstractTableMediator
 			if (file.isDirectory()) {
 				//  turn off delete (only once) if directory found
 				if (!foundDir){
-					setButtonEnabled(LibraryTableButtons.DELETE_BUTTON, false);
+					DELETE_ACTION.setEnabled(false);
 					foundDir = true;
 				}
 				if (!RouterService.getFileManager().isCompletelySharedDirectory(file))
@@ -886,8 +892,12 @@ final class LibraryTableMediator extends AbstractTableMediator
 		boolean firstShared = RouterService.getFileManager().isFileShared(file);
 		MAGNET_LOOKUP_ACTION.setEnabled(firstShared);
 		BITZI_LOOKUP_ACTION.setEnabled(firstShared);
+
 		COPY_MAGNET_TO_CLIPBOARD_ACTION.setEnabled
 			(!_isIncomplete && getFileDesc(sel[0]) != null);
+        LibraryTableDataLine dl = (LibraryTableDataLine)TABLE.getSelectedDataLine();
+        boolean license = dl != null && dl.isLicensed();
+		LICENSE_ACTION.setEnabled(license);
 	}
 
 	/**
@@ -895,40 +905,132 @@ final class LibraryTableMediator extends AbstractTableMediator
 	 * disabling all necessary buttons and menu items.
 	 */
 	public void handleNoSelection() {
-		setButtonEnabled(LibraryTableButtons.LAUNCH_BUTTON, false);
-		setButtonEnabled(LibraryTableButtons.DELETE_BUTTON, false);
-
-        if (GUIMediator.isPlaylistVisible())
-            setButtonEnabled(LibraryTableButtons.PLAYLIST_BUTTON, false);
-
-		ANNOTATE_LISTENER.setEnabled(false);
-
-        setButtonEnabled(LibraryTableButtons.ANNOTATE_BUTTON, false);
-		setButtonEnabled(LibraryTableButtons.RESUME_BUTTON, false);
+		LAUNCH_ACTION.setEnabled(false);
+		ENQUEUE_ACTION.setEnabled(false);
+		DELETE_ACTION.setEnabled(false);
+		ANNOTATE_ACTION.setEnabled(false);
+		RESUME_ACTION.setEnabled(false);
+		
+		RENAME_ACTION.setEnabled(false);
+		
+		SHARE_ACTION.setEnabled(false);
+		UNSHARE_ACTION.setEnabled(false);
+		SHARE_FOLDER_ACTION.setEnabled(false);
+		UNSHARE_FOLDER_ACTION.setEnabled(false);
 		
 		COPY_MAGNET_TO_CLIPBOARD_ACTION.setEnabled(false);
 		MAGNET_LOOKUP_ACTION.setEnabled(false);
 		BITZI_LOOKUP_ACTION.setEnabled(false);
 		LICENSE_ACTION.setEnabled(false);
-		SHARE_ACTION.setEnabled(false);
-		UNSHARE_ACTION.setEnabled(false);
 	}
 
-    ///////////////////////
-    // A collection of private listeners
-    //////////////////////
+	/**
+	 * Refreshes the enabledness of the Enqueue button based
+	 * on the player enabling state. 
+	 */
+	public void setPlayerEnabled(boolean value) {
+		handleSelection(TABLE.getSelectedRow());
+	}
+	
+	
+    ///////////////////////////////////////////////////////
+    //  ACTIONS
+    ///////////////////////////////////////////////////////
 
+    private final class LaunchAction extends AbstractAction {
+		
+		public LaunchAction () {
+			putValue(Action.NAME, GUIMediator.getStringResource
+					("LIBRARY_LAUNCH_BUTTON_LABEL"));
+			putValue(Action.SHORT_DESCRIPTION,
+					 GUIMediator.getStringResource("LIBRARY_LAUNCH_BUTTON_TIP"));
+			putValue(LimeAction.ICON_NAME, "LIBRARY_LAUNCH");
+		}
+		
+        public void actionPerformed(ActionEvent ae) {
+			launch();
+        }
+    }
+	
+    private final class EnqueueAction extends AbstractAction {
+		
+		public EnqueueAction () {
+			putValue(Action.NAME, GUIMediator.getStringResource
+					("LIBRARY_PLAYLIST_BUTTON_LABEL"));
+			putValue(Action.SHORT_DESCRIPTION,
+					 GUIMediator.getStringResource("LIBRARY_PLAYLIST_BUTTON_TIP"));
+			putValue(LimeAction.ICON_NAME, "LIBRARY_TO_PLAYLIST");
+		}
+		
+        public void actionPerformed(ActionEvent ae) {
+			//get the selected file. If there are more than 1 we add all
+			int[] rows = TABLE.getSelectedRows();
+			for (int i = 0; i < rows.length; i++) {
+				int index = rows[i]; // current index to add
+				File file = ((LibraryTableModel)DATA_MODEL).getFile(index);
+				if (GUIMediator.isPlaylistVisible() && PlaylistMediator.isPlayableFile(file))
+					LibraryMediator.instance().addFileToPlayList(file);
+			}
+        }
+    }
+
+    private final class RemoveAction extends AbstractAction {
+		
+		public RemoveAction () {
+			putValue(Action.NAME, GUIMediator.getStringResource
+					("LIBRARY_DELETE_BUTTON_LABEL"));
+			putValue(Action.SHORT_DESCRIPTION,
+					 GUIMediator.getStringResource("LIBRARY_DELETE_BUTTON_TIP"));
+			putValue(LimeAction.ICON_NAME, "LIBRARY_DELETE");
+		}
+		
+        public void actionPerformed(ActionEvent ae) {
+            REMOVE_LISTENER.actionPerformed(ae);
+		}
+    }
 	
     private final class AnnotateAction extends AbstractAction {
 		
 		public AnnotateAction() {
 			putValue(Action.NAME, 
 					 GUIMediator.getStringResource("LIBRARY_ANNOTATE_BUTTON_LABEL"));
+			putValue(Action.SHORT_DESCRIPTION,
+					 GUIMediator.getStringResource("LIBRARY_ANNOTATE_BUTTON_TIP"));
+			putValue(LimeAction.ICON_NAME, "LIBRARY_ANNOTATE");
 		}
 		
     	public void actionPerformed(ActionEvent ae) {
     		editMeta();
     	}
+    }
+
+    private final class ResumeAction extends AbstractAction {
+		
+		public ResumeAction () {
+			putValue(Action.NAME, GUIMediator.getStringResource
+					("LIBRARY_RESUME_BUTTON_LABEL"));
+			putValue(Action.SHORT_DESCRIPTION,
+					 GUIMediator.getStringResource("LIBRARY_RESUME_BUTTON_TIP"));			
+			putValue(LimeAction.ICON_NAME, "LIBRARY_RESUME");
+		}
+		
+        public void actionPerformed(ActionEvent ae) {
+            resumeIncomplete();
+		}
+    }
+	
+    private final class RenameAction extends AbstractAction {
+		
+		public RenameAction () {
+			putValue(Action.NAME, GUIMediator.getStringResource
+					("LIBRARY_RENAME_BUTTON_LABEL"));
+			//  "LIBRARY_RENAME"   ???
+			//  "LIBRARY_RENAME_BUTTON_TIP"   ???			
+		}
+		
+        public void actionPerformed(ActionEvent ae) {
+			startRename();
+		}
     }
 
 	private class ShareFileAction extends AbstractAction {
@@ -1039,24 +1141,18 @@ final class LibraryTableMediator extends AbstractTableMediator
 		}
 	}
 	
-    private final class ResumeListener implements ActionListener {
-    	public void actionPerformed(ActionEvent ae) {
-            resumeIncomplete();
-    	}
-    }
-
-    private final class MagnetLookupAction extends AbstractAction {
+	private final class MagnetLookupAction extends AbstractAction {
 		
 		public MagnetLookupAction() {
 			putValue(Action.NAME, GUIMediator.getStringResource
 					("SEARCH_PUBLIC_MAGNET_LOOKUP_STRING"));
 		}
 		
-        public void actionPerformed(ActionEvent e){
+        public void actionPerformed(ActionEvent e) {
             doMagnetLookup();
         }
     }
-	
+
 	private class LicenseAction extends AbstractAction {
 
 		public LicenseAction() {
@@ -1068,25 +1164,5 @@ final class LibraryTableMediator extends AbstractTableMediator
 			showLicenseWindow();
 		}
 	}
-
-    private final class LaunchListener implements ActionListener {
-
-    	public void actionPerformed(ActionEvent ae) {
-    		launch();
-    	}
-    }
-
-
-    private final class AddPLFileListener implements ActionListener{
-        public void actionPerformed(ActionEvent ae){
-			//get the selected file. If there are more than 1 we add all
-			int[] rows = TABLE.getSelectedRows();
-			for (int i = 0; i < rows.length; i++) {
-				int index = rows[i]; // current index to add
-				File file = ((LibraryTableModel)DATA_MODEL).getFile(index);
-				if (GUIMediator.isPlaylistVisible() && PlaylistMediator.isPlayableFile(file))
-					LibraryMediator.instance().addFileToPlayList(file);
-			}
-        }
-    }
 }
+

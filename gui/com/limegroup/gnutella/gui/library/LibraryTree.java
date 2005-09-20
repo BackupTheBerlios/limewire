@@ -238,7 +238,6 @@ final class LibraryTree extends JTree implements MouseObserver {
 	 */
 	private void addSharedDirectory(File dir) {
 		SharedFilesDirectoryHolder dh = new SharedFilesDirectoryHolder(dir);
-		File parent = dir.getParentFile();
 		
 		LibraryTreeNode current = new LibraryTreeNode(dh);
 
@@ -255,8 +254,12 @@ final class LibraryTree extends JTree implements MouseObserver {
 		}
 
         // Add this into the correct position.
-		LibraryTreeNode parentNode = getNodeForFolder(parent, sharedFilesNode);
-		if(parentNode == null)
+		File parent = dir.getParentFile();
+		LibraryTreeNode parentNode = null;
+		if (parent != null) {
+			 parentNode = getNodeForFolder(parent, sharedFilesNode);
+		}			
+		if (parentNode == null)
 		    parentNode = sharedFilesNode;
 
 		addNode(parentNode, current);
@@ -583,18 +586,7 @@ final class LibraryTree extends JTree implements MouseObserver {
 
 			unshareAction.setEnabled(canBeUnshared(node));
 			shareAction.setEnabled(canBeShared(node));
-			//  enable addDirToPlaylistAction when non-incomplete, non-shared, and has a playable file
-			boolean enqueueable = false;
-			if (node != null && node != incompleteFilesNode && node != sharedFilesNode) {
-				File[] files = node.getDirectoryHolder().getFiles();
-				if (files != null && files.length > 0) {
-					for (int i = 0; i < files.length; i++) {
-						if (GUIMediator.isPlaylistVisible() && PlaylistMediator.isPlayableFile(files[i]))
-							enqueueable = true;
-					}
-				}
-			}
-			addDirToPlaylistAction.setEnabled(enqueueable);
+			addDirToPlaylistAction.setEnabled(isEnqueueable());
 			
 			if (node == null)
 				return;
@@ -754,6 +746,31 @@ final class LibraryTree extends JTree implements MouseObserver {
 		}
 	}
 	
+	/**
+	 * Enable enqueue action when non-incomplete, non-shared, and has a playable file. 
+	 */
+	private boolean isEnqueueable() {
+		LibraryTreeNode node = getSelectedNode();
+		boolean enqueueable = false;
+		if (node != null && node != incompleteFilesNode && node != sharedFilesNode) {
+			File[] files = node.getDirectoryHolder().getFiles();
+			if (files != null && files.length > 0) {
+				for (int i = 0; i < files.length; i++) {
+					if (GUIMediator.isPlaylistVisible() && PlaylistMediator.isPlayableFile(files[i]))
+						enqueueable = true;
+				}
+			}
+		}
+		return enqueueable;
+	}
+
+	/**
+	 * Updates the LibraryTree based on whether the player is enabled. 
+	 */
+	public void setPlayerEnabled(boolean value) {
+		addDirToPlaylistAction.setEnabled(isEnqueueable());
+	}
+	
 
 	///////////////////////////////////////////////////////////////////////////
 	//  Popups
@@ -770,15 +787,10 @@ final class LibraryTree extends JTree implements MouseObserver {
 	 * click.
 	 */
 	private void makePopupMenu() {
-		
 		DIRECTORY_POPUP.add(new JMenuItem(shareAction));
 		DIRECTORY_POPUP.add(new JMenuItem(unshareAction));
-		
-		if (GUIMediator.isPlaylistVisible())
-            DIRECTORY_POPUP.add(new JMenuItem(addDirToPlaylistAction));
-		
+        DIRECTORY_POPUP.add(new JMenuItem(addDirToPlaylistAction));
 		DIRECTORY_POPUP.addSeparator();
-		
 		DIRECTORY_POPUP.add(new JMenuItem(new ShareFileSpeciallyAction()));
 		DIRECTORY_POPUP.add(new JMenuItem(new ShareNewFolderAction()));
 		
@@ -819,13 +831,18 @@ final class LibraryTree extends JTree implements MouseObserver {
 
 	/**
 	 * Sets the tree selection to be the given directory, if it exists.
+	 * 
+	 * @return true if the directory exists in the tree and could be selected
 	 */
-	public void setSelectedDirectory(File dir) {
+	public boolean setSelectedDirectory(File dir) {
 		if (dir == null || !dir.isDirectory())
-			return;
+			return false;
 		LibraryTreeNode ltn = getNodeForFolder(dir, sharedFilesNode);
+		if (ltn == null)
+			return false;
+		
 		setSelectionPath(new TreePath(ltn.getPath()));
-
+		return true;
 	}
 }
 

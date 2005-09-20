@@ -45,7 +45,7 @@ final class SpeedWindow extends SetupWindow {
 		_cable = new JRadioButton(GUIConstants.CABLE_SPEED);
 		_t1 = new JRadioButton(GUIConstants.T1_SPEED);
 		_t3 = new JRadioButton(GUIConstants.T3_SPEED);
-		_modem.setSelected(true);
+		_cable.setSelected(true);
 		_speedGroup.add(_modem);
 		_speedGroup.add(_cable);
 		_speedGroup.add(_t1);

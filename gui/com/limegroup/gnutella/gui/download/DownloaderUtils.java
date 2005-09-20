@@ -5,7 +5,6 @@ import java.awt.Dialog;
 import java.io.File;
 import java.text.MessageFormat;
 
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import com.limegroup.gnutella.Downloader;

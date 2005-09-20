@@ -29,9 +29,7 @@ import com.limegroup.gnutella.gui.KeyProcessingTextField;
 import com.limegroup.gnutella.gui.GUIMediator;
 import com.limegroup.gnutella.gui.search.SearchField;
 import com.limegroup.gnutella.xml.LimeXMLSchema;
-import com.limegroup.gnutella.xml.LimeXMLUtils;
 import com.limegroup.gnutella.xml.SchemaFieldInfo;
-import com.limegroup.gnutella.xml.XMLStringUtils;
 import com.limegroup.gnutella.util.NameValue;
 
 /**

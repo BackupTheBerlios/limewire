@@ -4,7 +4,6 @@ import java.text.MessageFormat;
 
 import com.limegroup.gnutella.SaveLocationException;
 import com.limegroup.gnutella.gui.GUIMediator;
-import com.limegroup.gnutella.gui.MessageService;
 
 /**
  * Static helper class that handles exceptions from the core by creating 
