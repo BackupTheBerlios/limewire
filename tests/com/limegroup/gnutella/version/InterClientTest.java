@@ -29,6 +29,7 @@ public class InterClientTest extends ClientSideTestCase {
         junit.textui.TestRunner.run(suite());
     }
     
+    static UpdateRequest dummy = new UpdateRequest();
     public void setUp() throws Exception {
         setEmpty();
     }
@@ -103,7 +104,7 @@ public class InterClientTest extends ClientSideTestCase {
         
         // Get the -10 file.
         byte[] b = readFile(-10);
-        testUP[0].send(new UpdateResponse(b));
+        testUP[0].send(UpdateResponse.createUpdateResponse(b,dummy));
         testUP[0].flush();
         
         Thread.sleep(1000); // let it process.
@@ -128,7 +129,7 @@ public class InterClientTest extends ClientSideTestCase {
         
         // Get the -10 file.
         byte[] b = readFile(-10);
-        testUP[0].send(new UpdateResponse(b));
+        testUP[0].send(UpdateResponse.createUpdateResponse(b,dummy));
         testUP[0].flush();
         
         Thread.sleep(1000); // let it process.
@@ -148,7 +149,7 @@ public class InterClientTest extends ClientSideTestCase {
         // Get the -10 file.
         byte[] b = readFile(-10);
         b[0] = '0'; // break the sig.
-        testUP[0].send(new UpdateResponse(b));
+        testUP[0].send(UpdateResponse.createUpdateResponse(b,dummy));
         testUP[0].flush();
         
         Thread.sleep(1000); // let it process.
@@ -168,7 +169,7 @@ public class InterClientTest extends ClientSideTestCase {
         // Get the -10 file.
         byte[] b = readFile(-10);
         b[b.length-1] = '0'; // break the data.
-        testUP[0].send(new UpdateResponse(b));
+        testUP[0].send(UpdateResponse.createUpdateResponse(b,dummy));
         testUP[0].flush();
         
         Thread.sleep(1000); // let it process.
@@ -187,7 +188,7 @@ public class InterClientTest extends ClientSideTestCase {
         
         // Get the -9 file.
         byte[] b = readFile(-9);
-        testUP[0].send(new UpdateResponse(b));
+        testUP[0].send(UpdateResponse.createUpdateResponse(b,dummy));
         testUP[0].flush();
         
         Thread.sleep(1000); // let it process.
@@ -209,7 +210,7 @@ public class InterClientTest extends ClientSideTestCase {
         
         // Get the -8 file.
         byte[] b = readFile(-8);
-        testUP[0].send(new UpdateResponse(b));
+        testUP[0].send(UpdateResponse.createUpdateResponse(b,dummy));
         testUP[0].flush();
         
         Thread.sleep(1000); // let it process.
@@ -228,7 +229,7 @@ public class InterClientTest extends ClientSideTestCase {
         
         // Get the -8 file.
         b = readFile(-8);
-        testUP[0].send(new UpdateResponse(b));
+        testUP[0].send(UpdateResponse.createUpdateResponse(b,dummy));
         testUP[0].flush();
         
         Thread.sleep(1000); // let it process.
@@ -236,6 +237,79 @@ public class InterClientTest extends ClientSideTestCase {
         assertEquals(-8, UpdateHandler.instance().getLatestId());
         assertNotNull(cb.lastUpdate);
     }    
+    
+    public void testCompressedResponse() throws Exception {
+        drain(testUP[0]);
+        
+        assertEquals(0, UpdateHandler.instance().getLatestId());
+        
+        // We should get no response, since we have no data to give.
+        UpdateRequestStub request = new UpdateRequestStub(2,true,true);
+        testUP[0].send(new UpdateRequest());
+        testUP[0].flush();
+        Message m = getFirstInstanceOfMessageType(testUP[0], UpdateResponse.class);
+        assertNull(m);
+        
+        // Alright, set some current bytes so we can do some testing.
+        byte[] data = setCurrent(-10);
+        testUP[0].send(request);
+        testUP[0].flush();
+        m = getFirstInstanceOfMessageType(testUP[0], UpdateResponse.class);
+        assertNotNull(m);
+        assertInstanceof(UpdateResponse.class, m);
+        byte [] payload = payload(m);
+        GGEP g = new GGEP(payload,0,null);
+        assertEquals(g.getBytes("C"),data);
+        assertFalse(g.hasKey("U"));
+    }
+    
+    public void testUncompressedGGEPResponse() throws Exception {
+        drain(testUP[0]);
+        
+        assertEquals(0, UpdateHandler.instance().getLatestId());
+        
+        // We should get no response, since we have no data to give.
+        testUP[0].send(new UpdateRequest());
+        testUP[0].flush();
+        Message m = getFirstInstanceOfMessageType(testUP[0], UpdateResponse.class);
+        assertNull(m);
+        
+        UpdateRequestStub request = new UpdateRequestStub(2,true,false);
+        byte[] data = setCurrent(-10);
+        testUP[0].send(request);
+        testUP[0].flush();
+        m = getFirstInstanceOfMessageType(testUP[0], UpdateResponse.class);
+        assertNotNull(m);
+        assertInstanceof(UpdateResponse.class, m);
+        
+        byte [] payload = payload(m);
+        GGEP g = new GGEP(payload,0,null);
+        assertEquals(g.getBytes("U"),data);
+        assertFalse(g.hasKey("C"));
+    }
+    
+    /**
+     * tests that a request with higher version w/o GGEP gets responded to properly
+     */
+    public void testHigherVersionNoGGEP() throws Exception {
+        drain(testUP[0]);
+        
+        assertEquals(0, UpdateHandler.instance().getLatestId());
+        
+        // We should get no response, since we have no data to give.
+        testUP[0].send(new UpdateRequest());
+        testUP[0].flush();
+        Message m = getFirstInstanceOfMessageType(testUP[0], UpdateResponse.class);
+        assertNull(m);
+        
+        UpdateRequestStub request = new UpdateRequestStub(2,false,false);
+        byte[] data = setCurrent(-10);
+        testUP[0].send(request);
+        testUP[0].flush();
+        m = getFirstInstanceOfMessageType(testUP[0], UpdateResponse.class);
+        assertNotNull(m);
+        assertEquals(data,payload(m));
+    }
     
     private static void setCurrentId(int i) throws Exception {
         PrivilegedAccessor.setValue(UpdateHandler.instance(), "_lastId", new Integer(i));
@@ -300,6 +374,48 @@ public class InterClientTest extends ClientSideTestCase {
         public void updateAvailable(UpdateInformation info) {
             lastUpdate = info;
         }
+    }
+    
+    static byte [] derivePayload(boolean hasGGEP, boolean requestsCompressed) throws Exception {
+        if (!hasGGEP)
+            return DataUtils.EMPTY_BYTE_ARRAY;
+        
+        GGEP g = new GGEP();
+        if (requestsCompressed)
+            g.put("C");
+        else
+            g.put("X"); //put something else
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        g.write(baos);
+        return baos.toByteArray();
+    }
+    
+    private static class UpdateRequestStub extends VendorMessage{
+
+        public int version;
+        public boolean hasGGEP,requestsCompressed;
+        
+        public UpdateRequestStub(int version, boolean hasGGEP, boolean requestsCompressed) 
+        throws Exception {
+            super(F_LIME_VENDOR_ID, F_UPDATE_REQ, version, derivePayload(hasGGEP, requestsCompressed));
+            this.version = version;
+            this.hasGGEP = hasGGEP;
+            this.requestsCompressed = requestsCompressed;
+        }
+        
+        public int getVersion() {
+            return version;
+        }
+
+        public boolean hasGGEP() {
+            return hasGGEP;
+        }
+
+        public boolean requestsCompressed() {
+            return requestsCompressed;
+        }
+        
     }
 }
 
