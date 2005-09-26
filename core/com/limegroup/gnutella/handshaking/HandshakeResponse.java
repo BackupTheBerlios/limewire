@@ -188,6 +188,11 @@ public final class HandshakeResponse {
 	 * Constant for whether or not this node is a LimeWire (or derivative)
 	 */
 	private final boolean IS_LIMEWIRE;
+	
+	/**
+	 * Constant for whether or not this node is a LimeWire (or derivative)
+	 */
+	private final boolean IS_FROSTWIRE;
     
     /**
      * Constant for whether or nor this node is an older limewire. 
@@ -258,7 +263,10 @@ public final class HandshakeResponse {
             extractStringHeaderValue(headers, HeaderNames.USER_AGENT).
                 toLowerCase().startsWith("limewire");
 
-        
+		IS_FROSTWIRE =
+					extractStringHeaderValue(headers, HeaderNames.USER_AGENT).
+						toLowerCase().startsWith("frostwire");
+						
         GOOD_ULTRAPEER = isHighDegreeConnection() &&
             isUltrapeerQueryRoutingConnection() &&
             (getMaxTTL() < 5) &&
@@ -717,8 +725,8 @@ public final class HandshakeResponse {
 	 * Returns whether or not we think this connection is from a LimeWire
 	 * or a derivative of LimeWire
 	 */
-	public boolean isLimeWire() {
-	    return IS_LIMEWIRE;
+	public boolean isFrostWire() {
+	    return IS_FROSTWIRE;
     }
     
     /**
@@ -728,7 +736,15 @@ public final class HandshakeResponse {
     public boolean isOldLimeWire() {
         return IS_OLD_LIMEWIRE;
     }
-
+	
+	/**
+		* @return true if we consider this an older version of limewire, false
+		* otherwise
+		*/
+	   public boolean isLimeWire() {
+		   return IS_LIMEWIRE;
+	}
+	   
     /**
      * Returns whether or not this is connection passed the headers to be
      * considered a "good" leaf.

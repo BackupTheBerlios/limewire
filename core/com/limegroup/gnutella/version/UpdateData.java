@@ -24,12 +24,6 @@ class UpdateData implements Cloneable, UpdateInformation {
     /** The 'for' version. */
     private Version forVersion;
     
-    /** Is valid for pro? */
-    private boolean isPro;
-    
-    /** Is valid for free? */
-    private boolean isFree;
-    
     /** The url to send this to. */
     private String updateURL;
     
@@ -86,7 +80,7 @@ class UpdateData implements Cloneable, UpdateInformation {
     public String toString() {
         return "\n{" + 
             "from: " + fromVersion + ", to: " + toVersion + ", for: " + forVersion + 
-            ", pro: " + isPro + ", free: " + isFree + ", url: " + updateURL + ", style: " + updateStyle +
+            ", url: " + updateURL + ", style: " + updateStyle +
             ", javaFrom: " + fromJava + ", javaTo: " + toJava + ", osList: " + OS.toString(osList) +
             ", language: " + language + ", text: " + updateText + ", title: " + updateTitle + 
             ", urn: " + urn + ", ttroot: " + ttRoot + ", updateCommand: " + updateCommand +
@@ -101,12 +95,6 @@ class UpdateData implements Cloneable, UpdateInformation {
     
     /** Sets the forVersion */
     void setForVersion(Version v) { forVersion = v; }
-    
-    /** Sets the pro status */
-    void setPro(boolean b) { isPro = b; }
-    
-    /** Sets the free status */
-    void setFree(boolean b) { isFree = b; }
     
     /** Sets the update URL */
     void setUpdateURL(String s) { updateURL = s; }
@@ -198,13 +186,12 @@ class UpdateData implements Cloneable, UpdateInformation {
      * Determines if this matches (on all except language).
      * The OS match is taken from CommonUtils.
      */
-    boolean isAllowed(Version currentV, boolean currentPro, int currentStyle, Version currentJava) {
+    boolean isAllowed(Version currentV, int currentStyle, Version currentJava) {
         return currentV.compareTo(fromVersion) >= 0 && 
                currentV.compareTo(toVersion) < 0 && 
                currentStyle <= updateStyle &&
                OS.hasAcceptableOS(osList) &&
-               isValidJava(currentJava) &&
-               (currentPro ? isPro : isFree);
+               isValidJava(currentJava);
     }
     
     /**

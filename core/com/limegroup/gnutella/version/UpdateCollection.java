@@ -98,7 +98,7 @@ class UpdateCollection {
      * Gets the UpdateData that is relevant to us.
      * Returns null if there is no relevant update.
      */
-    UpdateData getUpdateDataFor(Version currentV, String lang, boolean currentPro,
+    UpdateData getUpdateDataFor(Version currentV, String lang, 
                                 int currentStyle, Version currentJava) {
         UpdateData englishMatch = null;
         UpdateData exactMatch = null;
@@ -108,7 +108,7 @@ class UpdateCollection {
         // If we got an exact, use that.  Otherwise, use English.
         for(Iterator i = updateDataList.iterator(); i.hasNext(); ) {
             UpdateData next = (UpdateData)i.next();
-            if(next.isAllowed(currentV, currentPro, currentStyle, currentJava)) {
+            if(next.isAllowed(currentV, currentStyle, currentJava)) {
                 if(lang.equals(next.getLanguage())) {
                     exactMatch = next;
                     break;
@@ -299,21 +299,12 @@ class UpdateCollection {
             return;
         }
         
-        if(pro == null && free == null) {
-            data.setPro(true);
-            data.setFree(true);
-        } else {
-            data.setPro(pro != null);
-            data.setFree(free != null);
-        }
-        
         // Update the URL to contain the correct pro & language.
         if(url.indexOf('?') == -1)
             url += "?";
         else
             url += "&";
-        url += "pro="   + CommonUtils.isPro() + 
-               "&lang=" + encode(ApplicationSettings.getLanguage()) +
+            url += "&lang=" + encode(ApplicationSettings.getLanguage()) +
                "&lv="   + encode(CommonUtils.getLimeWireVersion()) +
                "&jv="   + encode(CommonUtils.getJavaVersion()) +
                "&os="   + encode(CommonUtils.getOS()) +

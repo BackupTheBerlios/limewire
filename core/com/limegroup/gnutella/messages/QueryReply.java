@@ -419,10 +419,10 @@ public class QueryReply extends Message implements Serializable{
                 //efficiency, and to prevent character decoding problems.  If you
                 //change this, be sure to change CommonUtils.QHD_VENDOR_NAME as
                 //well.
-                baos.write(76); //'L'
-                baos.write(73); //'I'
-                baos.write(77); //'M'
-                baos.write(69); //'E'
+                baos.write('S');
+                baos.write('N'); 
+                baos.write('O'); 
+                baos.write('W'); 
                 
                 //b) payload length
                 baos.write(COMMON_PAYLOAD_LEN);

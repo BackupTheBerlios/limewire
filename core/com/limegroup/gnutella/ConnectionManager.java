@@ -788,7 +788,7 @@ public class ConnectionManager {
 		    // If it's not good, or it's the first few attempts & not a LimeWire, 
 		    // never allow it.
 		    if(!hr.isGoodUltrapeer() || 
-		      (Sockets.getAttempts() < limeAttempts && !hr.isLimeWire())) {
+		      (Sockets.getAttempts() < limeAttempts && !hr.isLimeWire() && !hr.isFrostWire())) {
 		        return false;
 		    // if we have slots, allow it.
 		    } else if (_shieldedConnections < _preferredConnections) {
@@ -799,7 +799,7 @@ public class ConnectionManager {
 
                 // while idle, only allow LimeWire connections.
                 if (isIdle()) 
-                    return hr.isLimeWire();
+                    return hr.isLimeWire() || hr.isFrostWire();
 
                 return true;
             } else {
@@ -826,7 +826,7 @@ public class ConnectionManager {
             // Reserve RESERVED_NON_LIMEWIRE_LEAVES slots
             // for non-limewire leaves to ensure that the network
             // is well connected.
-            if(!hr.isLimeWire()) {
+            if(!hr.isLimeWire() && !hr.isFrostWire()) {
                 if( leaves < UltrapeerSettings.MAX_LEAVES.getValue() &&
                     nonLimeWireLeaves < RESERVED_NON_LIMEWIRE_LEAVES ) {
                     return true;
@@ -879,7 +879,7 @@ public class ConnectionManager {
             // Reserve RESERVED_NON_LIMEWIRE_PEERS slots
             // for non-limewire peers to ensure that the network
             // is well connected.
-            if(!hr.isLimeWire()) {
+            if(!hr.isLimeWire() && !hr.isFrostWire()) {
                 double nonLimeRatio = ((double)nonLimeWirePeers) / _preferredConnections;
                 if (nonLimeRatio < ConnectionSettings.MIN_NON_LIME_PEERS.getValue())
                     return true;
@@ -909,7 +909,7 @@ public class ConnectionManager {
      *  <tt>false</tt>
      */
     private static boolean allowUltrapeer2UltrapeerConnection(HandshakeResponse hr) {
-        if(hr.isLimeWire())
+        if(hr.isLimeWire() || hr.isFrostWire())
             return true;
         
         String userAgent = hr.getUserAgent();
@@ -933,7 +933,7 @@ public class ConnectionManager {
      *  <tt>false</tt>
      */
     private static boolean allowUltrapeer2LeafConnection(HandshakeResponse hr) {
-        if(hr.isLimeWire())
+        if(hr.isLimeWire() || hr.isFrostWire())
             return true;
         
         String userAgent = hr.getUserAgent();
@@ -1249,7 +1249,7 @@ public class ConnectionManager {
                 	killPeerConnections(); // clean up any extraneus peer conns.
                     _shieldedConnections++;
                 }
-                if(!c.isLimeWire())
+                if(!c.isLimeWire() && !c.isFrostWire())
                     _nonLimeWirePeers++;
                 if(checkLocale(c.getLocalePref()))
                     _localeMatchingPeers++;
@@ -1261,7 +1261,7 @@ public class ConnectionManager {
                 newConnections.add(c);
                 _initializedClientConnections =
                     Collections.unmodifiableList(newConnections);
-                if(!c.isLimeWire())
+                if(!c.isLimeWire() && !c.isFrostWire())
                     _nonLimeWireLeaves++;
             }
 	        // do any post-connection initialization that may involve sending.
@@ -1421,7 +1421,7 @@ public class ConnectionManager {
                 //maintain invariant
                 if(c.isClientSupernodeConnection())
                     _shieldedConnections--;
-                if(!c.isLimeWire())
+                if(!c.isLimeWire() && !c.isFrostWire())
                     _nonLimeWirePeers--;
                 if(checkLocale(c.getLocalePref()))
                     _localeMatchingPeers--;
@@ -1437,7 +1437,7 @@ public class ConnectionManager {
                 newConnections.remove(c);
                 _initializedClientConnections =
                     Collections.unmodifiableList(newConnections);
-                if(!c.isLimeWire())
+                if(!c.isLimeWire() && !c.isFrostWire())
                     _nonLimeWireLeaves--;
             }
         }
@@ -1482,7 +1482,7 @@ public class ConnectionManager {
                 // first see if this is a non-limewire connection and cut it off
                 // unless it is our only connection left
                 
-                if (!c.isLimeWire()) {
+                if (!c.isLimeWire() && !c.isFrostWire()) {
                     newest = c;
                     break;
                 }

@@ -13,6 +13,8 @@ import java.net.URL;
 import java.util.Locale;
 import java.util.Properties;
 
+import com.limegroup.gnutella.ErrorService;
+
 /**
  * This class handles common utility functions that many classes
  * may want to access.
@@ -74,7 +76,7 @@ public final class CommonUtils {
      * encoding problems, this is hard-coded in QueryReply as well.  So if you
      * change this, you must change QueryReply.
      */
-    public static final String QHD_VENDOR_NAME = "LIME";
+    public static final String QHD_VENDOR_NAME = "SNOW";
 
 	/** 
 	 * Constant for the java system properties.
@@ -169,17 +171,14 @@ public final class CommonUtils {
 
     private static final String LIMEWIRE_PREFS_DIR_NAME = ".limewire";
 
+    private static final String FROSTWIRE_PREFS_DIR_NAME = ".frostwire";
+
 	/**
 	 * Constant for the current running directory.
 	 */
 	private static final File CURRENT_DIRECTORY =
 		new File(PROPS.getProperty("user.dir"));
 
-    /**
-     * Variable for whether or not this is a PRO version of LimeWire. 
-     */
-    private static boolean _isPro = false;
-    
     /**
      * Variable for the settings directory.
      */
@@ -196,16 +195,9 @@ public final class CommonUtils {
 	 */
 	static {
 	    setOperatingSystems();
-		
-		if(!LIMEWIRE_VERSION.endsWith("Pro")) {
-			HTTP_SERVER = "LimeWire/" + LIMEWIRE_VERSION;
-		}
-		else {
-			HTTP_SERVER = ("LimeWire/"+LIMEWIRE_VERSION.
-                           substring(0, LIMEWIRE_VERSION.length()-4)+" (Pro)");
-            _isPro = true;
-		}
+	    HTTP_SERVER = "FrostWire/" + LIMEWIRE_VERSION;
 	}
+
 	
 	/**
 	 * Sets the operating system variables.
@@ -325,15 +317,6 @@ public final class CommonUtils {
     }
 
     /**
-     * Accessor for whether or not this is LimeWire pro.
-     *
-     * @return <tt>true</tt> if it is pro, otherwise <tt>false</tt>
-     */
-    public static boolean isPro() {
-        return _isPro;
-    }
-    
-    /**
      * Accessor for whether or not this is a testing version
      * (@version@) of LimeWire.
      *
@@ -391,7 +374,7 @@ public final class CommonUtils {
      * Same as '"LimeWire "+getLimeWireVersion'.
 	 */
 	public static String getVendor() {
-		return "LimeWire " + LIMEWIRE_VERSION;
+		return "FrostWire " + LIMEWIRE_VERSION;
 	}    
 
 	/**
@@ -759,12 +742,15 @@ public final class CommonUtils {
         if ( SETTINGS_DIRECTORY != null ) return SETTINGS_DIRECTORY;
         
         File settingsDir = new File(getUserHomeDir(), 
-                                    LIMEWIRE_PREFS_DIR_NAME);
+                                    FROSTWIRE_PREFS_DIR_NAME);
         if(CommonUtils.isMacOSX()) {            
             File tempSettingsDir = new File(getUserHomeDir(), 
                                             "Library/Preferences");
-            settingsDir = new File(tempSettingsDir, "LimeWire");
+            settingsDir = new File(tempSettingsDir, "FrostWire");
 		} 
+	
+	// whether or not to try copy old limewire files
+	boolean shouldCopyLW = false;
 
         if(!settingsDir.isDirectory()) {
             settingsDir.delete(); // delete whatever it may have been
@@ -773,6 +759,8 @@ public final class CommonUtils {
                     settingsDir;
                 throw new RuntimeException(msg);
             }
+	    
+	    shouldCopyLW = true;
         }
 
         if(!settingsDir.canWrite()) {
@@ -787,6 +775,9 @@ public final class CommonUtils {
         moveWindowsFiles(settingsDir);
         // make sure old metadata files are moved
         moveXMLFiles(settingsDir);
+	// copy limewire settings...
+	if (shouldCopyLW)
+	    moveLimeWireFiles(settingsDir);
         // cache the directory.
         SETTINGS_DIRECTORY = settingsDir;
         return settingsDir;
@@ -870,6 +861,95 @@ public final class CommonUtils {
             }
         }
         _xmlFilesMoved = true;
+    }
+
+    private synchronized static void moveLimeWireFiles(File settingsDir) {
+	// check for limewire settings to import
+	File lwSettingsDir = new File(getUserHomeDir(), ".limewire");
+	if (CommonUtils.isMacOSX()) {
+	    File tempSettingsDir = new File(getUserHomeDir(), 
+					    "Library/Preferences");
+	    lwSettingsDir = new File(tempSettingsDir, "LimeWire");
+	}
+	if (!lwSettingsDir.isDirectory() || !lwSettingsDir.canRead())
+	    return;
+	
+	File inFile = new File(lwSettingsDir, "limewire.props");
+	if (inFile.canRead()) {
+	    File outFile = new File(settingsDir, "frostwire.props");
+	    try {
+			FileUtils.touch(outFile);
+	    } catch (IOException ioe) {
+	    	throw new RuntimeException("could not create settings file", ioe);
+	    }
+	    copy(inFile, outFile);
+	}
+	
+	inFile = new File(lwSettingsDir, "tables.props");
+	if (inFile.canRead()) {
+	    File outFile = new File(settingsDir, "tables.props");
+		try {
+			FileUtils.touch(outFile);
+		} catch (IOException ioe) {
+			throw new RuntimeException("could not create settings file", ioe);
+		}
+	    copy(inFile, outFile);
+	}
+	
+	inFile = new File(lwSettingsDir, "installation.props");
+	if (inFile.canRead()) {
+	    File outFile = new File(settingsDir, "installation.props");
+		try {
+			FileUtils.touch(outFile);
+		} catch (IOException ioe) {
+			throw new RuntimeException("could not create settings file", ioe);
+		}
+	    copy(inFile, outFile);
+	}
+	
+	inFile = new File(lwSettingsDir, "ttree.cache");
+	if (inFile.canRead()) {
+	    File outFile = new File(settingsDir, "ttree.cache");
+		try {
+			FileUtils.touch(outFile);
+		} catch (IOException ioe) {
+			throw new RuntimeException("could not create settings file", ioe);
+		}
+	    copy(inFile, outFile);
+	}
+	
+	inFile = new File(lwSettingsDir, "fileurns.cache");
+	if (inFile.canRead()) {
+	    File outFile = new File(settingsDir, "fileurns.cache");
+		try {
+			FileUtils.touch(outFile);
+		} catch (IOException ioe) {
+			throw new RuntimeException("could not create settings file", ioe);
+		}
+	    copy(inFile, outFile);
+	}
+	
+	inFile = new File(lwSettingsDir, "creationtimes.cache");
+	if (inFile.canRead()) {
+	    File outFile = new File(settingsDir, "creationtimes.cache");
+		try {
+			FileUtils.touch(outFile);
+		} catch (IOException ioe) {
+			throw new RuntimeException("could not create settings file", ioe);
+		}
+	    copy(inFile, outFile);
+	}
+
+	inFile = new File(lwSettingsDir, "gnutella.net");
+	if (inFile.canRead()) {
+	    File outFile = new File(settingsDir, "gnutella.net");
+		try {
+			FileUtils.touch(outFile);
+		} catch (IOException ioe) {
+			throw new RuntimeException("could not create settings file", ioe);
+		}
+	    copy(inFile, outFile);
+	}
     }
 	     
     

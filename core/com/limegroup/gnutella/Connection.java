@@ -1592,6 +1592,10 @@ public class Connection implements IpPort {
     public boolean isLimeWire() {
         return _headers.isLimeWire();
     }
+
+    public boolean isFrostWire() {
+	return _headers.isFrostWire();
+    }
     
     public boolean isOldLimeWire() {
         return _headers.isOldLimeWire();

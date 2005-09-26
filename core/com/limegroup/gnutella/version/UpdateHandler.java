@@ -262,8 +262,7 @@ public class UpdateHandler {
         
         UpdateData updateInfo = uc.getUpdateDataFor(limeV, 
                     ApplicationSettings.getLanguage(),
-                    CommonUtils.isPro(),
-                    style,
+                     style,
                     javaV);
 
         List updatesToDownload = uc.getUpdatesWithDownloadInformation();

