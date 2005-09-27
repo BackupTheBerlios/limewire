@@ -259,11 +259,6 @@ final class ThemeMenu extends AbstractMenu {
               name.equals(ThemeSettings.WINDOWS_LAF_THEME_NAME))
                 return false;
             
-            // only show pro theme if we're on pro.
-            if(!CommonUtils.isPro() &&
-               name.equals(ThemeSettings.PRO_THEME_NAME))
-                return false;
-                
             // only show GTK theme on linux with 1.5  
             if(name.equals(ThemeSettings.GTK_LAF_THEME_NAME) &&   
               (!CommonUtils.isLinux() ||  

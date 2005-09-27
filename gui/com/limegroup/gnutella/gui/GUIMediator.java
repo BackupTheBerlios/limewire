@@ -560,9 +560,6 @@ public final class GUIMediator {
         } else {
             int preferred = RouterService.getConnectionManager().
                             getPreferredConnectionCount();
-            // pro will have more.
-            if(CommonUtils.isPro())
-                preferred -= 2;
             // ultrapeers don't need as many...
             if(RouterService.isSupernode())
                 preferred -= 5;

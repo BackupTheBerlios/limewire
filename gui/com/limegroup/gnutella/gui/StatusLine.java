@@ -534,8 +534,7 @@ public final class StatusLine implements ThemeObserver {
                     break;
             case STATUS_TURBOCHARGED:
                     status = GUIMediator.getStringResource("STATISTICS_CONNECTION_TURBO_CHARGED") + " " + connection;
-                    tip = GUIMediator.getStringResource("STATISTICS_CONNECTION_TURBO_CHARGED_TIP_" +
-				            (CommonUtils.isPro() ? "PRO" : "FREE"));
+                    tip = GUIMediator.getStringResource("STATISTICS_CONNECTION_TURBO_CHARGED_TIP_PRO");
                     break;
             //case STATUS_IDLE:
                     //status = STATISTICS_CONNECTION_IDLE;

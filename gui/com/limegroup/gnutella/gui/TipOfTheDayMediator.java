@@ -123,17 +123,7 @@ public final class TipOfTheDayMediator implements ThemeObserver {
      * The prefix to use for non OSX tips.
      */
     private static final String NOT_OSX = "NOT_OSX_";
-    
-    /**
-     * The prefix to use for Pro tips.
-     */
-    private static final String PRO = "PRO_";
-    
-    /**
-     * The prefix to use for Free tips.
-     */
-    private static final String FREE = "FREE_";
-    
+
     /**
      * The list of keys that are valid in the resource bundle.
      */
@@ -281,10 +271,6 @@ public final class TipOfTheDayMediator implements ThemeObserver {
                     k.startsWith(OTHER))
                 KEYS.add(k);
             else if(!CommonUtils.isMacOSX() && k.startsWith(NOT_OSX))
-                KEYS.add(k);
-            else if(CommonUtils.isPro() && k.startsWith(PRO))
-                KEYS.add(k);
-            else if(!CommonUtils.isPro() && k.startsWith(FREE))
                 KEYS.add(k);
         }
         

@@ -93,21 +93,7 @@ class OverlayAd extends JPanel implements ThemeObserver {
     void searchPerformed() {
         if(!_searchDone) {
             _searchDone = true;
-            if(CommonUtils.isPro())
-                OverlayAd.this.setVisible(false);
-            else {
-                _image = GUIMediator.getThemeImage("gopro");
-                Dimension preferredSize =
-                    new Dimension(_image.getIconWidth(),
-                                  _image.getIconHeight());
-                setMaximumSize(preferredSize);
-                setPreferredSize(preferredSize);                
-                
-                removeAll();
-                add(createTextPanel(true));
-                add(createImagePanel());
-                GUIUtils.setOpaque(false, this);
-            }
+            OverlayAd.this.setVisible(false);
         }
     }
     
@@ -130,11 +116,9 @@ class OverlayAd extends JPanel implements ThemeObserver {
     private JPanel createTextPanel(boolean goPro) {
         JPanel panel = new JPanel(new BorderLayout());
         
-        if(CommonUtils.isPro() || goPro)
-            panel.add(createNorthPanel(), BorderLayout.NORTH);
+        panel.add(createNorthPanel(), BorderLayout.NORTH);
         panel.add(Box.createHorizontalStrut(18), BorderLayout.WEST);
-        JPanel center = goPro ? 
-                    createGoProCenter() : createGettingStartedCenter();
+        JPanel center = createGettingStartedCenter();
         panel.add(center, BorderLayout.CENTER);
         panel.add(Box.createHorizontalStrut(18), BorderLayout.EAST);
 
@@ -149,20 +133,17 @@ class OverlayAd extends JPanel implements ThemeObserver {
     private JPanel createNorthPanel() {
         JPanel box = new BoxPanel(BoxPanel.X_AXIS);
         box.add(Box.createHorizontalGlue());
-        if(CommonUtils.isPro()) {
-            JLabel closer = new JLabel(CLOSER);
-            closer.addMouseListener(new MouseListener() {
-                public void mouseClicked(MouseEvent e) {
-                    OverlayAd.this.setVisible(false);
-                }
-                public void mousePressed(MouseEvent e) {}
-                public void mouseReleased(MouseEvent e) {}
-                public void mouseEntered(MouseEvent e) {}
-                public void mouseExited(MouseEvent e) {}
-            });
-            box.add(closer);
-        } else
-            box.add(Box.createVerticalStrut(CLOSER.getIconHeight()));
+        JLabel closer = new JLabel(CLOSER);
+        closer.addMouseListener(new MouseListener() {
+        	public void mouseClicked(MouseEvent e) {
+        		OverlayAd.this.setVisible(false);
+			}
+            public void mousePressed(MouseEvent e) {}
+            public void mouseReleased(MouseEvent e) {}
+            public void mouseEntered(MouseEvent e) {}
+            public void mouseExited(MouseEvent e) {}
+        });
+        box.add(closer);
         return box;
     }
     

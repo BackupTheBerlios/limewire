@@ -409,9 +409,6 @@ public final class ThemeSettings extends LimeProps {
         if(CommonUtils.isMacOSX()) {
             theme = PINSTRIPES_OSX_THEME_FILE;
             dir = new File(THEME_DIR_FILE, "pinstripes_theme_osx");
-        } else if(CommonUtils.isPro()) {
-            theme = PRO_THEME_FILE;
-            dir = new File(THEME_DIR_FILE, "limewirePro_theme");
         } else if(CommonUtils.isWindowsXP() && CommonUtils.isJava14OrLater()) {
             theme = WINDOWS_LAF_THEME_FILE;
             dir = new File(THEME_DIR_FILE, "windows_theme");
@@ -420,7 +417,7 @@ public final class ThemeSettings extends LimeProps {
             dir = new File(THEME_DIR_FILE, "GTK_theme");
         } else {
             theme = LIMEWIRE_THEME_FILE;
-            dir = new File(THEME_DIR_FILE, "limewire_theme");
+            dir = new File(THEME_DIR_FILE, "winter_theme");
         }
         THEME_DEFAULT = theme;
         THEME_DEFAULT_DIR = dir;
