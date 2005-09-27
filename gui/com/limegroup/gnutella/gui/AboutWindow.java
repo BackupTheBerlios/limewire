@@ -175,8 +175,9 @@ final class AboutWindow {
         sb.append("<br><br>");
         
         //  developers
-        sb.append(GUIMediator.getStringResource("ABOUT_WHY_FROST_WRIE"));
-
+        sb.append(GUIMediator.getStringResource("ABOUT_WHY_FROST_WIRE"));
+		sb.append("<br><br>");
+		
         //  previous developers
         sb.append(GUIMediator.getStringResource("ABOUT_THANKS_TO_LIMEWIRE"));
         sb.append("<ul>\n" + 
