@@ -36,12 +36,6 @@ public final class MenuMediator {
 	private final NavMenu NAV_MENU = new NavMenu("NAV");
 
 	/**
-	 * Constant handle to the single <tt>ResourcesMenu</tt> instance for
-	 * the application.
-	 */
-	private final Menu RESOURCES_MENU = new ResourcesMenu("RESOURCES");
-
-	/**
 	 * Constant handle to the single <tt>ToolsMenu</tt> instance for
 	 * the application.
 	 */
@@ -83,7 +77,6 @@ public final class MenuMediator {
 		addMenu(FILE_MENU);
 		addMenu(VIEW_MENU);
 		addMenu(NAV_MENU);
-		addMenu(RESOURCES_MENU);
 		addMenu(TOOLS_MENU);
 		addMenu(HELP_MENU);
 	}
