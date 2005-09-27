@@ -112,12 +112,6 @@ public final class GUIMediator {
 	public static final int LIBRARY_INDEX = 3;
 
 	/**
-	 * Constant specifying whether or not the user has donated to the LimeWire
-	 * project.
-	 */
-	private static boolean HAS_DONATED = true;
-
-	/**
 	 * The main <tt>JFrame</tt> for the application.
 	 */
 	private static final JFrame FRAME = new JFrame();
@@ -383,9 +377,6 @@ public final class GUIMediator {
 	 * time the application is made visible.
 	 */
 	private static final void showDialogsForFirstVisibility() {
-		if (!hasDonated())
-			UpgradeWindow.showProDialog();
-			
 		if (!_displayedMessage && 
 		  ResourceManager.hasLocalizedTipsOfTheDay() && StartupSettings.SHOW_TOTD.getValue()) {
 			new ManagedThread("TOTD") {
@@ -1947,16 +1938,6 @@ public final class GUIMediator {
 	 */
 	public void disconnect() {
 		RouterService.disconnect();
-	}
-
-	/**
-	 * Returns a <tt>boolean</tt> specifying whether or not the user has
-	 * donated to the LimeWire project.
-	 *
-	 * @return <tt>true</tt> if the user has donated, <tt>false</tt> otherwise
-	 */
-	public static boolean hasDonated() {
-		return HAS_DONATED;
 	}
 
 	/**

@@ -27,12 +27,12 @@ final class HelpMenu extends AbstractMenu {
 	HelpMenu(final String key) {
 		super(key);
 		addMenuItem("HELP_USING_LIMEWIRE",
-		    new LinkListener("http://www.limewire.com/support.htm"));
+		    new LinkListener("http://www.frostwire.com/index.php?title=Help:Contents"));
 		addMenuItem("HELP_TOTD", new TOTDListener());
 		addMenuItem("HELP_FAQ",
-		    new LinkListener("http://www.limewire.com/support/faq.htm"));
+		    new LinkListener("http://www.frostwire.com/index.php?title=Help:FAQ"));
 		addMenuItem("HELP_FORUM",
-		    new LinkListener("http://www.limewire.com/forum.htm"));
+		    new LinkListener("http://www.gnutellaforums.com/forumdisplay.php?s=&forumid=7"));
 		if(!CommonUtils.isMacOSX()) {
             addSeparator();
             addMenuItem("HELP_ABOUT", new AboutListener());

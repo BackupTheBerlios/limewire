@@ -82,8 +82,8 @@ final class AboutWindow {
         JLabel java = new JLabel("Java " + CommonUtils.getJavaVersion());
         java.setHorizontalAlignment(SwingConstants.CENTER);
         
-        //  set up limewire.com label
-        JLabel url = new URLLabel("http://www.limewire.com");
+        //  set up frostwire.com label
+        JLabel url = new URLLabel("http://www.frostwire.com");
         url.setHorizontalAlignment(SwingConstants.CENTER);
 
         //  set up scroll check box
@@ -175,45 +175,19 @@ final class AboutWindow {
         sb.append("<br><br>");
         
         //  developers
-        sb.append(GUIMediator.getStringResource("ABOUT_DEV_BLURB"));
-        sb.append("<ul>\n" + 
-                "  <li>Greg Bildson</li>\n" + 
-                "  <li>Sam Berlin</li>\n" + 
-                "  <li>Zlatin Balevsky</li>\n" + 
-                "  <li>Justin Schmidt</li>\n" + 
-                "  <li>Dave Nicponski</li>\n" + 
-                "  <li>Karl Magdsick</li>\n" + 
-                "  <li>Tim Olsen</li>\n" + 
-                "  <li>Felix Berger</li>\n" + 
-                "</ul>");
-        
-        //  business developers
-        sb.append(GUIMediator.getStringResource("ABOUT_BIZDEV_BLURB"));
-        sb.append("<ul>\n" + 
-                "  <li>Meghan Formel</li>\n" + 
-                "  <li>Kathryn Catillaz</li>\n" + 
-                "  <li>Rachel Sterne</li>\n" + 
-                "</ul>");
-        
-        //  web developers
-        sb.append(GUIMediator.getStringResource("ABOUT_WEBDEV_BLURB"));
-        sb.append("<ul>\n" + 
-                "  <li>Angel Leon</li>\n" + 
-                "  <li>Aubrey Arago</li>\n" + 
-                "  <li>Justin Schmidt</li>\n" + 
-                "</ul>");
-        
-        //  support staff
-        sb.append(GUIMediator.getStringResource("ABOUT_SUPPORT_BLURB"));
-        sb.append("<ul>\n" + 
-                "  <li>Zenzele Bell</li>\n" + 
-                "  <li>Christine Nicponski</li>\n" + 
-                "  <li>Kirk Kahn</li>\n" + 
-                "</ul>");
-        
+        sb.append(GUIMediator.getStringResource("ABOUT_WHY_FROST_WRIE"));
+
         //  previous developers
-        sb.append(GUIMediator.getStringResource("ABOUT_PREVIOUS_DEV_BLURB"));
+        sb.append(GUIMediator.getStringResource("ABOUT_THANKS_TO_LIMEWIRE"));
         sb.append("<ul>\n" + 
+				"  <li>Greg Bildson</li>\n" + 
+				"  <li>Sam Berlin</li>\n" + 
+				"  <li>Zlatin Balevsky</li>\n" + 
+				"  <li>Justin Schmidt</li>\n" + 
+				"  <li>Dave Nicponski</li>\n" + 
+				"  <li>Karl Magdsick</li>\n" + 
+				"  <li>Tim Olsen</li>\n" + 
+				"  <li>Felix Berger</li>\n" + 
                 "  <li>Susheel Daswani</li>\n" +
                 "  <li>Adam Fisk</li>\n" +
                 "  <li>Tarun Kapoor</li>\n" +
@@ -272,7 +246,6 @@ final class AboutWindow {
                 "  <li>Tor Klingberg</li>\n" +
                 "  <li>Mickael Prinkey</li>\n" +
                 "  <li>Sean Ediger</li>\n" +
-                "  <li>Kath Whittle</li>\n" +
                 "</ul>");
         
         //  conclusion

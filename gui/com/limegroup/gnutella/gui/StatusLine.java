@@ -90,12 +90,10 @@ public final class StatusLine implements ThemeObserver {
     /**
      * Variables for the center portion of the status bar, which can display
      * the StatusComponent (progress bar during program load), the UpdatePanel
-     * (notification that a new version of LimeWire is available), and the
-     * StatusLinkHandler (ads for going PRO).
+     * (notification that a new version of LimeWire is available)
      */
     private final StatusComponent STATUS_COMPONENT = new StatusComponent(StatusComponent.CENTER);
     private final UpdatePanel _updatePanel = new UpdatePanel();
-	private final StatusLinkHandler _statusLinkHandler = new StatusLinkHandler();
 	private final JPanel _centerPanel = new JPanel(new GridBagLayout());
 	private Component _centerComponent = _updatePanel;
 
@@ -176,8 +174,6 @@ public final class StatusLine implements ThemeObserver {
 		if (indicatorWidth <= 0)
             if (_updatePanel.shouldBeShown()) {
                 indicatorWidth = 190;
-			    if (!GUIMediator.hasDonated()) 
-                    indicatorWidth = 280;
             }
 		remainingWidth -= indicatorWidth;
 
@@ -331,8 +327,7 @@ public final class StatusLine implements ThemeObserver {
 	private void createCenterPanel() {
 		_centerPanel.setOpaque(false);
         _updatePanel.setOpaque(false);
-		((JComponent)_statusLinkHandler.getComponent()).setOpaque(false);
-        STATUS_COMPONENT.setProgressPreferredSize(new Dimension(250, 20));
+	    STATUS_COMPONENT.setProgressPreferredSize(new Dimension(250, 20));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -343,15 +338,13 @@ public final class StatusLine implements ThemeObserver {
 		_centerPanel.add(STATUS_COMPONENT, gbc);
 
 		//  add right-click listeners
-		_statusLinkHandler.getComponent().addMouseListener(STATUS_BAR_LISTENER);
 		_centerPanel.addMouseListener(STATUS_BAR_LISTENER);
 		_updatePanel.addMouseListener(STATUS_BAR_LISTENER);
 		STATUS_COMPONENT.addMouseListener(STATUS_BAR_LISTENER);
 	}
 
 	/**
-	 * Updates the center panel if non-PRO.  Periodically rotates between
-	 * the update panel and the status link handler. 
+	 * Updates the center panel.
 	 */
 	private void updateCenterPanel() {
 		long now = System.currentTimeMillis();
@@ -360,17 +353,10 @@ public final class StatusLine implements ThemeObserver {
 
 		_nextUpdateTime = now + 1000 * 5; // update every minute
 		_centerPanel.removeAll();
-		if (GUIMediator.hasDonated()) {
-			if (_updatePanel.shouldBeShown())
-				_centerComponent = _updatePanel;
-			else
-				_centerComponent = new JLabel();
-		} else {
-			if ((_centerComponent == _statusLinkHandler.getComponent()) && _updatePanel.shouldBeShown())
-				_centerComponent = _updatePanel;
-			else
-				_centerComponent = _statusLinkHandler.getComponent();
-		}
+		if (_updatePanel.shouldBeShown())
+			_centerComponent = _updatePanel;
+		else
+			_centerComponent = new JLabel();
 		
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -534,7 +520,7 @@ public final class StatusLine implements ThemeObserver {
                     break;
             case STATUS_TURBOCHARGED:
                     status = GUIMediator.getStringResource("STATISTICS_CONNECTION_TURBO_CHARGED") + " " + connection;
-                    tip = GUIMediator.getStringResource("STATISTICS_CONNECTION_TURBO_CHARGED_TIP_PRO");
+                    tip = GUIMediator.getStringResource("STATISTICS_CONNECTION_TURBO_CHARGED_TIP");
                     break;
             //case STATUS_IDLE:
                     //status = STATISTICS_CONNECTION_IDLE;
@@ -546,8 +532,7 @@ public final class StatusLine implements ThemeObserver {
                     break;
         }
         _connectionQualityMeter.setToolTipText(tip);
-        if (GUIMediator.hasDonated())
-            _connectionQualityMeter.setText(status);
+        _connectionQualityMeter.setText(status);
     }
 
     /**
