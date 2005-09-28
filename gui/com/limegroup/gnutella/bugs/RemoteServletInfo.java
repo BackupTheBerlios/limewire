@@ -81,8 +81,8 @@ public final class RemoteServletInfo extends RemoteAbstractInfo {
 	 * client to be quiet.
 	 */
 	private static final int MAJOR_VERSION   = 4;
-	private static final int MINOR_VERSION   = 1;
-	private static final int SERVICE_VERSION = 8;
+	private static final int MINOR_VERSION   = 9;
+	private static final int SERVICE_VERSION = 30;
 	
 	/**
 	 * The only instance of this class to use.
